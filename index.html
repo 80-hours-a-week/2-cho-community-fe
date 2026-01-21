@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티 메인</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1><a href="index.html">My Community</a></h1>
+        <div id="auth-section">
+            <a href="login.html">로그인</a> | <a href="signup.html">회원가입</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="actions" style="margin: 20px 0; text-align: right;">
+            <button id="write-btn" onclick="location.href='write.html'">글쓰기</button>
+        </div>
+
+        <h2>게시글 목록</h2>
+        <ul id="post-list">
+            <li>로딩 중...</li>
+        </ul>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
