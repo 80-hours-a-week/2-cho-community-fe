@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function checkLoginStatus() {
-    const authSection = document.getElementById("auth-selection");
+    const authSection = document.getElementById("auth-section");
     const writeBtn = document.getElementById("write-btn");
 
     try {
@@ -18,8 +18,9 @@ async function checkLoginStatus() {
 
         if (response.ok) {
             const user = await response.json();
-            authSection.innerHTML = `<span><b>${user.data.user.nickname || "사용자"}</b>님 환영합니다.</span>
-                <button id="logout-btn">로그아웃</button>`;
+            authSection.innerHTML = `
+            <span><b>${user.data.user.nickname || "사용자"}</b>님 환영합니다.</span>
+            <button id="logout-btn">로그아웃</button>`;
             document.getElementById("logout-btn").addEventListener("click", handleLogout);
         } else {
             // 비로그인 상태 UI
@@ -36,22 +37,27 @@ async function loadPosts() {
     try {
         const response = await fetch(`${API_BASE_URL}/v1/posts/`, {
             method: "GET",
-
             credentials: "include"
         });
 
         if (!response.ok) throw new Error("게시글 목록을 불러오지 못했습니다.");
 
-        const posts = await response.json();
+        const posts = await response.json().data?.posts || [];
 
         // 로딩 메시지 제거
         listElement.innerHTML = "";
 
-        posts.forEach(post => {
+        if (posts.length === 0) {
+            listElement.innerHTML = "<li>게시글이 없습니다.</li>";
+            return;
+        }
+
+        // https://haenny.tistory.com/86#google_vignette
+        posts.forEach.call(posts, (post) => {
             const li = document.createElement("li");
             li.innerHTML = `
                 <h3>${post.title}</h3>
-                <p>작성자: ${post.author} | 날짜: ${post.created_at}</p>
+                <p>작성자: ${post.author.nickname} | 날짜: ${new Date(post.created_at).toLocaleDateString()}</p>
             `;
             li.addEventListener("click", () => {
                 location.href = `detail.html?id=${post.id}`;
