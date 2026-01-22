@@ -29,6 +29,7 @@ function clearHelperText(inputElement) {
     }
 }
 
+// 프로필 사진 업로드
 if (profileInput) {
     profileInput.addEventListener("change", (event) => {
         const file = event.target.files[0];
@@ -48,6 +49,7 @@ if (profileInput) {
     });
 }
 
+// 회원가입 정보를 백엔드로 전달
 if (signupForm) {
     signupForm.addEventListener("submit", async (event) => {
         event.preventDefault(); // 기본 제출 방지
