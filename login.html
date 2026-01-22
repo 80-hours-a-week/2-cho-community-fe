@@ -5,25 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>커뮤니티 로그인</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+KR:wght@100..900&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
+    <header>
+        <h2>아무 말 대잔치</h2>
+    </header>
     <div class="login-container">
         <h2>로그인</h2>
         <form id="login-form">
             <div class="input-group">
                 <label for="email">이메일</label>
-                <input type="text" id="email" name="email" required placeholder="이메일을 입력하세요">
+                <input type="email" id="email" name="email" required placeholder="이메일을 입력하세요" autocomplete="email">
+                <span>* helper text</span>
             </div>
             <div class="input-group">
                 <label for="password">비밀번호</label>
-                <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요">
+                <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+                <span>* helper text</span>
             </div>
-            <button type="submit" class="login-btn">로그인하기</button>
+            <button type="submit" class="login-btn">로그인</button>
         </form>
         <div class="links">
-            <a href="signup.html">회원가입</a> | <a href="#">비밀번호 찾기</a>
+            <a href="signup.html">회원가입</a> | <a href="find_password.html">더미페이지</a>
         </div>
     </div>
 
