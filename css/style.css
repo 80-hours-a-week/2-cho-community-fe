@@ -141,8 +141,9 @@ header h2 {
 }
 
 .write-btn:hover {
-    background-color: #9286d8;
+    background-color: #7F6AEE;
 }
+
 
 /* Post List */
 #post-list {
@@ -328,8 +329,6 @@ header h2 {
 }
 
 .stat-box {
-    background: #f9f9f9;
-    /* #D9D9D9 for disabled like? No, generic bg is nicer. */
     background: #D9D9D9;
     padding: 10px 20px;
     border-radius: 12px;
@@ -538,13 +537,176 @@ header h2 {
     background: #9286d8;
 }
 
+
+/* =========================== */
+/* Write Page Styles          */
+/* =========================== */
+
+.write-container {
+    max-width: 800px;
+}
+
+/* Form Groups */
+.form-group {
+    width: 100%;
+}
+
+/* Title Input */
+#post-title {
+    width: 100%;
+    border: none;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 10px 0;
+    outline: none;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.2s;
+}
+
+#post-title::placeholder {
+    color: #aaa;
+}
+
+/* Content Textarea */
+#post-content {
+    width: 100%;
+    min-height: 300px;
+    border: none;
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 10px 0;
+    outline: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+}
+
+#post-content::placeholder {
+    color: #aaa;
+}
+
+/* Image Upload Section */
+.image-upload-section {
+    margin-top: 20px;
+}
+
+.helper-text {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+.image-upload-box {
+    border: 1px dashed #ccc;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.image-upload-box:hover {
+    background-color: #f0f0f0;
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.image-preview {
+    margin-top: 10px;
+    max-height: 200px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+}
+
+/* Submit Section */
+.submit-section {
+    margin-top: 30px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #ACA0EB;
+    /* Default active (but disabled handles opacity?) */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.submit-btn:disabled {
+    background-color: #ACA0EB;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.submit-btn.active {
+    opacity: 1;
+    cursor: pointer;
+    background-color: #ACA0EB;
+}
+
+.submit-btn.active:hover {
+    background-color: #7F6AEE;
+}
+
+
+.validation-helper {
+    font-size: 14px;
+    color: #FF3333;
+    /* Error Color */
+    font-weight: 500;
+    display: none;
+    /* Hidden by default or controlled by JS */
+}
+
+/* SR Only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+
 /* Login Page Specifics (Compatibility override) */
 .login-container {
-    background: #f4f5f7;
-    padding: 2rem;
-    border-radius: 10px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
     width: 100%;
     max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* ... Keep existing login styles if they are unique ... */
@@ -553,4 +715,9 @@ header h2 {
 /* Helper classes */
 .hidden {
     display: none !important;
+}
+
+/* File Input hidden */
+.hidden-input {
+    display: none;
 }
