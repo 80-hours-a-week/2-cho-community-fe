@@ -163,21 +163,16 @@ function formatCount(num) {
 
 async function handleLogout() {
     try {
-        const response = await fetch(`${API_BASE_URL}/v1/auth/logout`, { // Assuming /logout endpoint exists or based on backend spec
-            method: "POST", // Usually POST for logout
+        const response = await fetch(`${API_BASE_URL}/v1/auth/session`, {
+            method: "DELETE",
             credentials: "include"
         });
-        // Or if it was DELETE /auth/session as before
-        if (response.status === 404) {
-            // Fallback to previous usage if need be
-            await fetch(`${API_BASE_URL}/v1/auth/session`, { method: "DELETE", credentials: "include" });
-        }
 
         alert("로그아웃 되었습니다.");
         location.reload();
 
     } catch (error) {
         console.error("로그아웃 에러: ", error);
-        location.reload(); // Just reload to clear state visually
+        location.reload();
     }
 }
