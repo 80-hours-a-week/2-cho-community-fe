@@ -1,6 +1,6 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-    checkLoginStatus();
+    // checkLoginStatus(); // Handled by header.js
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get("id");
 

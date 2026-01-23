@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    checkLoginStatus();
+    // checkLoginStatus(); // Handled by header.js
     loadPostDetail(postId);
     reloadComments(postId);
     setupEventListeners(postId);

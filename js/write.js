@@ -1,6 +1,6 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-    checkLoginStatus();
+    // checkLoginStatus(); // Handled by header.js
     setupFormListeners();
 });
 
