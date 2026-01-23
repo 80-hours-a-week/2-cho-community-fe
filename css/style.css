@@ -59,19 +59,14 @@ header h2 {
 }
 
 /* 뒤로 가기 버튼 스타일 */
-.header-title-wrapper .back-button {
-
-    position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-right: 20px;
-
+.back-button {
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
+    margin-right: 20px;
     display: flex;
+    align-items: center;
 }
 
 /* 마우스 올렸을 때 효과 */
@@ -101,8 +96,8 @@ header h2 {
 
 /* 게시글 목록 */
 .main-container {
-    margin-top: 80px;
-    /* 화면 상단에 고정된 헤더를 위한 공간*/
+    margin-top: 104px;
+    /* 화면 상단에 고정된 헤더를 위한 공간 */
     width: 100%;
     max-width: 600px;
     padding: 0 20px;
@@ -129,6 +124,7 @@ header h2 {
 .action-wrapper {
     display: flex;
     justify-content: flex-end;
+    /* Southeast alignment */
     width: 100%;
 }
 
@@ -145,7 +141,7 @@ header h2 {
 }
 
 .write-btn:hover {
-    background-color: #7F6AEE;
+    background-color: #9286d8;
 }
 
 /* Post List */
@@ -167,6 +163,8 @@ header h2 {
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
 }
 
 .post-card:hover {
@@ -174,36 +172,56 @@ header h2 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.post-card h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 16px 0;
-    line-height: 1.4;
-    word-break: break-word;
+.post-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 
-/* 게시글 정보 (좋아요, 댓글, 조회수, 날짜) */
-.post-meta {
+.post-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.4;
+    word-break: break-word;
+    flex: 1;
+    margin-right: 20px;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+}
+
+/* Post Meta Info (Likes, Comments, Views) */
+.post-stats {
     display: flex;
     gap: 16px;
     font-size: 12px;
     color: #666;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
-.post-meta span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.post-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #ddd;
+    /* Light gray line for card/detail default */
+    margin: 10px 0;
 }
 
-/* 작성자 정보 */
+.post-card .post-divider {
+    background-color: #000;
+    /* Black line for card specifically as requested */
+}
+
+/* Author Info */
 .post-author {
     display: flex;
     align-items: center;
-    border-top: 1px solid #f4f5f7;
-    padding-top: 16px;
+    padding-top: 4px;
 }
 
 .author-profile-img {
@@ -222,13 +240,7 @@ header h2 {
     color: #333;
 }
 
-.author-date {
-    margin-left: auto;
-    font-size: 12px;
-    color: #888;
-}
-
-/* 로딩 표시 */
+/* Loading Sentinel */
 #loading-sentinel {
     height: 20px;
     margin: 20px 0;
@@ -236,87 +248,297 @@ header h2 {
     color: #888;
     font-size: 14px;
     display: none;
+    /* Hidden by default */
 }
 
 #loading-sentinel.visible {
     display: block;
 }
 
-/* 로그인 페이지 */
-.login-container {
+/* ============================ */
+/* Post Detail Specific Styles */
+/* ============================ */
+
+.post-detail-container {
+    max-width: 800px;
+    /* Slightly wider for reading */
+}
+
+.detail-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    line-height: 1.3;
+}
+
+.post-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-info-row .author-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-info-row .post-date {
+    margin-left: 10px;
+}
+
+.post-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
     background: #fff;
-    padding: 40px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.input-group label {
-    margin-bottom: 8px;
+.action-btn:hover {
+    background: #f0f0f0;
 }
 
-/* 프로필 업로드 컨테이너 */
-.profile-upload-container {
+.post-body {
+    min-height: 200px;
+    margin: 30px 0;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.post-image {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Stats Boxes */
+.post-stats-box {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    background: #f9f9f9;
+    /* #D9D9D9 for disabled like? No, generic bg is nicer. */
+    background: #D9D9D9;
+    padding: 10px 20px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 24px;
+    min-width: 60px;
+    cursor: default;
 }
 
-/* 원형 미리보기 영역 */
-.profile-preview {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: #e0e0e0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Like Box Logic */
+#like-box {
     cursor: pointer;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    position: relative;
     transition: background-color 0.2s;
 }
 
-.profile-preview:hover {
-    background-color: #d0d0d0;
+#like-box.active {
+    background-color: #ACA0EB;
+    /* Active like */
+    color: #fff;
 }
 
-/* 실제 이미지 스타일 */
-#preview-img {
+/* Stats Text */
+.stat-value {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.stat-label {
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Comment Section */
+.comment-section {
+    margin-top: 40px;
+}
+
+.comment-input-wrapper {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+#comment-input {
+    width: 100%;
+    height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: none;
+    margin-bottom: 10px;
+}
+
+.comment-submit-btn {
+    padding: 10px 20px;
+    background-color: #ACA0EB;
+    /* Default */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
+/* .comment-submit-btn.active -> Styled via JS logic to #7F6AEE */
+
+.comment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-author-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ddd;
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+.comment-content-wrapper {
+    flex: 1;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.comment-author-name {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.comment-date {
+    font-size: 12px;
+    color: #888;
+}
+
+.comment-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+}
+
+.small-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid #eee;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comment-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+}
+
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: block;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 50% transparency */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
 }
 
-/* 숨김 처리를 위한 클래스 */
-.hidden {
-    display: none !important;
-}
-
-/* 파일 인풋 숨기기 (라벨을 클릭해서 실행하므로) */
-.hidden-input {
+.modal.hidden {
     display: none;
 }
 
-/* 플레이스홀더 아이콘 스타일 */
-.placeholder-icon svg {
-    stroke: #666;
-    width: 32px;
-    height: 32px;
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* 헬퍼 텍스트 스타일 (기존 스타일과 통일감 유지) */
-.profile-upload-container .helper-text {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #FF3333;
-    font-family: 'Inter', sans-serif;
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 20px;
+    font-weight: 700;
 }
 
+.modal-buttons {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    padding: 10px 30px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.secondary-btn {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.primary-btn {
+    background: #ACA0EB;
+    color: #fff;
+}
+
+.primary-btn:hover {
+    background: #9286d8;
+}
+
+/* Login Page Specifics (Compatibility override) */
 .login-container {
     background: #f4f5f7;
     padding: 2rem;
@@ -325,92 +547,10 @@ header h2 {
     max-width: 400px;
 }
 
-h2 {
-    font-weight: 700;
-    font-style: Bold;
-    font-size: 32px;
-    line-height: 100%;
-    letter-spacing: 0%;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-}
+/* ... Keep existing login styles if they are unique ... */
+/* Merging previous login styles logic into general where possible */
 
-.input-group {
-    margin-bottom: 1rem;
-    font-size: 15px;
-}
-
-.input-group label {
-    display: block;
-    font-weight: 700;
-    font-style: bold;
-    line-height: 100%;
-    letter-spacing: 0%;
-    margin-bottom: 0.5rem;
-    color: #000;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #000;
-    border-radius: 4px;
-    box-sizing: border-box;
-    /* 패딩 포함 너비 계산 */
-}
-
-.input-group input::placeholder {
-    color: #000;
-    font-weight: 400;
-    line-height: 100%;
-    font-style: normal;
-    font-size: 14px;
-}
-
-.error-border {
-    border-color: #FF3333;
-}
-
-.input-group span {
-    color: #FF3333;
-    font-family: 'Inter', sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 100%;
-    border: 4px;
-    border-radius: 8px 8px 8px;
-    padding: 4px;
-}
-
-.login-btn {
-    width: 100%;
-    padding: 1rem;
-    background-color: #ACA0EB;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-weight: 700;
-    font-size: 14px;
-    font-style: bold;
-    cursor: pointer;
-    margin-top: 1rem;
-}
-
-.login-btn:hover {
-    background-color: #0056b3;
-}
-
-.links {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-}
-
-.links a {
-    text-decoration: none;
-    color: #000;
-    font-weight: 400;
+/* Helper classes */
+.hidden {
+    display: none !important;
 }

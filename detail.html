@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아무 말 대잔치 - 게시글 상세</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+KR:wght@100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="header-titel-wrapper">
+            <button id="back-btn" class="back-button" onclick="location.href='index.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 19L8 12L15 5" stroke="black" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <h2>아무 말 대잔치</h2>
+        </div>
+        <div class="header-auth">
+            <div class="profile-circle" id="header-profile"></div>
+        </div>
+    </header>
+
+    <main class="main-container post-detail-container">
+        <!-- Post Content Section -->
+        <article class="post-content-wrapper">
+            <h1 id="post-title" class="detail-title">Loading...</h1>
+
+            <div class="post-info-row">
+                <div class="author-info">
+                    <div class="author-profile-img" id="post-author-img"></div>
+                    <span class="author-nickname" id="post-author-nickname">Unknown</span>
+                    <span class="post-date" id="post-date"></span>
+                </div>
+                <div class="post-actions" id="post-actions">
+                    <button class="action-btn" id="edit-post-btn">수정</button>
+                    <button class="action-btn" id="delete-post-btn">삭제</button>
+                </div>
+            </div>
+
+            <div class="post-divider"></div>
+
+            <div class="post-body">
+                <img id="post-image" src="" alt="Post Image" class="post-image hidden">
+                <p id="post-content"></p>
+            </div>
+
+            <div class="post-stats-box">
+                <div class="stat-box" id="like-box">
+                    <div class="stat-value" id="like-count">0</div>
+                    <div class="stat-label">좋아요</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="view-count">0</div>
+                    <div class="stat-label">조회수</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="comment-count">0</div>
+                    <div class="stat-label">댓글</div>
+                </div>
+            </div>
+        </article>
+
+        <div class="post-divider"></div>
+
+        <!-- Comment Section -->
+        <section class="comment-section">
+            <div class="comment-input-wrapper">
+                <textarea id="comment-input" placeholder="댓글을 남겨주세요!"></textarea>
+                <div class="comment-submit-wrapper">
+                    <button id="comment-submit-btn" class="comment-submit-btn">댓글 등록</button>
+                </div>
+            </div>
+
+            <ul id="comment-list" class="comment-list">
+                <!-- Comments will be injected here -->
+            </ul>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modal-title">게시글을 삭제하시겠습니까?</h3>
+            <p id="modal-desc">삭제한 내용은 복구할 수 없습니다.</p>
+            <div class="modal-buttons">
+                <button id="modal-cancel-btn" class="secondary-btn">취소</button>
+                <button id="modal-confirm-btn" class="primary-btn">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/detail.js"></script>
+</body>
+
+</html>
