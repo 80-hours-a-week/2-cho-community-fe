@@ -1,0 +1,116 @@
+/* css/modules/modals.css */
+/* 모달 스타일 */
+
+/* ============================= */
+/* Modal Overlay                 */
+/* ============================= */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+/* ============================= */
+/* Modal Content                 */
+/* ============================= */
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* ============================= */
+/* Modal Buttons                 */
+/* ============================= */
+.modal-buttons {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    padding: 10px 30px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* 취소 Button - Dark/Black */
+.modal-buttons .secondary-btn {
+    background-color: #333;
+    color: #fff;
+}
+
+.modal-buttons .secondary-btn:hover {
+    background-color: #555;
+}
+
+/* 확인 Button - Purple */
+.modal-buttons .primary-btn {
+    background-color: #ACA0EB;
+    color: #fff;
+}
+
+.modal-buttons .primary-btn:hover {
+    background-color: #7F6AEE;
+}
+
+/* ============================= */
+/* Modal Input                   */
+/* ============================= */
+.modal-input {
+    width: 80%;
+    padding: 10px;
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* ============================= */
+/* Toast Notification            */
+/* ============================= */
+.toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ACA0EB;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    z-index: 3000;
+}
+
+.toast.show {
+    opacity: 1;
+}

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>커뮤니티 로그인</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -25,23 +25,22 @@
             <div class="input-group">
                 <label for="email">이메일</label>
                 <input type="email" id="email" name="email" required placeholder="이메일을 입력하세요" autocomplete="email">
-                <span>* helper text</span>
+                <span id="email-helper"></span>
             </div>
             <div class="input-group">
                 <label for="password">비밀번호</label>
                 <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요"
                     autocomplete="current-password">
-                <span>* helper text</span>
+                <span id="password-helper"></span>
             </div>
             <button type="submit" class="login-btn">로그인</button>
         </form>
         <div class="links">
-            <a href="signup.html">회원가입</a>
+            <a href="/signup">회원가입</a>
         </div>
     </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/login.js"></script>
+    <script type="module" src="/js/app/login.js"></script>
 </body>
 
 </html>
