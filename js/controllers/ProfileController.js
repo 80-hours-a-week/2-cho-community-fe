@@ -209,10 +209,20 @@ class ProfileController {
             if (result.ok) {
                 showToast();
             } else {
-                if (result.status === 409 || (result.data?.detail && result.data.detail.includes('exists'))) {
+                const detail = result.data?.detail;
+                // Check for duplicate nickname error
+                if (result.status === 409 || (typeof detail === 'string' && detail.includes('exists'))) {
                     showError(helper, '*중복되는 닉네임입니다.');
                 } else {
-                    alert('수정 실패: ' + (result.data?.detail || '알 수 없는 오류'));
+                    // Start: Fix for [Error] TypeError: result.data.detail.includes is not a function
+                    let msg = '알 수 없는 오류';
+                    if (typeof detail === 'string') {
+                        msg = detail;
+                    } else if (typeof detail === 'object') {
+                        msg = JSON.stringify(detail);
+                    }
+                    alert('수정 실패: ' + msg);
+                    // End: Fix
                 }
             }
         } catch (e) {

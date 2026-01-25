@@ -5,12 +5,10 @@
 /* Login Container               */
 /* ============================= */
 .login-container {
-    background: #fff;
-    padding: 40px;
+    padding: 20px;
     border-radius: 16px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .login-container h2 {

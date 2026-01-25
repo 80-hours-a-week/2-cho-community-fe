@@ -8,6 +8,7 @@ app = FastAPI()
 # 정적 파일 마운트
 app.mount("/css", StaticFiles(directory="css"), name="css")
 app.mount("/js", StaticFiles(directory="js"), name="js")
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 # HTML 템플릿 디렉토리
 templates = Jinja2Templates(directory="html")
