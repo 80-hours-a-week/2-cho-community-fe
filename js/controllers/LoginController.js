@@ -19,7 +19,19 @@ class LoginController {
     /**
      * 컨트롤러 초기화
      */
-    init() {
+    async init() {
+        // 이미 로그인된 경우 메인 페이지로 리다이렉트
+        try {
+            const authStatus = await AuthModel.checkAuthStatus();
+            if (authStatus.isAuthenticated) {
+                window.location.href = '/main';
+                return;
+            }
+        } catch (error) {
+            // 인증 확인 실패 시 로그인 페이지 유지
+            console.log('Auth check failed, staying on login page');
+        }
+
         this.loginForm = document.getElementById('login-form');
         this.loginBtn = document.querySelector('.login-btn');
         this.emailInput = document.getElementById('email');
@@ -132,7 +144,7 @@ class LoginController {
             const result = await AuthModel.login(email, password);
 
             if (result.ok) {
-                window.location.href = '/index.html';
+                window.location.href = '/main';
             } else {
                 showError(this.passwordHelper, '* 아이디 또는 비밀번호를 확인해주세요');
                 this.loginBtn.disabled = false;

@@ -28,7 +28,7 @@ class DetailController {
 
         if (!postId) {
             alert('잘못된 접근입니다.');
-            location.href = 'index.html';
+            location.href = '/main';
             return;
         }
 
@@ -75,7 +75,7 @@ class DetailController {
         } catch (error) {
             console.error(error);
             alert(error.message);
-            location.href = 'index.html';
+            location.href = '/main';
         }
     }
 
@@ -100,7 +100,7 @@ class DetailController {
         const editBtn = document.getElementById('edit-post-btn');
         if (editBtn) {
             editBtn.addEventListener('click', () => {
-                location.href = `edit.html?id=${this.currentPostId}`;
+                location.href = `/edit?id=${this.currentPostId}`;
             });
         }
 
@@ -187,7 +187,7 @@ class DetailController {
                 const result = await PostModel.deletePost(this.deleteTarget.id);
                 if (result.ok) {
                     alert('게시글이 삭제되었습니다.');
-                    location.href = 'index.html';
+                    location.href = '/main';
                 } else {
                     alert('삭제 실패');
                 }

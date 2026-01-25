@@ -37,13 +37,13 @@ class HeaderController {
             } else {
                 // 로그인/회원가입 페이지가 아니면 로그인으로 리다이렉트
                 if (!this._isAuthPage()) {
-                    location.href = 'login.html';
+                    location.href = '/login';
                 }
             }
         } catch (error) {
             console.error('Header Auth Check Failed:', error);
             if (!this._isAuthPage()) {
-                location.href = 'login.html';
+                location.href = '/login';
             }
         }
     }
@@ -62,7 +62,7 @@ class HeaderController {
      */
     _isAuthPage() {
         const path = location.pathname;
-        return path.endsWith('login.html') || path.endsWith('signup.html');
+        return path === '/login' || path === '/signup';
     }
 
     /**
@@ -70,7 +70,7 @@ class HeaderController {
      * @private
      */
     _handleEditInfo() {
-        location.href = 'edit_profile.html';
+        location.href = '/edit-profile';
     }
 
     /**
@@ -78,7 +78,7 @@ class HeaderController {
      * @private
      */
     _handleChangePassword() {
-        location.href = 'password.html';
+        location.href = '/password';
     }
 
     /**
@@ -90,13 +90,13 @@ class HeaderController {
             const result = await AuthModel.logout();
             if (result.ok) {
                 alert('로그아웃 되었습니다.');
-                location.href = 'login.html';
+                location.href = '/login';
             } else {
                 alert('로그아웃 실패');
             }
         } catch (error) {
             console.error('Logout Error:', error);
-            location.href = 'login.html';
+            location.href = '/login';
         }
     }
 }

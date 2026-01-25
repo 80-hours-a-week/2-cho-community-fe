@@ -55,7 +55,7 @@ class ProfileController {
                 this._validateNickname();
 
             } else {
-                location.href = 'login.html';
+                location.href = '/login';
             }
         } catch (error) {
             console.error('Profile Load Error:', error);
@@ -239,7 +239,7 @@ class ProfileController {
 
             if (result.ok) {
                 alert('회원탈퇴가 완료되었습니다.');
-                location.href = 'login.html';
+                location.href = '/login';
             } else {
                 alert('탈퇴 실패. 비밀번호를 확인해주세요.');
             }

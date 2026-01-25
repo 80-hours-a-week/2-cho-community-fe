@@ -43,14 +43,14 @@ class MainController {
 
                 // 드롭다운 설정
                 HeaderView.createDropdown(profileCircle, {
-                    onEditInfo: () => location.href = 'edit_profile.html',
-                    onChangePassword: () => location.href = 'password.html',
+                    onEditInfo: () => location.href = '/edit-profile',
+                    onChangePassword: () => location.href = '/password',
                     onLogout: () => this._handleLogout()
                 });
             } else {
                 // 비로그인 상태에서도 목록은 볼 수 있음
                 profileCircle.addEventListener('click', () => {
-                    location.href = 'login.html';
+                    location.href = '/login';
                 });
             }
         } catch (error) {
@@ -101,7 +101,7 @@ class MainController {
             }
 
             PostListView.renderPosts(listElement, posts, (postId) => {
-                location.href = `detail.html?id=${postId}`;
+                location.href = `/detail?id=${postId}`;
             });
 
             this.currentOffset += this.LIMIT;

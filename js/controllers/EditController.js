@@ -22,7 +22,7 @@ class EditController {
 
         if (!this.postId) {
             alert('잘못된 접근입니다.');
-            location.href = 'index.html';
+            location.href = '/main';
             return;
         }
 
@@ -67,7 +67,7 @@ class EditController {
         } catch (error) {
             console.error(error);
             alert(error.message);
-            location.href = 'index.html';
+            location.href = '/main';
         }
     }
 
@@ -154,7 +154,7 @@ class EditController {
             const result = await PostModel.updatePost(this.postId, payload);
 
             if (result.ok) {
-                location.href = `detail.html?id=${this.postId}`;
+                location.href = `/detail?id=${this.postId}`;
             } else {
                 alert('게시글 수정 실패');
             }

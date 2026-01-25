@@ -125,7 +125,7 @@ class WriteController {
             const result = await PostModel.createPost(postPayload);
 
             if (result.ok) {
-                location.href = 'index.html';
+                location.href = '/main';
             } else {
                 alert('게시글 작성 실패');
             }

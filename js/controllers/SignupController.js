@@ -106,7 +106,7 @@ class SignupController {
             backBtn.addEventListener('click', () => {
                 window.history.back();
                 if (document.referrer === '') {
-                    window.location.href = 'login.html';
+                    window.location.href = '/login';
                 }
             });
         }
@@ -261,7 +261,7 @@ class SignupController {
 
             if (result.ok) {
                 alert('회원가입이 완료되었습니다!');
-                window.location.href = 'login.html';
+                window.location.href = '/login';
             } else {
                 const errorData = result.data;
 
