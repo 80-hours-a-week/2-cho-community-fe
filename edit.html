@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아무 말 대잔치 - 게시글 수정</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -22,50 +22,49 @@
                         stroke-linejoin="round" />
                 </svg>
             </button>
-            <h2>아무 말 대잔치</h2>
-            <div class="header-auth">
-                <div class="profile-circle" id="header-profile"></div>
-            </div>
+            <h2>게시글 수정</h2>
+        </div>
+        <div class="header-auth">
+            <div class="profile-circle" id="header-profile"></div>
         </div>
     </header>
 
     <main class="main-container write-container">
-        <h2 class="page-title" style="text-align: center; margin-bottom: 30px;">게시글 수정</h2>
-
         <form id="edit-form">
-            <div class="input-group">
-                <label for="post-title">제목*</label>
-                <div class="form-divider"></div>
+            <div class="form-group title-group">
+                <label for="post-title" class="sr-only">제목</label>
                 <input type="text" id="post-title" placeholder="제목을 입력해주세요. (최대 26글자)" maxlength="26" required>
-                <div class="form-divider"></div>
             </div>
 
-            <div class="input-group">
-                <label for="post-content">내용*</label>
-                <div class="form-divider"></div>
-                <textarea id="post-content" class="content-textarea" placeholder="내용을 입력해주세요." required></textarea>
-                <div class="form-divider"></div>
+            <div class="post-divider"></div>
+
+            <div class="form-group body-group">
+                <label for="post-content" class="sr-only">내용</label>
+                <textarea id="post-content" placeholder="내용을 입력해주세요." required></textarea>
             </div>
 
-            <p id="validation-helper" class="helper-text">*제목, 내용을 모두 작성해주세요.</p>
-
-            <div class="file-upload-section">
-                <label class="file-upload-label">이미지</label>
-                <div class="file-upload-row">
+            <div class="image-upload-section">
+                <p class="helper-text">*이미지는 하나만 업로드 가능합니다.</p>
+                <div class="image-upload-box">
                     <input type="file" id="file-input" accept="image/*" class="hidden-input">
-                    <label for="file-input" class="file-select-btn">파일 선택</label>
-                    <span id="file-name" class="file-name-text">기존 파일 명</span>
+                    <label for="file-input" class="upload-label">이미지 업로드</label>
+                    <div id="image-preview" class="image-preview hidden"></div>
                 </div>
             </div>
 
+            <div class="post-divider"></div>
+
             <div class="submit-section">
                 <button type="submit" id="submit-btn" class="submit-btn" disabled>수정하기</button>
+                <p id="validation-helper" class="validation-helper">*수정할 내용을 입력해주세요.</p>
             </div>
 
         </form>
     </main>
 
-    <script type="module" src="/js/app/edit.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/edit.js"></script>
 </body>
 
 </html>

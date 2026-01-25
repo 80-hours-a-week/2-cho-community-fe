@@ -1,4 +1,3 @@
-// js/config.js
-// API 설정 파일
+// config.js: API 경로가 담긴 파일
 
-export const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://127.0.0.1:8000";

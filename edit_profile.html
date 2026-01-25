@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>아무 말 대잔치 - 회원정보수정</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -22,10 +22,10 @@
                         stroke-linejoin="round" />
                 </svg>
             </button>
-            <h2>아무 말 대잔치</h2>
-            <div class="header-auth">
-                <div class="profile-circle" id="header-profile"></div>
-            </div>
+            <h2>회원정보수정</h2>
+        </div>
+        <div class="header-auth">
+            <div class="profile-circle" id="header-profile"></div>
         </div>
     </header>
 
@@ -33,12 +33,15 @@
         <form id="profile-form">
 
             <div class="profile-edit-section">
-                <p class="profile-label" style="text-align: left; margin-bottom: 10px;">프로필 사진*</p>
                 <!-- Profile Image with Overlay -->
                 <div class="profile-img-wrapper" id="profile-img-wrapper">
                     <!-- Image set via JS background -->
                     <div class="profile-img-overlay">
-                        <span class="change-btn-text">변경</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17 3C17.2652 3 17.5196 3.10536 17.7071 3.29289C17.8946 3.48043 18 3.73478 18 4V7H21C21.2652 7 21.5196 7.10536 21.7071 7.29289C21.8946 7.48043 22 7.73478 22 8V20C22 20.2652 21.8946 20.5196 21.7071 20.7071C21.5196 20.8946 21.2652 21 21 21H5C4.73478 21 4.48043 20.8946 4.29289 20.7071C4.10536 20.5196 4 20.2652 4 20V8C4 7.73478 4.10536 7.48043 4.29289 7.29289C4.48043 7.10536 4.73478 7 5 7H8V4C8 3.73478 8.10536 3.48043 8.29289 3.29289C8.48043 3.10536 8.73478 3 9 3H17ZM13 11C11.8954 11 11 11.8954 11 13C11 14.1046 11.8954 15 13 15C14.1046 15 15 14.1046 15 13C15 11.8954 14.1046 11 13 11ZM13 9C10.7909 9 9 10.7909 9 13C9 15.2091 10.7909 17 13 17C15.2091 17 17 15.2091 17 13C17 10.7909 15.2091 9 13 9Z"
+                                fill="white" />
+                        </svg>
                     </div>
                 </div>
                 <!-- Hidden Input -->
@@ -66,9 +69,6 @@
             </div>
 
         </form>
-
-        <!-- Toast Notification -->
-        <div id="toast" class="toast">수정 완료</div>
     </main>
 
     <!-- Withdrawal Modal -->
@@ -87,7 +87,9 @@
         </div>
     </div>
 
-    <script type="module" src="/js/app/edit_profile.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/edit_profile.js"></script>
 </body>
 
 </html>
