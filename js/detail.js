@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 let currentPostId = null;
 let currentUserId = null; // To check ownership
+let editingCommentId = null; // Track comment being edited
 
 async function checkLoginStatus() {
     const profileCircle = document.getElementById("header-profile");
@@ -149,14 +150,15 @@ function createCommentElement(comment) {
     if (isOwner) {
         li.querySelector(".delete-cmt-btn").addEventListener("click", () => openDeleteModal("comment", comment.comment_id));
         li.querySelector(".edit-cmt-btn").addEventListener("click", () => {
-            // Edit logic: replace text p with textarea? or prompt?
-            // Requirement says "user can also edit or delete".
-            // Let's implement simple prompt or inline edit later.
-            // For now, prompt is simplest.
-            const newContent = prompt("댓글을 수정하세요:", comment.content);
-            if (newContent && newContent !== comment.content) {
-                updateComment(comment.comment_id, newContent);
-            }
+            // Edit logic: populate comment input field with existing content
+            const commentInput = document.getElementById("comment-input");
+            const commentSubmitBtn = document.getElementById("comment-submit-btn");
+
+            commentInput.value = comment.content;
+            commentInput.focus();
+            commentSubmitBtn.textContent = "댓글 수정";
+            commentSubmitBtn.style.backgroundColor = "#7F6AEE";
+            editingCommentId = comment.comment_id;
         });
     }
 
@@ -207,11 +209,14 @@ function openDeleteModal(type, id) {
         title.innerText = "댓글을 삭제하시겠습니까?";
     }
 
+    // Block background scroll and click
+    document.body.style.overflow = 'hidden';
     modal.classList.remove("hidden");
 }
 
 function closeModal() {
     document.getElementById("confirm-modal").classList.add("hidden");
+    document.body.style.overflow = ''; // Restore scroll
     deleteTarget = { type: null, id: null };
 }
 
@@ -249,23 +254,39 @@ async function executeDelete() {
 
 async function submitComment() {
     const input = document.getElementById("comment-input");
+    const submitBtn = document.getElementById("comment-submit-btn");
     const content = input.value.trim();
     if (!content) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/v1/posts/${currentPostId}/comments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: content }),
-            credentials: "include"
-        });
+        let response;
+
+        if (editingCommentId) {
+            // Update existing comment
+            response = await fetch(`${API_BASE_URL}/v1/posts/${currentPostId}/comments/${editingCommentId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: content }),
+                credentials: "include"
+            });
+        } else {
+            // Create new comment
+            response = await fetch(`${API_BASE_URL}/v1/posts/${currentPostId}/comments`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: content }),
+                credentials: "include"
+            });
+        }
 
         if (response.ok) {
             input.value = "";
-            document.getElementById("comment-submit-btn").style.backgroundColor = "#ACA0EB"; // Reset color
+            submitBtn.textContent = "댓글 등록";
+            submitBtn.style.backgroundColor = "#ACA0EB";
+            editingCommentId = null;
             reloadComments();
         } else {
-            alert("댓글 등록 실패");
+            alert(editingCommentId ? "댓글 수정 실패" : "댓글 등록 실패");
         }
     } catch (e) { console.error(e); }
 }
