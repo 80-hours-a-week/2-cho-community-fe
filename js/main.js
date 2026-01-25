@@ -162,7 +162,9 @@ function formatDate(date) {
 // 숫자를 k 단위로 포맷팅
 // 예: 1000 -> 1k, 10000 -> 10k, 12345 -> 12.3k
 function formatCount(num) {
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+    if (num >= 100000) return Math.floor(num / 1000) + 'k';
+    if (num >= 10000) return Math.floor(num / 1000) + 'k';
+    if (num >= 1000) return Math.floor(num / 1000) + 'k';
     return num;
 }
 
