@@ -38,8 +38,8 @@ class PostDetailView {
 
         // 이미지
         const imgEl = document.getElementById('post-image');
-        if (imgEl && post.image_urls && post.image_urls.length > 0) {
-            imgEl.src = getImageUrl(post.image_urls[0]);
+        if (imgEl && post.image_url) {
+            imgEl.src = getImageUrl(post.image_url);
             imgEl.classList.remove('hidden');
         }
 

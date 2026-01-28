@@ -26,7 +26,7 @@ class HeaderController {
                 this.currentUser = authStatus.user;
 
                 // 프로필 이미지 설정
-                HeaderView.setProfileImage(profileCircle, this.currentUser.profile_image);
+                HeaderView.setProfileImage(profileCircle, this.currentUser.profileImageUrl);
 
                 // 드롭다운 설정
                 HeaderView.createDropdown(profileCircle, {

@@ -2,6 +2,9 @@
 AWS AI School 2기 4주차 과제
 
 ## changelog
+- 2026-01-28
+  - MVC 모델에 더욱 충실하도록 재구성
+  - 프로필 이미지가 제대로 표시되지 않는 이슈 해결
 - 2026-01-25
   - 프로젝트 구조 리팩토링
     - MVC 패턴 도입 (Model, View, Controller 분리)

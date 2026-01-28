@@ -41,7 +41,7 @@ class ProfileController {
 
                 this.view.setEmail(user.email);
                 this.view.setNickname(user.nickname);
-                this.view.setProfileImage(user.profile_image);
+                this.view.setProfileImage(user.profileImageUrl);
 
                 this.originalNickname = user.nickname;
                 this._validateNickname();
@@ -141,7 +141,9 @@ class ProfileController {
             try {
                 const uploadResult = await UserModel.uploadProfileImage(this.currentProfileFile);
                 if (uploadResult.ok) {
-                    newImageUrl = uploadResult.data?.data;
+                    const data = uploadResult.data?.data;
+                    // 객체인 경우 url 프로퍼티 사용, 아니면 값 자체 사용
+                    newImageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
                 } else {
                     alert('이미지 업로드 실패');
                     return;
