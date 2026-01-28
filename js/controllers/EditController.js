@@ -57,6 +57,18 @@ class EditController {
             if (post.image_urls && post.image_urls.length > 0) {
                 this.originalData.image_url = post.image_urls[0];
                 this.view.showImagePreview(post.image_urls[0]);
+
+                // URL에서 파일명 추출하여 표시
+                const fileName = post.image_urls[0].split('/').pop();
+                this.view.setFileName(fileName);
+            } else if (post.image_url) {
+                // image_url 단일 필드 지원 (백엔드 스키마 변경 대비)
+                this.originalData.image_url = post.image_url;
+                this.view.showImagePreview(post.image_url);
+                const fileName = post.image_url.split('/').pop();
+                this.view.setFileName(fileName);
+            } else {
+                this.view.setFileName('선택된 파일 없음');
             }
 
         } catch (error) {
@@ -104,6 +116,7 @@ class EditController {
         const file = event.target.files[0];
         if (file) {
             this.currentData.image_file = file;
+            this.view.setFileName(file.name);
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.view.showImagePreview(e.target.result);
@@ -143,10 +156,29 @@ class EditController {
         const content = this.view.getContent();
 
         try {
+            let newImageUrl = null;
+
+            // 이미지 업로드
+            if (this.currentData.image_file) {
+                const uploadResult = await PostModel.uploadImage(this.currentData.image_file);
+
+                if (uploadResult.ok) {
+                    const data = uploadResult.data?.data;
+                    newImageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
+                } else {
+                    alert('이미지 업로드 실패');
+                    return;
+                }
+            }
+
             const payload = {
                 title: title,
                 content: content
             };
+
+            if (newImageUrl) {
+                payload.image_url = newImageUrl;
+            }
 
             const result = await PostModel.updatePost(this.postId, payload);
 

@@ -27,6 +27,7 @@ class WriteView {
         this.submitBtn = document.getElementById('submit-btn');
         this.validationHelper = document.getElementById('validation-helper');
         this.fileInput = document.getElementById('file-input');
+        this.fileNameEl = document.getElementById('file-name');
         this.previewContainer = document.getElementById('image-preview');
 
         return !!this.form;
@@ -74,6 +75,16 @@ class WriteView {
         if (this.previewContainer) {
             this.previewContainer.innerHTML = `<img src="${imageUrl}" alt="Preview" class="preview-img">`;
             this.previewContainer.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * 파일명 표시 설정
+     * @param {string} name - 파일명
+     */
+    setFileName(name) {
+        if (this.fileNameEl) {
+            this.fileNameEl.textContent = name;
         }
     }
 

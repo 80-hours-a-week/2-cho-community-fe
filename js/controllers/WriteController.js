@@ -62,6 +62,7 @@ class WriteController {
         const file = event.target.files[0];
         if (file) {
             this.selectedFile = file;
+            this.view.setFileName(file.name);
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.view.showImagePreview(e.target.result);
@@ -69,6 +70,7 @@ class WriteController {
             reader.readAsDataURL(file);
         } else {
             this.selectedFile = null;
+            this.view.setFileName('파일을 선택해주세요.');
             this.view.hideImagePreview();
         }
     }
@@ -100,14 +102,15 @@ class WriteController {
         if (!title || !content) return;
 
         try {
-            let imageUrls = [];
+            let imageUrl = null;
 
             // 이미지 업로드
             if (this.selectedFile) {
                 const uploadResult = await PostModel.uploadImage(this.selectedFile);
 
                 if (uploadResult.ok) {
-                    imageUrls.push(uploadResult.data?.data);
+                    const data = uploadResult.data?.data;
+                    imageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
                 } else {
                     alert('이미지 업로드 실패');
                     return;
@@ -118,7 +121,7 @@ class WriteController {
             const postPayload = {
                 title: title,
                 content: content,
-                image_urls: imageUrls
+                image_url: imageUrl
             };
 
             const result = await PostModel.createPost(postPayload);
