@@ -40,6 +40,13 @@
     font-weight: 700;
 }
 
+.modal-content p,
+.modal-desc {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
 /* ============================= */
 /* 모달 버튼 (Modal Buttons) */
 /* ============================= */
