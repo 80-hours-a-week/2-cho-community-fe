@@ -3,7 +3,6 @@
 
 import AuthModel from '../models/AuthModel.js';
 import PostModel from '../models/PostModel.js';
-import HeaderView from '../views/HeaderView.js';
 import PostListView from '../views/PostListView.js';
 import Logger from '../utils/Logger.js';
 
@@ -18,7 +17,6 @@ class MainController {
         this.LIMIT = 10;
         this.isLoading = false;
         this.hasMore = true;
-        this.currentUser = null;
         // 중복 게시물 감지를 위한 Set
         this.loadedPostIds = new Set();
     }
@@ -27,7 +25,7 @@ class MainController {
      * 컨트롤러 초기화
      */
     async init() {
-        await this._checkLoginStatus();
+        // 헤더의 인증 관련 로직은 HeaderController에서 처리
         await this._loadPosts();
         this._setupInfiniteScroll();
 
@@ -37,38 +35,6 @@ class MainController {
             writeBtn.addEventListener('click', () => {
                 location.href = '/write';
             });
-        }
-    }
-
-    /**
-     * 로그인 상태 확인 및 헤더 설정
-     * @private
-     */
-    async _checkLoginStatus() {
-        const profileCircle = document.getElementById('header-profile');
-
-        try {
-            const authStatus = await AuthModel.checkAuthStatus();
-
-            if (authStatus.isAuthenticated) {
-                this.currentUser = authStatus.user;
-                HeaderView.setProfileImage(profileCircle, this.currentUser.profileImageUrl);
-
-                // 드롭다운 설정
-                HeaderView.createDropdown(profileCircle, {
-                    onEditInfo: () => location.href = '/edit-profile',
-                    onChangePassword: () => location.href = '/password',
-                    onLogout: () => this._handleLogout()
-                });
-            } else {
-                // 비로그인 상태에서는 로그인 페이지로 리다이렉트
-                location.href = '/login';
-                return;
-            }
-        } catch (error) {
-            logger.error('인증 확인 실패', error);
-            // 인증 확인 실패 시에도 로그인 페이지로 리다이렉트
-            location.href = '/login';
         }
     }
 
@@ -146,20 +112,6 @@ class MainController {
         }
     }
 
-    /**
-     * 로그아웃 처리
-     * @private
-     */
-    async _handleLogout() {
-        try {
-            await AuthModel.logout();
-            alert('로그아웃 되었습니다.');
-            location.href = '/login';
-        } catch (error) {
-            logger.error('로그아웃 에러', error);
-            location.href = '/login';
-        }
-    }
 }
 
 export default MainController;

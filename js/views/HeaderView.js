@@ -11,20 +11,23 @@ import { getImageUrl } from './helpers.js';
  */
 class HeaderView {
     /**
-     * 프로필 이미지 설정
-     * @param {HTMLElement} profileCircle - 프로필 원 요소
-     * @param {string|null} imageUrl - 이미지 URL
+     * 프로필 요소 생성
+     * @param {object} user - 사용자 정보
+     * @returns {HTMLElement} - 생성된 프로필 요소
      */
-    static setProfileImage(profileCircle, imageUrl) {
-        if (!profileCircle) return;
+    static createProfileElement(user) {
+        const profileCircle = document.createElement('div');
+        profileCircle.className = 'profile-circle';
+        profileCircle.id = 'header-profile';
 
-        if (imageUrl) {
-            const fullUrl = getImageUrl(imageUrl);
+        if (user && user.profileImageUrl) {
+            const fullUrl = getImageUrl(user.profileImageUrl);
             profileCircle.style.backgroundImage = `url(${fullUrl})`;
-            profileCircle.style.backgroundSize = 'cover';
         } else {
             profileCircle.style.backgroundColor = '#555';
         }
+
+        return profileCircle;
     }
 
     /**

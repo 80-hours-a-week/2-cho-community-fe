@@ -19,8 +19,11 @@ class HeaderController {
      * 헤더 초기화
      */
     async init() {
-        const profileCircle = document.getElementById('header-profile');
-        if (!profileCircle) return;
+        const authSection = document.getElementById('auth-section');
+        if (!authSection) return;
+
+        // 기존 내용 비우기
+        authSection.innerHTML = '';
 
         try {
             const authStatus = await AuthModel.checkAuthStatus();
@@ -28,8 +31,9 @@ class HeaderController {
             if (authStatus.isAuthenticated) {
                 this.currentUser = authStatus.user;
 
-                // 프로필 이미지 설정
-                HeaderView.setProfileImage(profileCircle, this.currentUser.profileImageUrl);
+                // 프로필 요소 생성 및 주입
+                const profileCircle = HeaderView.createProfileElement(this.currentUser);
+                authSection.appendChild(profileCircle);
 
                 // 드롭다운 설정
                 HeaderView.createDropdown(profileCircle, {
@@ -50,6 +54,7 @@ class HeaderController {
             }
         }
     }
+
 
     /**
      * 현재 사용자 정보 반환
