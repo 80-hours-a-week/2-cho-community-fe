@@ -58,6 +58,15 @@ ol {
 /* ============================= */
 /* 유틸리티 클래스 (Utility Classes) */
 /* ============================= */
+.text-center {
+    text-align: center;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
 .hidden {
     display: none !important;
 }
@@ -106,6 +115,7 @@ ol {
     font-size: 14px;
     color: #FF3333;
     font-weight: 500;
+    margin-top: 8px;
     display: none;
 }
 
