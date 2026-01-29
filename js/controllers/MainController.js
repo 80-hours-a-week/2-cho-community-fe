@@ -39,7 +39,7 @@ class MainController {
 
             if (authStatus.isAuthenticated) {
                 this.currentUser = authStatus.user;
-                HeaderView.setProfileImage(profileCircle, this.currentUser.profile_image);
+                HeaderView.setProfileImage(profileCircle, this.currentUser.profileImageUrl);
 
                 // 드롭다운 설정
                 HeaderView.createDropdown(profileCircle, {

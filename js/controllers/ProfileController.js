@@ -168,6 +168,9 @@ class ProfileController {
 
             if (result.ok) {
                 this.view.showSuccessToast();
+                setTimeout(() => {
+                    location.href = '/';
+                }, 1000);
             } else {
                 const detail = result.data?.detail;
                 // 닉네임 중복 오류 확인
