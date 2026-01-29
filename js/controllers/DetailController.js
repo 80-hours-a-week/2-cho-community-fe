@@ -99,6 +99,14 @@ class DetailController {
      * @private
      */
     _setupEventListeners() {
+        // 뒤로가기 버튼
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                location.href = '/main';
+            });
+        }
+
         // 수정 버튼
         const editBtn = document.getElementById('edit-post-btn');
         if (editBtn) {
