@@ -4,6 +4,9 @@
 import UserModel from '../models/UserModel.js';
 import PasswordView from '../views/PasswordView.js';
 import FormValidator from '../views/FormValidator.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('PasswordController');
 
 /**
  * 비밀번호 변경 페이지 컨트롤러
@@ -131,7 +134,7 @@ class PasswordController {
                 this.view.showNewPasswordError(result.data?.message || '* 비밀번호 변경에 실패했습니다.');
             }
         } catch (error) {
-            console.error('Error:', error);
+            logger.error('비밀번호 변경 실패', error);
             this.view.showNewPasswordError('* 서버 통신 중 오류가 발생했습니다.');
         }
     }

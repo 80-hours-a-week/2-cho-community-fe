@@ -5,6 +5,9 @@ import AuthModel from '../models/AuthModel.js';
 import PostModel from '../models/PostModel.js';
 import HeaderView from '../views/HeaderView.js';
 import PostListView from '../views/PostListView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('MainController');
 
 /**
  * 메인 페이지 컨트롤러
@@ -54,7 +57,7 @@ class MainController {
                 });
             }
         } catch (error) {
-            console.error('인증 확인 실패:', error);
+            logger.error('인증 확인 실패', error);
         }
     }
 
@@ -107,7 +110,7 @@ class MainController {
             this.currentOffset += this.LIMIT;
 
         } catch (error) {
-            console.error('게시글 목록 로딩 실패:', error);
+            logger.error('게시글 목록 로딩 실패', error);
             PostListView.showSentinelError(sentinel, '오류 발생');
         } finally {
             this.isLoading = false;
@@ -124,7 +127,7 @@ class MainController {
             alert('로그아웃 되었습니다.');
             location.reload();
         } catch (error) {
-            console.error('로그아웃 에러:', error);
+            logger.error('로그아웃 에러', error);
             location.reload();
         }
     }

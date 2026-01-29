@@ -4,6 +4,9 @@
 import AuthModel from '../models/AuthModel.js';
 import LoginView from '../views/LoginView.js';
 import FormValidator from '../views/FormValidator.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('LoginController');
 
 /**
  * 로그인 컨트롤러
@@ -22,16 +25,18 @@ class LoginController {
      * 컨트롤러 초기화
      */
     async init() {
+        logger.info('컨트롤러 초기화');
         // 이미 로그인된 경우 메인 페이지로 리다이렉트
         try {
             const authStatus = await AuthModel.checkAuthStatus();
             if (authStatus.isAuthenticated) {
+                logger.info('이미 로그인됨, 메인 페이지로 리다이렉트');
                 window.location.href = '/main';
                 return;
             }
         } catch (error) {
             // 인증 확인 실패 시 로그인 페이지 유지
-            console.log('Auth check failed, staying on login page');
+            logger.debug('인증 확인 실패, 로그인 페이지 유지');
         }
 
         // View 초기화
@@ -131,7 +136,7 @@ class LoginController {
                 this.view.setButtonLoading(false);
             }
         } catch (error) {
-            console.error('로그인 에러:', error);
+            logger.error('로그인 에러', error);
             this.view.showPasswordError('* 서버와 통신할 수 없습니다.');
             this.view.setButtonLoading(false);
         }

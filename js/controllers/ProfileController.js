@@ -5,6 +5,9 @@ import AuthModel from '../models/AuthModel.js';
 import UserModel from '../models/UserModel.js';
 import ProfileView from '../views/ProfileView.js';
 import ModalView from '../views/ModalView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('ProfileController');
 
 /**
  * 프로필 수정 페이지 컨트롤러
@@ -49,7 +52,7 @@ class ProfileController {
                 location.href = '/login';
             }
         } catch (error) {
-            console.error('Profile Load Error:', error);
+            logger.error('프로필 데이터 로드 실패', error);
         }
     }
 
@@ -149,7 +152,7 @@ class ProfileController {
                     return;
                 }
             } catch (e) {
-                console.error(e);
+                logger.error('프로필 이미지 업로드 실패', e);
                 return;
             }
         }
@@ -187,7 +190,7 @@ class ProfileController {
                 }
             }
         } catch (e) {
-            console.error(e);
+            logger.error('프로필 수정 실패', e);
             alert('오류 발생');
         }
     }
@@ -242,7 +245,7 @@ class ProfileController {
                 alert('탈퇴 실패. 비밀번호를 확인해주세요.');
             }
         } catch (e) {
-            console.error(e);
+            logger.error('회원 탈퇴 실패', e);
             alert('오류 발생');
         }
     }

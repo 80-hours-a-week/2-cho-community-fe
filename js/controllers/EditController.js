@@ -3,6 +3,9 @@
 
 import PostModel from '../models/PostModel.js';
 import EditView from '../views/EditView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('EditController');
 
 /**
  * 게시글 수정 페이지 컨트롤러
@@ -72,7 +75,7 @@ class EditController {
             }
 
         } catch (error) {
-            console.error(error);
+            logger.error('게시글 데이터 로드 실패', error);
             alert(error.message);
             location.href = '/main';
         }
@@ -188,7 +191,7 @@ class EditController {
                 alert('게시글 수정 실패');
             }
         } catch (error) {
-            console.error('수정 에러:', error);
+            logger.error('게시글 수정 실패', error);
             alert('오류가 발생했습니다.');
         }
     }

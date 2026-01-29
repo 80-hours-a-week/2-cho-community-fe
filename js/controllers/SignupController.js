@@ -4,6 +4,9 @@
 import UserModel from '../models/UserModel.js';
 import SignupView from '../views/SignupView.js';
 import FormValidator from '../views/FormValidator.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('SignupController');
 
 /**
  * 회원가입 컨트롤러
@@ -249,7 +252,7 @@ class SignupController {
                 }
             }
         } catch (error) {
-            console.error('회원가입 에러:', error);
+            logger.error('회원가입 실패', error);
             alert('서버 통신 중 오류가 발생했습니다.');
         }
     }

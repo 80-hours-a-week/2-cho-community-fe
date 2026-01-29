@@ -7,6 +7,9 @@ import CommentModel from '../models/CommentModel.js';
 import PostDetailView from '../views/PostDetailView.js';
 import CommentListView from '../views/CommentListView.js';
 import ModalView from '../views/ModalView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('DetailController');
 
 /**
  * 게시글 상세 페이지 컨트롤러
@@ -50,7 +53,7 @@ class DetailController {
                 this.currentUserId = authStatus.user.user_id;
             }
         } catch (error) {
-            console.error('인증 확인 실패:', error);
+            logger.error('인증 확인 실패', error);
         }
     }
 
@@ -73,7 +76,7 @@ class DetailController {
             PostDetailView.toggleActionButtons(this.currentUserId === post.author.user_id);
 
         } catch (error) {
-            console.error(error);
+            logger.error('게시글 로드 실패', error);
             alert(error.message);
             location.href = '/main';
         }
@@ -192,7 +195,7 @@ class DetailController {
                     alert('삭제 실패');
                 }
             } catch (e) {
-                console.error(e);
+                logger.error('게시글 삭제 실패', e);
             }
         } else if (this.deleteTarget.type === 'comment') {
             try {
@@ -203,7 +206,7 @@ class DetailController {
                     alert('삭제 실패');
                 }
             } catch (e) {
-                console.error(e);
+                logger.error('댓글 삭제 실패', e);
             }
         }
 
@@ -254,7 +257,7 @@ class DetailController {
                 alert(this.editingCommentId ? '댓글 수정 실패' : '댓글 등록 실패');
             }
         } catch (e) {
-            console.error(e);
+            logger.error('댓글 제출 실패', e);
         }
     }
 }

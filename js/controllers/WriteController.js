@@ -3,6 +3,9 @@
 
 import PostModel from '../models/PostModel.js';
 import WriteView from '../views/WriteView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('WriteController');
 
 /**
  * 게시글 작성 페이지 컨트롤러
@@ -133,7 +136,7 @@ class WriteController {
             }
 
         } catch (error) {
-            console.error('작성 에러:', error);
+            logger.error('게시글 작성 실패', error);
             alert('오류가 발생했습니다.');
         }
     }

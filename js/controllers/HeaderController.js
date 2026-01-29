@@ -3,6 +3,9 @@
 
 import AuthModel from '../models/AuthModel.js';
 import HeaderView from '../views/HeaderView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('HeaderController');
 
 /**
  * 헤더 컨트롤러
@@ -41,7 +44,7 @@ class HeaderController {
                 }
             }
         } catch (error) {
-            console.error('Header Auth Check Failed:', error);
+            logger.error('헤더 인증 확인 실패', error);
             if (!this._isAuthPage()) {
                 location.href = '/login';
             }
@@ -95,7 +98,7 @@ class HeaderController {
                 alert('로그아웃 실패');
             }
         } catch (error) {
-            console.error('Logout Error:', error);
+            logger.error('로그아웃 실패', error);
             location.href = '/login';
         }
     }
