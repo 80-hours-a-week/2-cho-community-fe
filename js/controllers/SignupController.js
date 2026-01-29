@@ -1,15 +1,20 @@
 // js/controllers/SignupController.js
-// 회원가입 페이지 컨트롤러
+// 회원가입 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import UserModel from '../models/UserModel.js';
+import SignupView from '../views/SignupView.js';
 import FormValidator from '../views/FormValidator.js';
-import { showError } from '../views/helpers.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('SignupController');
 
 /**
  * 회원가입 컨트롤러
+ * Model과 View를 연결하고 비즈니스 로직을 처리
  */
 class SignupController {
     constructor() {
+        this.view = new SignupView();
         this.state = {
             profile: { valid: false, touched: false },
             email: { valid: false, touched: false },
@@ -23,28 +28,12 @@ class SignupController {
      * 컨트롤러 초기화
      */
     init() {
-        this.signupForm = document.getElementById('signup-form');
-        this.signupBtn = document.querySelector('.login-btn');
-        this.emailInput = document.getElementById('email');
-        this.passwordInput = document.getElementById('password');
-        this.passwordConfirmInput = document.getElementById('password-confirm');
-        this.nicknameInput = document.getElementById('nickname');
-        this.profileInput = document.getElementById('profile-upload');
-        this.previewImg = document.getElementById('preview-img');
-        this.placeholder = document.getElementById('preview-placeholder');
-
-        // 헬퍼 요소
-        this.profileHelper = document.getElementById('profile-helper');
-        this.emailHelper = document.getElementById('email-helper');
-        this.passwordHelper = document.getElementById('password-helper');
-        this.passwordConfirmHelper = document.getElementById('password-confirm-helper');
-        this.nicknameHelper = document.getElementById('nickname-helper');
-
-        if (!this.signupForm) return;
+        // View 초기화
+        if (!this.view.initialize()) return;
 
         this._setupEventListeners();
-        this._initButtonState();
-        this._setupBackButton();
+        this.view.updateButtonState(false);
+        this.view.setupBackButton();
     }
 
     /**
@@ -52,64 +41,14 @@ class SignupController {
      * @private
      */
     _setupEventListeners() {
-        // 프로필 이미지
-        this.profileInput.addEventListener('change', (e) => this._handleProfileChange(e));
-
-        // 이메일
-        this.emailInput.addEventListener('input', () => {
-            this.state.email.touched = true;
-            this._validateEmail();
-            this._updateButtonState();
+        this.view.bindEvents({
+            onProfileChange: (e) => this._handleProfileChange(e),
+            onEmailInput: () => this._handleEmailInput(),
+            onPasswordInput: () => this._handlePasswordInput(),
+            onPasswordConfirmInput: () => this._handlePasswordConfirmInput(),
+            onNicknameInput: () => this._handleNicknameInput(),
+            onSubmit: (e) => this._handleSubmit(e)
         });
-
-        // 비밀번호
-        this.passwordInput.addEventListener('input', () => {
-            this.state.password.touched = true;
-            this._validatePassword();
-            this._updateButtonState();
-        });
-
-        // 비밀번호 확인
-        this.passwordConfirmInput.addEventListener('input', () => {
-            this.state.passwordConfirm.touched = true;
-            this._validatePasswordConfirm();
-            this._updateButtonState();
-        });
-
-        // 닉네임
-        this.nicknameInput.addEventListener('input', () => {
-            this.state.nickname.touched = true;
-            this._validateNickname();
-            this._updateButtonState();
-        });
-
-        // 폼 제출
-        this.signupForm.addEventListener('submit', (e) => this._handleSubmit(e));
-    }
-
-    /**
-     * 버튼 초기 상태 설정
-     * @private
-     */
-    _initButtonState() {
-        this.signupBtn.disabled = true;
-        this.signupBtn.style.backgroundColor = '#ACA0EB';
-    }
-
-    /**
-     * 뒤로 가기 버튼 설정
-     * @private
-     */
-    _setupBackButton() {
-        const backBtn = document.getElementById('back-btn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                window.history.back();
-                if (document.referrer === '') {
-                    window.location.href = '/login';
-                }
-            });
-        }
     }
 
     /**
@@ -123,18 +62,54 @@ class SignupController {
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                this.previewImg.src = e.target.result;
-                this.previewImg.classList.remove('hidden');
-                this.placeholder.classList.add('hidden');
+                this.view.showProfilePreview(e.target.result);
             };
             reader.readAsDataURL(file);
         } else {
-            this.previewImg.src = '';
-            this.previewImg.classList.add('hidden');
-            this.placeholder.classList.remove('hidden');
+            this.view.hideProfilePreview();
         }
 
         this._validateProfile();
+        this._updateButtonState();
+    }
+
+    /**
+     * 이메일 입력 처리
+     * @private
+     */
+    _handleEmailInput() {
+        this.state.email.touched = true;
+        this._validateEmail();
+        this._updateButtonState();
+    }
+
+    /**
+     * 비밀번호 입력 처리
+     * @private
+     */
+    _handlePasswordInput() {
+        this.state.password.touched = true;
+        this._validatePassword();
+        this._updateButtonState();
+    }
+
+    /**
+     * 비밀번호 확인 입력 처리
+     * @private
+     */
+    _handlePasswordConfirmInput() {
+        this.state.passwordConfirm.touched = true;
+        this._validatePasswordConfirm();
+        this._updateButtonState();
+    }
+
+    /**
+     * 닉네임 입력 처리
+     * @private
+     */
+    _handleNicknameInput() {
+        this.state.nickname.touched = true;
+        this._validateNickname();
         this._updateButtonState();
     }
 
@@ -143,9 +118,10 @@ class SignupController {
      * @private
      */
     _validateProfile() {
+        const file = this.view.getProfileFile();
         this.state.profile.valid = FormValidator.validateProfileImage(
-            this.profileInput.files[0],
-            this.profileHelper
+            file,
+            this.view.profileHelper
         );
     }
 
@@ -154,9 +130,10 @@ class SignupController {
      * @private
      */
     _validateEmail() {
+        const email = this.view.getEmail();
         this.state.email.valid = FormValidator.validateEmail(
-            this.emailInput.value,
-            this.emailHelper
+            email,
+            this.view.emailHelper
         );
     }
 
@@ -165,9 +142,10 @@ class SignupController {
      * @private
      */
     _validatePassword() {
+        const password = this.view.getPassword();
         this.state.password.valid = FormValidator.validatePassword(
-            this.passwordInput.value,
-            this.passwordHelper
+            password,
+            this.view.passwordHelper
         );
 
         // 비밀번호 확인도 다시 검사
@@ -181,10 +159,12 @@ class SignupController {
      * @private
      */
     _validatePasswordConfirm() {
+        const password = this.view.getPassword();
+        const confirmPassword = this.view.getPasswordConfirm();
         this.state.passwordConfirm.valid = FormValidator.validatePasswordConfirm(
-            this.passwordInput.value,
-            this.passwordConfirmInput.value,
-            this.passwordConfirmHelper
+            password,
+            confirmPassword,
+            this.view.passwordConfirmHelper
         );
     }
 
@@ -193,9 +173,10 @@ class SignupController {
      * @private
      */
     _validateNickname() {
+        const nickname = this.view.getNickname();
         this.state.nickname.valid = FormValidator.validateNickname(
-            this.nicknameInput.value,
-            this.nicknameHelper
+            nickname,
+            this.view.nicknameHelper
         );
     }
 
@@ -211,7 +192,7 @@ class SignupController {
             this.state.passwordConfirm.valid &&
             this.state.nickname.valid;
 
-        FormValidator.updateButtonState(isValid, this.signupBtn);
+        this.view.updateButtonState(isValid);
     }
 
     /**
@@ -247,14 +228,7 @@ class SignupController {
         }
 
         // FormData 준비
-        const formData = new FormData();
-        formData.append('email', this.emailInput.value.trim());
-        formData.append('password', this.passwordInput.value);
-        formData.append('nickname', this.nicknameInput.value.trim());
-
-        if (this.profileInput.files[0]) {
-            formData.append('profile_image', this.profileInput.files[0]);
-        }
+        const formData = this.view.createFormData();
 
         try {
             const result = await UserModel.signup(formData);
@@ -267,9 +241,9 @@ class SignupController {
 
                 if (errorData?.detail) {
                     if (errorData.detail.includes('email') || errorData.detail.includes('이메일')) {
-                        showError(this.emailHelper, '* 중복된 이메일입니다');
+                        this.view.showEmailError('* 중복된 이메일입니다');
                     } else if (errorData.detail.includes('nickname') || errorData.detail.includes('닉네임')) {
-                        showError(this.nicknameHelper, '* 중복된 닉네임입니다');
+                        this.view.showNicknameError('* 중복된 닉네임입니다');
                     } else {
                         alert(`회원가입 실패: ${errorData.detail}`);
                     }
@@ -278,7 +252,7 @@ class SignupController {
                 }
             }
         } catch (error) {
-            console.error('회원가입 에러:', error);
+            logger.error('회원가입 실패', error);
             alert('서버 통신 중 오류가 발생했습니다.');
         }
     }

@@ -1,7 +1,7 @@
 // js/models/UserModel.js
 // 사용자 관련 API 호출 관리
 
-import Api from './api.js';
+import ApiService from '../services/ApiService.js';
 
 /**
  * 사용자 관련 Model
@@ -13,7 +13,7 @@ class UserModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async signup(formData) {
-        return Api.postFormData('/v1/users', formData);
+        return ApiService.postFormData('/v1/users', formData);
     }
 
     /**
@@ -22,7 +22,7 @@ class UserModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async updateProfile(data) {
-        return Api.patch('/v1/users/me', data);
+        return ApiService.patch('/v1/users/me', data);
     }
 
     /**
@@ -32,7 +32,7 @@ class UserModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async changePassword(newPassword, newPasswordConfirm) {
-        return Api.put('/v1/users/me/password', {
+        return ApiService.put('/v1/users/me/password', {
             new_password: newPassword,
             new_password_confirm: newPasswordConfirm
         });
@@ -44,7 +44,7 @@ class UserModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async withdraw(password) {
-        return Api.delete('/v1/users/me', {
+        return ApiService.delete('/v1/users/me', {
             password: password,
             agree: true
         });
@@ -58,7 +58,7 @@ class UserModel {
     static async uploadProfileImage(file) {
         const formData = new FormData();
         formData.append('file', file);
-        return Api.postFormData('/v1/posts/image', formData);
+        return ApiService.postFormData('/v1/users/profile/image', formData);
     }
 }
 

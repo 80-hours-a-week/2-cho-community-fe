@@ -1,7 +1,7 @@
 // js/models/AuthModel.js
 // 인증 관련 상태 및 API 호출 관리
 
-import Api from './api.js';
+import ApiService from '../services/ApiService.js';
 
 /**
  * 인증 관련 Model
@@ -14,7 +14,7 @@ class AuthModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async login(email, password) {
-        return Api.post('/v1/auth/session', { email, password });
+        return ApiService.post('/v1/auth/session', { email, password });
     }
 
     /**
@@ -22,7 +22,7 @@ class AuthModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async logout() {
-        return Api.delete('/v1/auth/session');
+        return ApiService.delete('/v1/auth/session');
     }
 
     /**
@@ -30,7 +30,7 @@ class AuthModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async getCurrentUser() {
-        return Api.get('/v1/users/me');
+        return ApiService.get('/v1/users/me');
     }
 
     /**
@@ -39,7 +39,7 @@ class AuthModel {
      */
     static async checkAuthStatus() {
         try {
-            const result = await Api.get('/v1/users/me');
+            const result = await ApiService.get('/v1/users/me');
             if (result.ok && result.data?.data?.user) {
                 return {
                     isAuthenticated: true,

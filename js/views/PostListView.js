@@ -1,7 +1,8 @@
 // js/views/PostListView.js
 // 게시글 목록 렌더링 관련 로직
 
-import { formatDate, formatCount, truncateTitle } from './helpers.js';
+import { formatDate, formatCount, truncateTitle } from '../utils/formatters.js';
+import { getImageUrl } from './helpers.js';
 
 /**
  * 게시글 목록 View 클래스
@@ -29,7 +30,7 @@ class PostListView {
         const views = post.views_count || 0;
 
         // 작성자 프로필 이미지
-        const profileImg = post.author?.profileImageUrl || '';
+        const profileImg = getImageUrl(post.author?.profileImageUrl);
 
         li.innerHTML = `
             <div class="post-card-header">

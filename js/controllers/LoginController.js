@@ -1,15 +1,20 @@
 // js/controllers/LoginController.js
-// 로그인 페이지 컨트롤러
+// 로그인 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import AuthModel from '../models/AuthModel.js';
+import LoginView from '../views/LoginView.js';
 import FormValidator from '../views/FormValidator.js';
-import { showError } from '../views/helpers.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('LoginController');
 
 /**
  * 로그인 컨트롤러
+ * Model과 View를 연결하고 비즈니스 로직을 처리
  */
 class LoginController {
     constructor() {
+        this.view = new LoginView();
         this.state = {
             email: { valid: false, touched: false },
             password: { valid: false, touched: false }
@@ -20,29 +25,25 @@ class LoginController {
      * 컨트롤러 초기화
      */
     async init() {
+        logger.info('컨트롤러 초기화');
         // 이미 로그인된 경우 메인 페이지로 리다이렉트
         try {
             const authStatus = await AuthModel.checkAuthStatus();
             if (authStatus.isAuthenticated) {
+                logger.info('이미 로그인됨, 메인 페이지로 리다이렉트');
                 window.location.href = '/main';
                 return;
             }
         } catch (error) {
             // 인증 확인 실패 시 로그인 페이지 유지
-            console.log('Auth check failed, staying on login page');
+            logger.debug('인증 확인 실패, 로그인 페이지 유지');
         }
 
-        this.loginForm = document.getElementById('login-form');
-        this.loginBtn = document.querySelector('.login-btn');
-        this.emailInput = document.getElementById('email');
-        this.passwordInput = document.getElementById('password');
-        this.emailHelper = document.getElementById('email-helper');
-        this.passwordHelper = document.getElementById('password-helper');
-
-        if (!this.loginForm) return;
+        // View 초기화
+        if (!this.view.initialize()) return;
 
         this._setupEventListeners();
-        this._initButtonState();
+        this.view.updateButtonState(false);
     }
 
     /**
@@ -50,43 +51,31 @@ class LoginController {
      * @private
      */
     _setupEventListeners() {
-        // 이메일 입력
-        this.emailInput.addEventListener('input', () => {
-            this.state.email.touched = true;
-            this._validateEmail();
-            this._updateButtonState();
+        this.view.bindEvents({
+            onEmailInput: () => this._handleEmailInput(),
+            onPasswordInput: () => this._handlePasswordInput(),
+            onSubmit: (e) => this._handleSubmit(e)
         });
-
-        this.emailInput.addEventListener('blur', () => {
-            this.state.email.touched = true;
-            this._validateEmail();
-            this._updateButtonState();
-        });
-
-        // 비밀번호 입력
-        this.passwordInput.addEventListener('input', () => {
-            this.state.password.touched = true;
-            this._validatePassword();
-            this._updateButtonState();
-        });
-
-        this.passwordInput.addEventListener('blur', () => {
-            this.state.password.touched = true;
-            this._validatePassword();
-            this._updateButtonState();
-        });
-
-        // 폼 제출
-        this.loginForm.addEventListener('submit', (e) => this._handleSubmit(e));
     }
 
     /**
-     * 버튼 초기 상태 설정
+     * 이메일 입력 처리
      * @private
      */
-    _initButtonState() {
-        this.loginBtn.disabled = true;
-        this.loginBtn.style.backgroundColor = '#ACA0EB';
+    _handleEmailInput() {
+        this.state.email.touched = true;
+        this._validateEmail();
+        this._updateButtonState();
+    }
+
+    /**
+     * 비밀번호 입력 처리
+     * @private
+     */
+    _handlePasswordInput() {
+        this.state.password.touched = true;
+        this._validatePassword();
+        this._updateButtonState();
     }
 
     /**
@@ -94,10 +83,9 @@ class LoginController {
      * @private
      */
     _validateEmail() {
-        this.state.email.valid = FormValidator.validateEmail(
-            this.emailInput.value,
-            this.emailHelper
-        );
+        const email = this.view.getEmail();
+        const helperEl = this.view.emailHelper;
+        this.state.email.valid = FormValidator.validateEmail(email, helperEl);
     }
 
     /**
@@ -105,10 +93,9 @@ class LoginController {
      * @private
      */
     _validatePassword() {
-        this.state.password.valid = FormValidator.validatePassword(
-            this.passwordInput.value,
-            this.passwordHelper
-        );
+        const password = this.view.getPassword();
+        const helperEl = this.view.passwordHelper;
+        this.state.password.valid = FormValidator.validatePassword(password, helperEl);
     }
 
     /**
@@ -117,7 +104,7 @@ class LoginController {
      */
     _updateButtonState() {
         const isValid = this.state.email.valid && this.state.password.valid;
-        FormValidator.updateButtonState(isValid, this.loginBtn);
+        this.view.updateButtonState(isValid);
     }
 
     /**
@@ -134,11 +121,10 @@ class LoginController {
             return;
         }
 
-        const email = this.emailInput.value.trim();
-        const password = this.passwordInput.value;
+        const email = this.view.getEmail();
+        const password = this.view.getPassword();
 
-        this.loginBtn.disabled = true;
-        this.loginBtn.textContent = '로그인 중...';
+        this.view.setButtonLoading(true);
 
         try {
             const result = await AuthModel.login(email, password);
@@ -146,16 +132,13 @@ class LoginController {
             if (result.ok) {
                 window.location.href = '/main';
             } else {
-                showError(this.passwordHelper, '* 아이디 또는 비밀번호를 확인해주세요');
-                this.loginBtn.disabled = false;
-                this.loginBtn.textContent = '로그인';
-                this.loginBtn.style.backgroundColor = '#7F6AEE';
+                this.view.showPasswordError('* 아이디 또는 비밀번호를 확인해주세요');
+                this.view.setButtonLoading(false);
             }
         } catch (error) {
-            console.error('로그인 에러:', error);
-            showError(this.passwordHelper, '* 서버와 통신할 수 없습니다.');
-            this.loginBtn.disabled = false;
-            this.loginBtn.textContent = '로그인';
+            logger.error('로그인 에러', error);
+            this.view.showPasswordError('* 서버와 통신할 수 없습니다.');
+            this.view.setButtonLoading(false);
         }
     }
 }

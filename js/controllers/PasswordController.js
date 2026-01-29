@@ -1,15 +1,20 @@
 // js/controllers/PasswordController.js
-// 비밀번호 변경 페이지 컨트롤러
+// 비밀번호 변경 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import UserModel from '../models/UserModel.js';
+import PasswordView from '../views/PasswordView.js';
 import FormValidator from '../views/FormValidator.js';
-import { showToast, showError, hideError } from '../views/helpers.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('PasswordController');
 
 /**
  * 비밀번호 변경 페이지 컨트롤러
+ * Model과 View를 연결하고 비즈니스 로직을 처리
  */
 class PasswordController {
     constructor() {
+        this.view = new PasswordView();
         this.state = {
             newPassword: { valid: false, touched: false },
             confirmPassword: { valid: false, touched: false }
@@ -20,14 +25,8 @@ class PasswordController {
      * 컨트롤러 초기화
      */
     init() {
-        this.passwordForm = document.getElementById('password-form');
-        this.newPasswordInput = document.getElementById('new-password');
-        this.confirmPasswordInput = document.getElementById('confirm-password');
-        this.submitBtn = document.getElementById('submit-btn');
-        this.newPasswordHelper = document.getElementById('new-password-helper');
-        this.confirmPasswordHelper = document.getElementById('confirm-password-helper');
-
-        if (!this.passwordForm) return;
+        // View 초기화
+        if (!this.view.initialize()) return;
 
         this._setupEventListeners();
     }
@@ -37,25 +36,31 @@ class PasswordController {
      * @private
      */
     _setupEventListeners() {
-        // 새 비밀번호 입력
-        this.newPasswordInput.addEventListener('input', () => {
-            this.state.newPassword.touched = true;
-            this._validateNewPassword();
-            this._updateButtonState();
+        this.view.bindEvents({
+            onNewPasswordInput: () => this._handleNewPasswordInput(),
+            onConfirmPasswordInput: () => this._handleConfirmPasswordInput(),
+            onSubmit: (e) => this._handleSubmit(e)
         });
+    }
 
-        // 비밀번호 확인 입력
-        this.confirmPasswordInput.addEventListener('input', () => {
-            this.state.confirmPassword.touched = true;
-            this._validateConfirmPassword();
-            this._updateButtonState();
-        });
+    /**
+     * 새 비밀번호 입력 처리
+     * @private
+     */
+    _handleNewPasswordInput() {
+        this.state.newPassword.touched = true;
+        this._validateNewPassword();
+        this._updateButtonState();
+    }
 
-        // 폼 제출
-        this.passwordForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this._handleSubmit();
-        });
+    /**
+     * 비밀번호 확인 입력 처리
+     * @private
+     */
+    _handleConfirmPasswordInput() {
+        this.state.confirmPassword.touched = true;
+        this._validateConfirmPassword();
+        this._updateButtonState();
     }
 
     /**
@@ -63,9 +68,10 @@ class PasswordController {
      * @private
      */
     _validateNewPassword() {
+        const password = this.view.getNewPassword();
         this.state.newPassword.valid = FormValidator.validatePassword(
-            this.newPasswordInput.value,
-            this.newPasswordHelper
+            password,
+            this.view.newPasswordHelper
         );
 
         // 확인 비밀번호도 다시 검사
@@ -79,18 +85,18 @@ class PasswordController {
      * @private
      */
     _validateConfirmPassword() {
-        const newPass = this.newPasswordInput.value;
-        const confirmPass = this.confirmPasswordInput.value;
+        const newPass = this.view.getNewPassword();
+        const confirmPass = this.view.getConfirmPassword();
 
         if (!confirmPass) {
-            showError(this.confirmPasswordHelper, '* 비밀번호를 한번 더 입력해주세요');
+            this.view.showConfirmPasswordError('* 비밀번호를 한번 더 입력해주세요');
             this.state.confirmPassword.valid = false;
         } else if (newPass !== confirmPass) {
-            showError(this.confirmPasswordHelper, '* 비밀번호가 다릅니다');
-            showError(this.newPasswordHelper, '* 비밀번호가 다릅니다');
+            this.view.showConfirmPasswordError('* 비밀번호가 다릅니다');
+            this.view.showNewPasswordError('* 비밀번호가 다릅니다');
             this.state.confirmPassword.valid = false;
         } else {
-            hideError(this.confirmPasswordHelper);
+            this.view.hideConfirmPasswordError();
             this.state.confirmPassword.valid = true;
         }
     }
@@ -101,21 +107,21 @@ class PasswordController {
      */
     _updateButtonState() {
         const isValid = this.state.newPassword.valid && this.state.confirmPassword.valid;
-        FormValidator.updateButtonState(isValid, this.submitBtn);
+        this.view.updateButtonState(isValid);
     }
 
     /**
      * 폼 제출 처리
      * @private
      */
-    async _handleSubmit() {
-        if (this.submitBtn.disabled) return;
+    async _handleSubmit(event) {
+        event.preventDefault();
 
-        const newPassword = this.newPasswordInput.value;
-        const confirmPassword = this.confirmPasswordInput.value;
+        const newPassword = this.view.getNewPassword();
+        const confirmPassword = this.view.getConfirmPassword();
 
         if (newPassword !== confirmPassword) {
-            showError(this.confirmPasswordHelper, '* 비밀번호가 다릅니다');
+            this.view.showConfirmPasswordError('* 비밀번호가 다릅니다');
             return;
         }
 
@@ -123,13 +129,13 @@ class PasswordController {
             const result = await UserModel.changePassword(newPassword, confirmPassword);
 
             if (result.ok) {
-                showToast();
+                this.view.showSuccessToast();
             } else {
-                showError(this.newPasswordHelper, result.data?.message || '* 비밀번호 변경에 실패했습니다.');
+                this.view.showNewPasswordError(result.data?.message || '* 비밀번호 변경에 실패했습니다.');
             }
         } catch (error) {
-            console.error('Error:', error);
-            showError(this.newPasswordHelper, '* 서버 통신 중 오류가 발생했습니다.');
+            logger.error('비밀번호 변경 실패', error);
+            this.view.showNewPasswordError('* 서버 통신 중 오류가 발생했습니다.');
         }
     }
 }

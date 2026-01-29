@@ -1,13 +1,19 @@
 // js/controllers/WriteController.js
-// 게시글 작성 페이지 컨트롤러
+// 게시글 작성 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import PostModel from '../models/PostModel.js';
+import WriteView from '../views/WriteView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('WriteController');
 
 /**
  * 게시글 작성 페이지 컨트롤러
+ * Model과 View를 연결하고 비즈니스 로직을 처리
  */
 class WriteController {
     constructor() {
+        this.view = new WriteView();
         this.selectedFile = null;
     }
 
@@ -15,15 +21,8 @@ class WriteController {
      * 컨트롤러 초기화
      */
     init() {
-        this.writeForm = document.getElementById('write-form');
-        this.titleInput = document.getElementById('post-title');
-        this.contentInput = document.getElementById('post-content');
-        this.submitBtn = document.getElementById('submit-btn');
-        this.validationHelper = document.getElementById('validation-helper');
-        this.fileInput = document.getElementById('file-input');
-        this.previewContainer = document.getElementById('image-preview');
-
-        if (!this.writeForm) return;
+        // View 초기화
+        if (!this.view.initialize()) return;
 
         this._setupEventListeners();
     }
@@ -33,42 +32,50 @@ class WriteController {
      * @private
      */
     _setupEventListeners() {
-        // 제목 입력 (최대 26자)
-        this.titleInput.addEventListener('input', () => {
-            if (this.titleInput.value.length > 26) {
-                this.titleInput.value = this.titleInput.value.slice(0, 26);
-            }
-            this._validateForm();
+        this.view.bindEvents({
+            onTitleInput: () => this._handleTitleInput(),
+            onContentInput: () => this._handleContentInput(),
+            onFileChange: (e) => this._handleFileChange(e),
+            onSubmit: (e) => this._handleSubmit(e)
         });
+    }
 
-        // 본문 입력
-        this.contentInput.addEventListener('input', () => {
-            this._validateForm();
-        });
+    /**
+     * 제목 입력 처리
+     * @private
+     */
+    _handleTitleInput() {
+        this.view.enforceTitleMaxLength(26);
+        this._validateForm();
+    }
 
-        // 이미지 업로드
-        this.fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                this.selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview" class="preview-img">`;
-                    this.previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                this.selectedFile = null;
-                this.previewContainer.innerHTML = '';
-                this.previewContainer.classList.add('hidden');
-            }
-        });
+    /**
+     * 본문 입력 처리
+     * @private
+     */
+    _handleContentInput() {
+        this._validateForm();
+    }
 
-        // 폼 제출
-        this.writeForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this._handleSubmit();
-        });
+    /**
+     * 파일 변경 처리
+     * @private
+     */
+    _handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            this.selectedFile = file;
+            this.view.setFileName(file.name);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.view.showImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            this.selectedFile = null;
+            this.view.setFileName('파일을 선택해주세요.');
+            this.view.hideImagePreview();
+        }
     }
 
     /**
@@ -76,39 +83,37 @@ class WriteController {
      * @private
      */
     _validateForm() {
-        const title = this.titleInput.value.trim();
-        const content = this.contentInput.value.trim();
+        const title = this.view.getTitle();
+        const content = this.view.getContent();
 
-        if (title && content) {
-            this.submitBtn.disabled = false;
-            this.submitBtn.classList.add('active');
-            this.validationHelper.style.display = 'none';
-        } else {
-            this.submitBtn.disabled = true;
-            this.submitBtn.classList.remove('active');
-            this.validationHelper.style.display = 'block';
-        }
+        const isValid = title.length > 0 && content.length > 0;
+
+        this.view.updateButtonState(isValid);
+        this.view.toggleValidationHelper(!isValid);
     }
 
     /**
      * 폼 제출 처리
      * @private
      */
-    async _handleSubmit() {
-        const title = this.titleInput.value.trim();
-        const content = this.contentInput.value.trim();
+    async _handleSubmit(event) {
+        event.preventDefault();
+
+        const title = this.view.getTitle();
+        const content = this.view.getContent();
 
         if (!title || !content) return;
 
         try {
-            let imageUrls = [];
+            let imageUrl = null;
 
             // 이미지 업로드
             if (this.selectedFile) {
                 const uploadResult = await PostModel.uploadImage(this.selectedFile);
 
                 if (uploadResult.ok) {
-                    imageUrls.push(uploadResult.data?.data);
+                    const data = uploadResult.data?.data;
+                    imageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
                 } else {
                     alert('이미지 업로드 실패');
                     return;
@@ -119,7 +124,7 @@ class WriteController {
             const postPayload = {
                 title: title,
                 content: content,
-                image_urls: imageUrls
+                image_url: imageUrl
             };
 
             const result = await PostModel.createPost(postPayload);
@@ -131,7 +136,7 @@ class WriteController {
             }
 
         } catch (error) {
-            console.error('작성 에러:', error);
+            logger.error('게시글 작성 실패', error);
             alert('오류가 발생했습니다.');
         }
     }

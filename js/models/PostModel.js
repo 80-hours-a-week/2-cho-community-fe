@@ -1,7 +1,7 @@
 // js/models/PostModel.js
 // 게시글 관련 API 호출 관리
 
-import Api from './api.js';
+import ApiService from '../services/ApiService.js';
 
 /**
  * 게시글 관련 Model
@@ -14,7 +14,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async getPosts(offset = 0, limit = 10) {
-        return Api.get(`/v1/posts/?offset=${offset}&limit=${limit}`);
+        return ApiService.get(`/v1/posts/?offset=${offset}&limit=${limit}`);
     }
 
     /**
@@ -23,7 +23,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async getPost(postId) {
-        return Api.get(`/v1/posts/${postId}`);
+        return ApiService.get(`/v1/posts/${postId}`);
     }
 
     /**
@@ -32,7 +32,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async createPost(data) {
-        return Api.post('/v1/posts/', data);
+        return ApiService.post('/v1/posts/', data);
     }
 
     /**
@@ -42,7 +42,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async updatePost(postId, data) {
-        return Api.patch(`/v1/posts/${postId}`, data);
+        return ApiService.patch(`/v1/posts/${postId}`, data);
     }
 
     /**
@@ -51,7 +51,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async deletePost(postId) {
-        return Api.delete(`/v1/posts/${postId}`);
+        return ApiService.delete(`/v1/posts/${postId}`);
     }
 
     /**
@@ -60,7 +60,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async likePost(postId) {
-        return Api.post(`/v1/posts/${postId}/likes`, {});
+        return ApiService.post(`/v1/posts/${postId}/likes`, {});
     }
 
     /**
@@ -69,7 +69,7 @@ class PostModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async unlikePost(postId) {
-        return Api.delete(`/v1/posts/${postId}/likes`);
+        return ApiService.delete(`/v1/posts/${postId}/likes`);
     }
 
     /**
@@ -80,7 +80,7 @@ class PostModel {
     static async uploadImage(file) {
         const formData = new FormData();
         formData.append('file', file);
-        return Api.postFormData('/v1/posts/image', formData);
+        return ApiService.postFormData('/v1/posts/image', formData);
     }
 }
 

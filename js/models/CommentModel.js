@@ -1,7 +1,7 @@
 // js/models/CommentModel.js
 // 댓글 관련 API 호출 관리
 
-import Api from './api.js';
+import ApiService from '../services/ApiService.js';
 
 /**
  * 댓글 관련 Model
@@ -14,7 +14,7 @@ class CommentModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async createComment(postId, content) {
-        return Api.post(`/v1/posts/${postId}/comments`, { content });
+        return ApiService.post(`/v1/posts/${postId}/comments`, { content });
     }
 
     /**
@@ -25,7 +25,7 @@ class CommentModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async updateComment(postId, commentId, content) {
-        return Api.put(`/v1/posts/${postId}/comments/${commentId}`, { content });
+        return ApiService.put(`/v1/posts/${postId}/comments/${commentId}`, { content });
     }
 
     /**
@@ -35,7 +35,7 @@ class CommentModel {
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
     static async deleteComment(postId, commentId) {
-        return Api.delete(`/v1/posts/${postId}/comments/${commentId}`);
+        return ApiService.delete(`/v1/posts/${postId}/comments/${commentId}`);
     }
 }
 

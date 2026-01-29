@@ -1,13 +1,19 @@
 // js/controllers/EditController.js
-// 게시글 수정 페이지 컨트롤러
+// 게시글 수정 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import PostModel from '../models/PostModel.js';
+import EditView from '../views/EditView.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('EditController');
 
 /**
  * 게시글 수정 페이지 컨트롤러
+ * Model과 View를 연결하고 비즈니스 로직을 처리
  */
 class EditController {
     constructor() {
+        this.view = new EditView();
         this.originalData = { title: '', content: '', image_url: null };
         this.currentData = { title: '', content: '', image_file: null };
         this.postId = null;
@@ -26,15 +32,8 @@ class EditController {
             return;
         }
 
-        this.editForm = document.getElementById('edit-form');
-        this.titleInput = document.getElementById('post-title');
-        this.contentInput = document.getElementById('post-content');
-        this.submitBtn = document.getElementById('submit-btn');
-        this.validationHelper = document.getElementById('validation-helper');
-        this.fileInput = document.getElementById('file-input');
-        this.previewContainer = document.getElementById('image-preview');
-
-        if (!this.editForm) return;
+        // View 초기화
+        if (!this.view.initialize()) return;
 
         await this._loadPostData();
         this._setupEventListeners();
@@ -52,20 +51,31 @@ class EditController {
 
             const post = result.data?.data?.post || result.data?.data;
 
-            this.titleInput.value = post.title;
-            this.contentInput.value = post.content;
+            this.view.setTitle(post.title);
+            this.view.setContent(post.content);
 
             this.originalData.title = post.title;
             this.originalData.content = post.content;
 
             if (post.image_urls && post.image_urls.length > 0) {
                 this.originalData.image_url = post.image_urls[0];
-                this.previewContainer.innerHTML = `<img src="${post.image_urls[0]}" alt="Current Image" class="preview-img">`;
-                this.previewContainer.classList.remove('hidden');
+                this.view.showImagePreview(post.image_urls[0]);
+
+                // URL에서 파일명 추출하여 표시
+                const fileName = post.image_urls[0].split('/').pop();
+                this.view.setFileName(fileName);
+            } else if (post.image_url) {
+                // image_url 단일 필드 지원 (백엔드 스키마 변경 대비)
+                this.originalData.image_url = post.image_url;
+                this.view.showImagePreview(post.image_url);
+                const fileName = post.image_url.split('/').pop();
+                this.view.setFileName(fileName);
+            } else {
+                this.view.setFileName('선택된 파일 없음');
             }
 
         } catch (error) {
-            console.error(error);
+            logger.error('게시글 데이터 로드 실패', error);
             alert(error.message);
             location.href = '/main';
         }
@@ -76,39 +86,47 @@ class EditController {
      * @private
      */
     _setupEventListeners() {
-        // 제목 입력 (최대 26자)
-        this.titleInput.addEventListener('input', () => {
-            if (this.titleInput.value.length > 26) {
-                this.titleInput.value = this.titleInput.value.slice(0, 26);
-            }
-            this._checkChanges();
+        this.view.bindEvents({
+            onTitleInput: () => this._handleTitleInput(),
+            onContentInput: () => this._handleContentInput(),
+            onFileChange: (e) => this._handleFileChange(e),
+            onSubmit: (e) => this._handleSubmit(e)
         });
+    }
 
-        // 본문 입력
-        this.contentInput.addEventListener('input', () => {
-            this._checkChanges();
-        });
+    /**
+     * 제목 입력 처리
+     * @private
+     */
+    _handleTitleInput() {
+        this.view.enforceTitleMaxLength(26);
+        this._checkChanges();
+    }
 
-        // 이미지 변경
-        this.fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                this.currentData.image_file = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview" class="preview-img">`;
-                    this.previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-            this._checkChanges();
-        });
+    /**
+     * 본문 입력 처리
+     * @private
+     */
+    _handleContentInput() {
+        this._checkChanges();
+    }
 
-        // 폼 제출
-        this.editForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this._handleUpdate();
-        });
+    /**
+     * 파일 변경 처리
+     * @private
+     */
+    _handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            this.currentData.image_file = file;
+            this.view.setFileName(file.name);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.view.showImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+        this._checkChanges();
     }
 
     /**
@@ -116,8 +134,8 @@ class EditController {
      * @private
      */
     _checkChanges() {
-        const title = this.titleInput.value.trim();
-        const content = this.contentInput.value.trim();
+        const title = this.view.getTitle();
+        const content = this.view.getContent();
         const hasImageChanged = !!this.currentData.image_file;
 
         const isTitleChanged = title !== this.originalData.title;
@@ -126,30 +144,44 @@ class EditController {
         const isValid = title.length > 0 && content.length > 0;
         const isChanged = isTitleChanged || isContentChanged || hasImageChanged;
 
-        if (isValid && isChanged) {
-            this.submitBtn.disabled = false;
-            this.submitBtn.classList.add('active');
-            this.validationHelper.style.display = 'none';
-        } else {
-            this.submitBtn.disabled = true;
-            this.submitBtn.classList.remove('active');
-            this.validationHelper.style.display = 'block';
-        }
+        this.view.updateButtonState(isValid && isChanged);
+        this.view.toggleValidationHelper(!(isValid && isChanged));
     }
 
     /**
-     * 수정 처리
+     * 폼 제출 처리
      * @private
      */
-    async _handleUpdate() {
-        const title = this.titleInput.value.trim();
-        const content = this.contentInput.value.trim();
+    async _handleSubmit(event) {
+        event.preventDefault();
+
+        const title = this.view.getTitle();
+        const content = this.view.getContent();
 
         try {
+            let newImageUrl = null;
+
+            // 이미지 업로드
+            if (this.currentData.image_file) {
+                const uploadResult = await PostModel.uploadImage(this.currentData.image_file);
+
+                if (uploadResult.ok) {
+                    const data = uploadResult.data?.data;
+                    newImageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
+                } else {
+                    alert('이미지 업로드 실패');
+                    return;
+                }
+            }
+
             const payload = {
                 title: title,
                 content: content
             };
+
+            if (newImageUrl) {
+                payload.image_url = newImageUrl;
+            }
 
             const result = await PostModel.updatePost(this.postId, payload);
 
@@ -159,7 +191,7 @@ class EditController {
                 alert('게시글 수정 실패');
             }
         } catch (error) {
-            console.error('수정 에러:', error);
+            logger.error('게시글 수정 실패', error);
             alert('오류가 발생했습니다.');
         }
     }

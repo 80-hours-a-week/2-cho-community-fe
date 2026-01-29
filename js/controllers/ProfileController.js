@@ -1,17 +1,21 @@
 // js/controllers/ProfileController.js
-// 프로필 수정 페이지 컨트롤러
+// 프로필 수정 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import AuthModel from '../models/AuthModel.js';
 import UserModel from '../models/UserModel.js';
-import FormValidator from '../views/FormValidator.js';
+import ProfileView from '../views/ProfileView.js';
 import ModalView from '../views/ModalView.js';
-import { showToast, showError } from '../views/helpers.js';
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('ProfileController');
 
 /**
  * 프로필 수정 페이지 컨트롤러
+ * Model과 View를 연결하고 비즈니스 로직을 처리
  */
 class ProfileController {
     constructor() {
+        this.view = new ProfileView();
         this.originalNickname = '';
         this.currentProfileFile = null;
     }
@@ -20,6 +24,9 @@ class ProfileController {
      * 컨트롤러 초기화
      */
     async init() {
+        // View 초기화
+        if (!this.view.initialize()) return;
+
         await this._loadProfileData();
         this._setupEventListeners();
     }
@@ -35,30 +42,17 @@ class ProfileController {
             if (result.ok && result.data?.data?.user) {
                 const user = result.data.data.user;
 
-                const emailDisplay = document.getElementById('email-display');
-                const nicknameInput = document.getElementById('nickname-input');
-                const profileWrapper = document.getElementById('profile-img-wrapper');
+                this.view.setEmail(user.email);
+                this.view.setNickname(user.nickname);
+                this.view.setProfileImage(user.profileImageUrl);
 
-                if (emailDisplay) emailDisplay.value = user.email;
-                if (nicknameInput) {
-                    nicknameInput.value = user.nickname;
-                    this.originalNickname = user.nickname;
-                }
-                if (profileWrapper) {
-                    if (user.profile_image) {
-                        profileWrapper.style.backgroundImage = `url(${user.profile_image})`;
-                    } else {
-                        profileWrapper.style.backgroundColor = '#555';
-                    }
-                }
-
+                this.originalNickname = user.nickname;
                 this._validateNickname();
-
             } else {
                 location.href = '/login';
             }
         } catch (error) {
-            console.error('Profile Load Error:', error);
+            logger.error('프로필 데이터 로드 실패', error);
         }
     }
 
@@ -67,85 +61,59 @@ class ProfileController {
      * @private
      */
     _setupEventListeners() {
-        const nicknameInput = document.getElementById('nickname-input');
-        const imgWrapper = document.getElementById('profile-img-wrapper');
-        const fileInput = document.getElementById('profile-file-input');
-        const profileForm = document.getElementById('profile-form');
-        const withdrawBtn = document.getElementById('withdraw-btn');
-
-        // 이미지 업로드
-        if (imgWrapper && fileInput) {
-            imgWrapper.addEventListener('click', () => fileInput.click());
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    this.currentProfileFile = file;
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        imgWrapper.style.backgroundImage = `url(${e.target.result})`;
-                    };
-                    reader.readAsDataURL(file);
-                }
-                this._checkFormValidity();
-            });
-        }
-
-        // 닉네임 입력
-        if (nicknameInput) {
-            nicknameInput.addEventListener('input', () => {
-                this._validateNickname();
-                this._checkFormValidity();
-            });
-        }
-
-        // 폼 제출
-        if (profileForm) {
-            profileForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this._handleProfileUpdate();
-            });
-        }
-
-        // 회원 탈퇴
-        if (withdrawBtn) {
-            withdrawBtn.addEventListener('click', () => {
-                ModalView.openWithdrawModal('withdraw-modal');
-            });
-        }
+        this.view.bindEvents({
+            onFileChange: (e) => this._handleFileChange(e),
+            onNicknameInput: () => this._handleNicknameInput(),
+            onSubmit: (e) => this._handleSubmit(e),
+            onWithdrawClick: () => this._handleWithdrawClick()
+        });
 
         // 탈퇴 모달 이벤트
-        const modalCancelBtn = document.getElementById('modal-cancel-btn');
-        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        this._setupWithdrawModal();
+    }
 
-        if (modalCancelBtn) {
-            modalCancelBtn.addEventListener('click', () => {
-                ModalView.closeModal('withdraw-modal');
-            });
+    /**
+     * 파일 변경 처리
+     * @private
+     */
+    _handleFileChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            this.currentProfileFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.view.showProfilePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
         }
+        this._checkFormValidity();
+    }
 
-        if (modalConfirmBtn) {
-            modalConfirmBtn.addEventListener('click', () => this._handleWithdrawal());
-        }
+    /**
+     * 닉네임 입력 처리
+     * @private
+     */
+    _handleNicknameInput() {
+        this._validateNickname();
+        this._checkFormValidity();
     }
 
     /**
      * 닉네임 유효성 검사
      * @private
+     * @returns {boolean}
      */
     _validateNickname() {
-        const nicknameInput = document.getElementById('nickname-input');
-        const helper = document.getElementById('validation-helper');
-        const val = nicknameInput.value.trim();
+        const nickname = this.view.getNickname();
 
-        if (val.length === 0) {
-            showError(helper, '*닉네임을 입력해주세요.');
+        if (nickname.length === 0) {
+            this.view.showNicknameError('*닉네임을 입력해주세요.');
             return false;
-        } else if (val.length > 10) {
-            showError(helper, '*닉네임은 최대 10자까지 작성 가능합니다.');
+        } else if (nickname.length > 10) {
+            this.view.showNicknameError('*닉네임은 최대 10자까지 작성 가능합니다.');
             return false;
         } else {
-            if (helper) helper.style.display = 'none';
+            this.view.hideNicknameError();
             return true;
         }
     }
@@ -155,27 +123,20 @@ class ProfileController {
      * @private
      */
     _checkFormValidity() {
-        const submitBtn = document.getElementById('submit-btn');
         const isValid = this._validateNickname();
-        const nickname = document.getElementById('nickname-input').value.trim();
+        const nickname = this.view.getNickname();
 
-        if (isValid && nickname.length > 0) {
-            submitBtn.disabled = false;
-            submitBtn.classList.add('active');
-        } else {
-            submitBtn.disabled = true;
-            submitBtn.classList.remove('active');
-        }
+        this.view.updateButtonState(isValid && nickname.length > 0);
     }
 
     /**
-     * 프로필 업데이트 처리
+     * 폼 제출 처리
      * @private
      */
-    async _handleProfileUpdate() {
-        const nickname = document.getElementById('nickname-input').value.trim();
-        const helper = document.getElementById('validation-helper');
+    async _handleSubmit(event) {
+        event.preventDefault();
 
+        const nickname = this.view.getNickname();
         let newImageUrl = null;
 
         // 이미지 업로드
@@ -183,13 +144,15 @@ class ProfileController {
             try {
                 const uploadResult = await UserModel.uploadProfileImage(this.currentProfileFile);
                 if (uploadResult.ok) {
-                    newImageUrl = uploadResult.data?.data;
+                    const data = uploadResult.data?.data;
+                    // 객체인 경우 url 프로퍼티 사용, 아니면 값 자체 사용
+                    newImageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
                 } else {
                     alert('이미지 업로드 실패');
                     return;
                 }
             } catch (e) {
-                console.error(e);
+                logger.error('프로필 이미지 업로드 실패', e);
                 return;
             }
         }
@@ -207,14 +170,16 @@ class ProfileController {
             const result = await UserModel.updateProfile(payload);
 
             if (result.ok) {
-                showToast();
+                this.view.showSuccessToast();
+                setTimeout(() => {
+                    location.href = '/';
+                }, 1000);
             } else {
                 const detail = result.data?.detail;
                 // 닉네임 중복 오류 확인
                 if (result.status === 409 || (typeof detail === 'string' && detail.includes('exists'))) {
-                    showError(helper, '*중복되는 닉네임입니다.');
+                    this.view.showNicknameError('*중복되는 닉네임입니다.');
                 } else {
-                    // 시작: [Error] TypeError: result.data.detail.includes is not a function 수정
                     let msg = '알 수 없는 오류';
                     if (typeof detail === 'string') {
                         msg = detail;
@@ -222,12 +187,38 @@ class ProfileController {
                         msg = JSON.stringify(detail);
                     }
                     alert('수정 실패: ' + msg);
-                    // 끝: 수정
                 }
             }
         } catch (e) {
-            console.error(e);
+            logger.error('프로필 수정 실패', e);
             alert('오류 발생');
+        }
+    }
+
+    /**
+     * 회원 탈퇴 클릭 처리
+     * @private
+     */
+    _handleWithdrawClick() {
+        ModalView.openWithdrawModal('withdraw-modal');
+    }
+
+    /**
+     * 탈퇴 모달 설정
+     * @private
+     */
+    _setupWithdrawModal() {
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+
+        if (modalCancelBtn) {
+            modalCancelBtn.addEventListener('click', () => {
+                ModalView.closeModal('withdraw-modal');
+            });
+        }
+
+        if (modalConfirmBtn) {
+            modalConfirmBtn.addEventListener('click', () => this._handleWithdrawal());
         }
     }
 
@@ -254,7 +245,7 @@ class ProfileController {
                 alert('탈퇴 실패. 비밀번호를 확인해주세요.');
             }
         } catch (e) {
-            console.error(e);
+            logger.error('회원 탈퇴 실패', e);
             alert('오류 발생');
         }
     }

@@ -4,6 +4,11 @@
 /**
  * 헤더 View 클래스
  */
+import { getImageUrl } from './helpers.js';
+
+/**
+ * 헤더 View 클래스
+ */
 class HeaderView {
     /**
      * 프로필 이미지 설정
@@ -14,7 +19,8 @@ class HeaderView {
         if (!profileCircle) return;
 
         if (imageUrl) {
-            profileCircle.style.backgroundImage = `url(${imageUrl})`;
+            const fullUrl = getImageUrl(imageUrl);
+            profileCircle.style.backgroundImage = `url(${fullUrl})`;
             profileCircle.style.backgroundSize = 'cover';
         } else {
             profileCircle.style.backgroundColor = '#555';
