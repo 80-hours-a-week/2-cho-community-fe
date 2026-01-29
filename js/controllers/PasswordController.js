@@ -2,6 +2,7 @@
 // 비밀번호 변경 페이지 컨트롤러 - 비즈니스 로직 및 이벤트 처리 담당
 
 import UserModel from '../models/UserModel.js';
+import AuthModel from '../models/AuthModel.js';
 import PasswordView from '../views/PasswordView.js';
 import FormValidator from '../views/FormValidator.js';
 import Logger from '../utils/Logger.js';
@@ -137,7 +138,16 @@ class PasswordController {
             const result = await UserModel.changePassword(newPassword, confirmPassword);
 
             if (result.ok) {
+                // 비밀번호 변경 성공 시 로그아웃 처리 및 리다이렉트
+                try {
+                    await AuthModel.logout();
+                } catch (logoutError) {
+                    logger.warn('로그아웃 처리 중 오류 발생 (무시함)', logoutError);
+                }
+
+                alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.');
                 this.view.showSuccessToast();
+                location.href = '/login';
             } else {
                 this.view.showNewPasswordError(result.data?.message || '* 비밀번호 변경에 실패했습니다.');
             }

@@ -26,7 +26,7 @@ async def login():
 
 @app.get("/signup")
 async def signup():
-    return FileResponse("html/signup.html")
+    return FileResponse("html/user_signup.html")
 
 
 @app.get("/password")
