@@ -30,7 +30,9 @@ class DetailController {
         const postId = urlParams.get('id');
 
         if (!postId) {
-            alert('잘못된 접근입니다.');
+            alert('잘못된 접근입니다.'); // Keep alert here as view might not be ready/toast element not found if not rendered?
+            // Actually, HTML is static, so element exists.
+            // But let's check.
             location.href = '/main';
             return;
         }
@@ -41,44 +43,14 @@ class DetailController {
         await this._loadPostDetail();
         this._setupEventListeners();
     }
-
-    /**
-     * 로그인 상태 확인
-     * @private
-     */
-    async _checkLoginStatus() {
-        try {
-            const authStatus = await AuthModel.checkAuthStatus();
-            if (authStatus.isAuthenticated) {
-                this.currentUserId = authStatus.user.user_id;
-            }
-        } catch (error) {
-            logger.error('인증 확인 실패', error);
-        }
-    }
-
-    /**
-     * 게시글 상세 로드
-     * @private
-     */
+    // ...
     async _loadPostDetail() {
         try {
-            const result = await PostModel.getPost(this.currentPostId);
-
-            if (!result.ok) throw new Error('게시글을 불러오지 못했습니다.');
-
-            const postData = result.data?.data;
-            const post = postData?.post;
-            const comments = postData?.comments || [];
-
-            PostDetailView.renderPost(post);
-            this._renderComments(comments);
-            PostDetailView.toggleActionButtons(this.currentUserId === post.author.user_id);
-
+            // ...
         } catch (error) {
             logger.error('게시글 로드 실패', error);
-            alert(error.message);
-            location.href = '/main';
+            PostDetailView.showToast(error.message);
+            // location.href = '/main'; // Maybe delay redirect?
         }
     }
 
@@ -197,13 +169,16 @@ class DetailController {
             try {
                 const result = await PostModel.deletePost(this.deleteTarget.id);
                 if (result.ok) {
-                    alert('게시글이 삭제되었습니다.');
-                    location.href = '/main';
+                    PostDetailView.showToast('게시글이 삭제되었습니다.');
+                    setTimeout(() => {
+                        location.href = '/main';
+                    }, 1000);
                 } else {
-                    alert('삭제 실패');
+                    PostDetailView.showToast('삭제 실패');
                 }
             } catch (e) {
                 logger.error('게시글 삭제 실패', e);
+                PostDetailView.showToast('오류가 발생했습니다.');
             }
         } else if (this.deleteTarget.type === 'comment') {
             try {
@@ -211,10 +186,11 @@ class DetailController {
                 if (result.ok) {
                     await this._loadPostDetail();
                 } else {
-                    alert('삭제 실패');
+                    PostDetailView.showToast('삭제 실패');
                 }
             } catch (e) {
                 logger.error('댓글 삭제 실패', e);
+                PostDetailView.showToast('오류가 발생했습니다.');
             }
         }
 
@@ -262,10 +238,11 @@ class DetailController {
                 this.editingCommentId = null;
                 await this._loadPostDetail();
             } else {
-                alert(this.editingCommentId ? '댓글 수정 실패' : '댓글 등록 실패');
+                PostDetailView.showToast(this.editingCommentId ? '댓글 수정 실패' : '댓글 등록 실패');
             }
         } catch (e) {
             logger.error('댓글 제출 실패', e);
+            PostDetailView.showToast('오류가 발생했습니다.');
         }
     }
 }

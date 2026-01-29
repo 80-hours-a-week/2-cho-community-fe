@@ -1,6 +1,8 @@
 // js/views/WriteView.js
 // 게시글 작성 페이지 View - DOM 조작 담당
 
+import { showToast } from './helpers.js';
+
 /**
  * 게시글 작성 페이지 View 클래스
  * DOM 요소 참조 및 UI 업데이트 담당
@@ -144,6 +146,14 @@ class WriteView {
         if (this.form && handlers.onSubmit) {
             this.form.addEventListener('submit', handlers.onSubmit);
         }
+    }
+
+    /**
+     * 토스트 메시지 표시
+     * @param {string} message - 메세지
+     */
+    showToast(message) {
+        showToast(message);
     }
 }
 

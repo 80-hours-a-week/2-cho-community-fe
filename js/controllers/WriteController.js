@@ -123,7 +123,7 @@ class WriteController {
                     const data = uploadResult.data?.data;
                     imageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
                 } else {
-                    alert('이미지 업로드 실패');
+                    this.view.showToast('이미지 업로드 실패');
                     return;
                 }
             }
@@ -138,14 +138,17 @@ class WriteController {
             const result = await PostModel.createPost(postPayload);
 
             if (result.ok) {
-                location.href = '/main';
+                this.view.showToast('게시글이 작성되었습니다.');
+                setTimeout(() => {
+                    location.href = '/main';
+                }, 1000);
             } else {
-                alert('게시글 작성 실패');
+                this.view.showToast('게시글 작성 실패');
             }
 
         } catch (error) {
             logger.error('게시글 작성 실패', error);
-            alert('오류가 발생했습니다.');
+            this.view.showToast('오류가 발생했습니다.');
         }
     }
 }

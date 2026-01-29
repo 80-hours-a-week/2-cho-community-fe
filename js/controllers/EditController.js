@@ -169,7 +169,6 @@ class EditController {
         try {
             let newImageUrl = null;
 
-            // 이미지 업로드
             if (this.currentData.image_file) {
                 const uploadResult = await PostModel.uploadImage(this.currentData.image_file);
 
@@ -177,7 +176,7 @@ class EditController {
                     const data = uploadResult.data?.data;
                     newImageUrl = (data && typeof data === 'object' && data.url) ? data.url : data;
                 } else {
-                    alert('이미지 업로드 실패');
+                    this.view.showToast('이미지 업로드 실패');
                     return;
                 }
             }
@@ -194,13 +193,16 @@ class EditController {
             const result = await PostModel.updatePost(this.postId, payload);
 
             if (result.ok) {
-                location.href = `/detail?id=${this.postId}`;
+                this.view.showToast('게시글이 수정되었습니다.');
+                setTimeout(() => {
+                    location.href = `/detail?id=${this.postId}`;
+                }, 1000);
             } else {
-                alert('게시글 수정 실패');
+                this.view.showToast('게시글 수정 실패');
             }
         } catch (error) {
             logger.error('게시글 수정 실패', error);
-            alert('오류가 발생했습니다.');
+            this.view.showToast('오류가 발생했습니다.');
         }
     }
 }

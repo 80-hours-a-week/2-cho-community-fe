@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
     },
     POSTS: {
         ROOT: '/v1/posts',
+        IMAGE: '/v1/posts/image'
     }
 };
 

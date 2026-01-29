@@ -2,7 +2,7 @@
 // 게시글 상세 렌더링 관련 로직
 
 import { formatDate, formatCount } from '../utils/formatters.js';
-import { getImageUrl } from './helpers.js';
+import { getImageUrl, showToast } from './helpers.js';
 
 /**
  * 게시글 상세 View 클래스
@@ -123,6 +123,13 @@ class PostDetailView {
             button.textContent = '댓글 등록';
             button.style.backgroundColor = '#ACA0EB';
         }
+    }
+    /**
+     * 토스트 메시지 표시
+     * @param {string} message - 메세지
+     */
+    static showToast(message) {
+        showToast(message);
     }
 }
 

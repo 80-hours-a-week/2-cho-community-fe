@@ -1,6 +1,8 @@
 // js/views/EditView.js
 // 게시글 수정 페이지 View - DOM 조작 담당
 
+import { showToast } from './helpers.js';
+
 /**
  * 게시글 수정 페이지 View 클래스
  * DOM 요소 참조 및 UI 업데이트 담당
@@ -156,6 +158,14 @@ class EditView {
         if (this.form && handlers.onSubmit) {
             this.form.addEventListener('submit', handlers.onSubmit);
         }
+    }
+
+    /**
+     * 토스트 메시지 표시
+     * @param {string} message - 메세지
+     */
+    showToast(message) {
+        showToast(message);
     }
 }
 

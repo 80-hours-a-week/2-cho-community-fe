@@ -59,24 +59,20 @@ class LoginController {
     }
 
     /**
-     * 이메일 입력 처리
+     * 공통 입력 처리 핸들러
+     * @param {string} field - 상태 필드명
+     * @param {Function} validator - 유효성 검사 메서드
      * @private
      */
-    _handleEmailInput() {
-        this.state.email.touched = true;
-        this._validateEmail();
+    _handleInput(field, validator) {
+        this.state[field].touched = true;
+        validator.call(this);
         this._updateButtonState();
     }
 
-    /**
-     * 비밀번호 입력 처리
-     * @private
-     */
-    _handlePasswordInput() {
-        this.state.password.touched = true;
-        this._validatePassword();
-        this._updateButtonState();
-    }
+    /* 이벤트 핸들러 */
+    _handleEmailInput() { this._handleInput('email', this._validateEmail); }
+    _handlePasswordInput() { this._handleInput('password', this._validatePassword); }
 
     /**
      * 이메일 유효성 검사
