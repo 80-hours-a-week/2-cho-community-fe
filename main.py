@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -15,7 +15,7 @@ templates = Jinja2Templates(directory="html")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("user_login.html", {"request": request})
+    return RedirectResponse("/login")
 
 
 @app.get("/main", response_class=HTMLResponse)
