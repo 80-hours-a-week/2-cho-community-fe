@@ -125,8 +125,19 @@ class ProfileView {
     /**
      * 성공 토스트 표시
      */
+    /**
+     * 성공 토스트 표시
+     */
     showSuccessToast() {
-        showToast();
+        showToast('회원정보가 수정되었습니다.');
+    }
+
+    /**
+     * 토스트 메시지 표시
+     * @param {string} message - 메세지
+     */
+    showToast(message) {
+        showToast(message);
     }
 
     /**

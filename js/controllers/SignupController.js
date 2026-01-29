@@ -78,6 +78,9 @@ class SignupController {
      * @param {string} field - 상태 필드명 (email, password, etc)
      * @param {Function} validator - 유효성 검사 메서드
      * @private
+     * 
+     * 반복되는 입력 처리 로직(상태 업데이트 -> 유효성 검사 -> 버튼 상태 업데이트)을 일반화하여
+     * 코드 중복을 줄이고 유지보수성을 높임. `call(this)`를 사용하여 validator 내부의 `this` 컨텍스트를 유지함.
      */
     _handleInput(field, validator) {
         this.state[field].touched = true;

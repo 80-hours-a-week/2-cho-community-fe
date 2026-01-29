@@ -1,7 +1,7 @@
 // js/views/CommentListView.js
 // 댓글 목록 렌더링 관련 로직
 
-import { formatDate } from '../utils/formatters.js';
+import { formatDate, escapeHtml } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
 
 /**
@@ -22,12 +22,14 @@ class CommentListView {
         li.className = 'comment-item';
 
         const isOwner = currentUserId && currentUserId === comment.author.user_id;
+        const safeContent = escapeHtml(comment.content);
+        const safeNickname = escapeHtml(comment.author.nickname);
 
         li.innerHTML = `
             <div class="comment-author-img" style="background-image: url('${getImageUrl(comment.author.profileImageUrl)}'); background-size: cover;"></div>
             <div class="comment-content-wrapper">
                 <div class="comment-header">
-                    <span class="comment-author-name">${comment.author.nickname}</span>
+                    <span class="comment-author-name">${safeNickname}</span>
                     <span class="comment-date">${formatDate(new Date(comment.created_at))}</span>
                     ${isOwner ? `
                     <div class="comment-actions">
@@ -35,7 +37,7 @@ class CommentListView {
                         <button class="small-btn delete-cmt-btn" data-id="${comment.comment_id}">삭제</button>
                     </div>` : ''}
                 </div>
-                <p class="comment-text">${comment.content}</p>
+                <p class="comment-text">${safeContent}</p>
             </div>
         `;
 

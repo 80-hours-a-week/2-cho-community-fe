@@ -77,11 +77,14 @@ class MainController {
             const pagination = result.data?.data?.pagination;
 
             // 중복 게시물 감지 (백엔드 버그 방어)
+            // 무한 스크롤 시, 데이터가 추가되거나 삭제되는 동안 오프셋 기반 페이지네이션의 고질적인 문제(중복/누락)가 발생할 수 있음.
+            // 클라이언트 측에서 이미 로드된 ID를 추적하여 중복 렌더링을 방지함.
             const fetchedIds = posts.map(p => p.post_id);
             const hasDuplicates = fetchedIds.some(id => this.loadedPostIds.has(id));
 
             if (hasDuplicates) {
                 logger.warn('중복 게시물 감지 - 더 이상 로드하지 않음');
+                // 중복이 발생했다는 것은 더 이상 새로운 데이터를 불러올 수 없거나(끝), 데이터 정합성이 깨진 상태일 수 있으므로 로딩 중단
                 this.hasMore = false;
                 PostListView.toggleLoadingSentinel(sentinel, false);
                 return;
@@ -91,6 +94,9 @@ class MainController {
             fetchedIds.forEach(id => this.loadedPostIds.add(id));
 
             // API 응답의 pagination 정보 또는 반환 개수로 hasMore 결정
+            // 1. 요청한 개수(LIMIT)보다 적게 왔다면 마지막 페이지임
+            // 2. 명시적인 pagination 객체의 has_more 플래그 확인
+            // 3. 전체 개수(total_count)와 현재 로드된 개수 비교
             if (posts.length < this.LIMIT ||
                 (pagination && !pagination.has_more) ||
                 (pagination && this.currentOffset + posts.length >= pagination.total_count)) {

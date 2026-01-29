@@ -145,15 +145,18 @@ class PasswordController {
                     logger.warn('로그아웃 처리 중 오류 발생 (무시함)', logoutError);
                 }
 
-                alert('비밀번호가 변경되었습니다. 다시 로그인해주세요.');
                 this.view.showSuccessToast();
-                location.href = '/login';
+                setTimeout(() => {
+                    location.href = '/login';
+                }, 1000);
             } else {
                 this.view.showNewPasswordError(result.data?.message || '* 비밀번호 변경에 실패했습니다.');
+                this.view.showToast('비밀번호 변경 실패');
             }
         } catch (error) {
             logger.error('비밀번호 변경 실패', error);
             this.view.showNewPasswordError('* 서버 통신 중 오류가 발생했습니다.');
+            this.view.showToast('오류가 발생했습니다.');
         }
     }
 }

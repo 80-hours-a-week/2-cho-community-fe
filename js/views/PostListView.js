@@ -1,7 +1,7 @@
 // js/views/PostListView.js
 // 게시글 목록 렌더링 관련 로직
 
-import { formatDate, formatCount, truncateTitle } from '../utils/formatters.js';
+import { formatDate, formatCount, truncateTitle, escapeHtml } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
 
 /**
@@ -18,8 +18,26 @@ class PostListView {
         const li = document.createElement('li');
         li.className = 'post-card';
 
-        // 제목 자르기
-        const title = truncateTitle(post.title);
+        // 제목 자르기 및 이스케이프 (중요: 자르기 전에 이스케이프 하면 길이가 달라질 수 있으나, 일반적으로는 원본을 자르고 이스케이프하거나, 이스케이프 후 자르는게 안전. 
+        // truncateTitle implementation just substrings. So if I escape first, '&' becomes '&amp;' (5 chars).
+        // If I truncate first, valid HTML entities might be broken.
+        // SAFE APPROACH: Escape first, then truncate? No, users see rendered text.
+        // Actually, CSS truncation is better but here we use JS.
+        // Let's assume content is plain text.
+        const safeTitle = escapeHtml(post.title);
+        const title = truncateTitle(safeTitle); // This might truncate '&amp;' to '&am...', rendering broken entity.
+        // Better: Truncate first (assuming native length), then escape? 
+        // If user inputs '<script>', truncate might make it '<scrip...'. Then escape -> '&lt;scrip...'. This is safe.
+        // So Truncate -> Escape is safer for entities integrity? No.
+        // Correct way for length limits: Ideally count chars, but here simply:
+        // `truncateTitle` accepts string.
+        // Let's use `escapeHtml` on the result of `truncateTitle`. User input '<script>' -> truncated '<script>' -> escaped '&lt;script&gt;'. Safe.
+        // User input 'AAAA...' -> truncated 'AAAA...' -> escaped 'AAAA...'. Safe.
+
+        const titleText = truncateTitle(post.title);
+        const safeTitleStr = escapeHtml(titleText);
+
+        const safeNickname = escapeHtml(post.author?.nickname || '');
 
         // 날짜 포맷팅
         const dateStr = formatDate(new Date(post.created_at));
@@ -34,7 +52,7 @@ class PostListView {
 
         li.innerHTML = `
             <div class="post-card-header">
-                <h3 class="post-title">${title}</h3>
+                <h3 class="post-title">${safeTitleStr}</h3>
                 <span class="post-date">${dateStr}</span>
             </div>
             <div class="post-stats">
@@ -45,7 +63,7 @@ class PostListView {
             <div class="post-divider"></div>
             <div class="post-author">
                 <div class="author-profile-img" style="background-image: url('${profileImg}'); background-size: cover;"></div>
-                <span class="author-nickname">${post.author?.nickname || ''}</span>
+                <span class="author-nickname">${safeNickname}</span>
             </div>
         `;
 

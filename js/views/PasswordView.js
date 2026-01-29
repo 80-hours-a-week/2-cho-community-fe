@@ -100,8 +100,19 @@ class PasswordView {
     /**
      * 성공 토스트 표시
      */
+    /**
+     * 성공 토스트 표시
+     */
     showSuccessToast() {
-        showToast();
+        showToast('비밀번호가 변경되었습니다.');
+    }
+
+    /**
+     * 토스트 메시지 표시
+     * @param {string} message - 메세지
+     */
+    showToast(message) {
+        showToast(message);
     }
 
     /**

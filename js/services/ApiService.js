@@ -123,12 +123,16 @@ class ApiService {
         let data = null;
 
         // 응답 본문이 있는 경우에만 처리
+        // 응답 본문이 있는 경우에만 처리
         const contentType = response.headers.get('content-type');
         try {
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
             } else {
                 // JSON이 아닌 경우 (예: 500 HTML 에러 페이지) 텍스트로 읽음
+                // 백엔드 프레임워크나 프록시(Nginx 등)가 JSON이 아닌 HTML 에러 페이지를 반환하는 경우가 많으므로
+                // 무조건 JSON 파싱을 시도하면 SyntaxError가 발생하여 에러 내용을 확인할 수 없게 됨.
+                // 따라서 Content-Type을 확인하여 유연하게 처리함.
                 const text = await response.text();
                 if (text) {
                     data = { message: text, _isText: true };
