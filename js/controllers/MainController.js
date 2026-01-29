@@ -53,13 +53,14 @@ class MainController {
                     onLogout: () => this._handleLogout()
                 });
             } else {
-                // 비로그인 상태에서도 목록은 볼 수 있음
-                profileCircle.addEventListener('click', () => {
-                    location.href = '/login';
-                });
+                // 비로그인 상태에서는 로그인 페이지로 리다이렉트
+                location.href = '/login';
+                return;
             }
         } catch (error) {
             logger.error('인증 확인 실패', error);
+            // 인증 확인 실패 시에도 로그인 페이지로 리다이렉트
+            location.href = '/login';
         }
     }
 
@@ -145,10 +146,10 @@ class MainController {
         try {
             await AuthModel.logout();
             alert('로그아웃 되었습니다.');
-            location.reload();
+            location.href = '/login';
         } catch (error) {
             logger.error('로그아웃 에러', error);
-            location.reload();
+            location.href = '/login';
         }
     }
 }
