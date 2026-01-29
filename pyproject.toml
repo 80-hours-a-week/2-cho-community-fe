@@ -17,7 +17,7 @@ dependencies = [
     "httptools>=0.6.0",
     "httpx>=0.26.0",
     "idna>=3.6",
-    "Jinja2>=3.1.2",
+
     "markdown-it-py>=3.0.0",
     "MarkupSafe>=2.1.0",
     "mdurl>=0.1.0",
