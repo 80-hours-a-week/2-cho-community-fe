@@ -92,6 +92,14 @@ class EditController {
             onFileChange: (e) => this._handleFileChange(e),
             onSubmit: (e) => this._handleSubmit(e)
         });
+
+        // 뒤로가기 버튼
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                history.back();
+            });
+        }
     }
 
     /**

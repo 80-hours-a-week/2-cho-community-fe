@@ -41,6 +41,14 @@ class PasswordController {
             onConfirmPasswordInput: () => this._handleConfirmPasswordInput(),
             onSubmit: (e) => this._handleSubmit(e)
         });
+
+        // 뒤로가기 버튼
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                history.back();
+            });
+        }
     }
 
     /**

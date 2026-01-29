@@ -30,6 +30,14 @@ class MainController {
         await this._checkLoginStatus();
         await this._loadPosts();
         this._setupInfiniteScroll();
+
+        // 게시글 작성 버튼
+        const writeBtn = document.getElementById('write-btn');
+        if (writeBtn) {
+            writeBtn.addEventListener('click', () => {
+                location.href = '/write';
+            });
+        }
     }
 
     /**

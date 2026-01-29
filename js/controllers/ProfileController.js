@@ -70,6 +70,14 @@ class ProfileController {
 
         // 탈퇴 모달 이벤트
         this._setupWithdrawModal();
+
+        // 뒤로가기 버튼
+        const backBtn = document.getElementById('back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                history.back();
+            });
+        }
     }
 
     /**
