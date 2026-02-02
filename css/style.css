@@ -22,10 +22,19 @@
 @import url('modules/toast.css');
 
 /* ============================= */
+
 /* 4. Pages - Page-specific      */
+
 /* ============================= */
-@import url('pages/login.css');
-@import url('pages/profile.css');
-@import url('pages/detail.css');
-@import url('pages/write.css');
-@import url('pages/signup.css');
+
+/* 성능 최적화를 위해 HTML 파일에서 직접 Import 합니다. */
+
+/* @import url('pages/login.css'); */
+
+/* @import url('pages/profile.css'); */
+
+/* @import url('pages/detail.css'); */
+
+/* @import url('pages/write.css'); */
+
+/* @import url('pages/signup.css'); */
