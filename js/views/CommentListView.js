@@ -67,10 +67,14 @@ class CommentListView {
      */
     static renderComments(container, comments, currentUserId, handlers) {
         container.innerHTML = '';
+        
+        const fragment = document.createDocumentFragment();
         comments.forEach(comment => {
             const element = CommentListView.createCommentElement(comment, currentUserId, handlers);
-            container.appendChild(element);
+            fragment.appendChild(element);
         });
+        
+        container.appendChild(fragment);
     }
 }
 

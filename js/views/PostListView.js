@@ -81,10 +81,12 @@ class PostListView {
      * @param {Function} onPostClick - 게시글 클릭 핸들러
      */
     static renderPosts(container, posts, onPostClick) {
+        const fragment = document.createDocumentFragment();
         posts.forEach(post => {
             const card = PostListView.createPostCard(post, onPostClick);
-            container.appendChild(card);
+            fragment.appendChild(card);
         });
+        container.appendChild(fragment);
     }
 
     /**
