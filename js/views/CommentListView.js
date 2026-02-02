@@ -1,8 +1,9 @@
 // js/views/CommentListView.js
 // 댓글 목록 렌더링 관련 로직
 
-import { formatDate, escapeHtml, escapeCssUrl } from '../utils/formatters.js';
+import { formatDate } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
+import { createElement } from '../utils/dom.js';
 
 /**
  * 댓글 목록 View 클래스
@@ -18,44 +19,50 @@ class CommentListView {
      * @returns {HTMLElement} - 댓글 요소
      */
     static createCommentElement(comment, currentUserId, handlers) {
-        const li = document.createElement('li');
-        li.className = 'comment-item';
-
         const isOwner = currentUserId && currentUserId === comment.author.user_id;
-        const safeContent = escapeHtml(comment.content);
-        const safeNickname = escapeHtml(comment.author.nickname);
-        const safeProfileImg = escapeCssUrl(getImageUrl(comment.author.profileImageUrl));
+        const profileImgUrl = getImageUrl(comment.author.profileImageUrl);
+        const nickname = comment.author.nickname;
+        const content = comment.content;
+        const dateStr = formatDate(new Date(comment.created_at));
 
-        li.innerHTML = `
-            <div class="comment-author-img" style="background-image: url('${safeProfileImg}'); background-size: cover;"></div>
-            <div class="comment-content-wrapper">
-                <div class="comment-header">
-                    <span class="comment-author-name">${safeNickname}</span>
-                    <span class="comment-date">${formatDate(new Date(comment.created_at))}</span>
-                    ${isOwner ? `
-                    <div class="comment-actions">
-                        <button class="small-btn edit-cmt-btn" data-id="${comment.comment_id}">수정</button>
-                        <button class="small-btn delete-cmt-btn" data-id="${comment.comment_id}">삭제</button>
-                    </div>` : ''}
-                </div>
-                <p class="comment-text">${safeContent}</p>
-            </div>
-        `;
+        // 자식 요소들 미리 생성
+        const children = [
+            // 프로필 이미지
+            createElement('div', { 
+                className: 'comment-author-img',
+                style: { 
+                    backgroundImage: `url('${profileImgUrl}')`,
+                    backgroundSize: 'cover'
+                }
+            }),
+            // 콘텐츠 래퍼
+            createElement('div', { className: 'comment-content-wrapper' }, [
+                // 헤더
+                createElement('div', { className: 'comment-header' }, [
+                    createElement('span', { className: 'comment-author-name' }, [nickname]),
+                    createElement('span', { className: 'comment-date' }, [dateStr]),
+                    // 버튼 그룹 (본인인 경우에만 추가)
+                    ...(isOwner ? [
+                        createElement('div', { className: 'comment-actions' }, [
+                            createElement('button', { 
+                                className: 'small-btn edit-cmt-btn',
+                                dataset: { id: comment.comment_id },
+                                onClick: () => handlers.onEdit(comment)
+                            }, ['수정']),
+                            createElement('button', { 
+                                className: 'small-btn delete-cmt-btn',
+                                dataset: { id: comment.comment_id },
+                                onClick: () => handlers.onDelete(comment.comment_id)
+                            }, ['삭제'])
+                        ])
+                    ] : [])
+                ]),
+                // 댓글 내용
+                createElement('p', { className: 'comment-text' }, [content])
+            ])
+        ];
 
-        // 이벤트 바인딩
-        if (isOwner) {
-            const deleteBtn = li.querySelector('.delete-cmt-btn');
-            const editBtn = li.querySelector('.edit-cmt-btn');
-
-            if (deleteBtn && handlers.onDelete) {
-                deleteBtn.addEventListener('click', () => handlers.onDelete(comment.comment_id));
-            }
-            if (editBtn && handlers.onEdit) {
-                editBtn.addEventListener('click', () => handlers.onEdit(comment));
-            }
-        }
-
-        return li;
+        return createElement('li', { className: 'comment-item' }, children);
     }
 
     /**

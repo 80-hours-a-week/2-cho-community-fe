@@ -69,16 +69,25 @@ class HeaderView {
         return dropdown;
     }
 
+    // 프로필 버튼 클릭 리스너 저장
+    static _profileClickListener = null;
+
     /**
      * 드롭다운 이벤트 바인딩
      * @private
      */
     static _bindDropdownEvents(profileBtn, dropdown, handlers) {
-        // 토글 로직
-        profileBtn.addEventListener('click', (e) => {
+        // 기존 프로필 버튼 리스너 제거
+        if (HeaderView._profileClickListener) {
+            profileBtn.removeEventListener('click', HeaderView._profileClickListener);
+        }
+
+        // 새 토글 리스너 생성 및 등록
+        HeaderView._profileClickListener = (e) => {
             e.stopPropagation();
             dropdown.classList.toggle('hidden');
-        });
+        };
+        profileBtn.addEventListener('click', HeaderView._profileClickListener);
 
         // 외부 클릭 시 닫기 (기존 리스너 제거 후 재등록)
         if (HeaderView._documentClickListener) {
@@ -92,17 +101,10 @@ class HeaderView {
         };
         document.addEventListener('click', HeaderView._documentClickListener);
 
-        // 메뉴 액션 (드롭다운이 새로 생성되었을 때만 바인딩됨)
-        // 주의: 드롭다운이 기존에 존재했다면 이 부분이 중복 바인딩 될 수 있음.
-        // 하지만 createDropdown에서 dropdown이 없으면 생성하고, 있으면 재사용함.
-        // dropdown이 재사용될 때 핸들러가 바뀌었다면?
-        // 안전하게 cloneNode로 리스너 초기화 혹은 핸들러 업데이트 방식이 필요하나,
-        // 현재 구조상 dropdown이 DOM에서 제거되었다가 다시 생성되는 구조일 가능성이 높으므로 일단 단순화.
-        
+        // 메뉴 버튼 이벤트 바인딩 (cloneNode로 기존 리스너 제거)
         const bindMenuBtn = (id, handler) => {
             const btn = document.getElementById(id);
             if (btn && handler) {
-                // 기존 리스너 제거를 위해 cloneNode 사용
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
                 newBtn.addEventListener('click', handler);

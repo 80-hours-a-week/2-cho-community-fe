@@ -1,0 +1,11 @@
+{
+  "name": "2-cho-community-fe",
+  "version": "1.0.0",
+  "description": "Frontend E2E Tests",
+  "scripts": {
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.1"
+  }
+}

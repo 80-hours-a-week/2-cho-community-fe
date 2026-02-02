@@ -5,6 +5,10 @@
  * 모달 View 클래스
  */
 class ModalView {
+    // 현재 등록된 콜백 저장 (리스너 중복 방지용)
+    static _currentConfirmCallback = null;
+    static _currentCancelCallback = null;
+
     /**
      * 확인 모달 열기
      * @param {string} modalId - 모달 요소 ID
@@ -39,6 +43,7 @@ class ModalView {
 
     /**
      * 삭제 확인 모달 설정
+     * 이전 리스너를 제거하고 새 리스너를 등록합니다.
      * @param {object} options - 설정 옵션
      * @param {string} options.modalId - 모달 요소 ID
      * @param {string} options.cancelBtnId - 취소 버튼 ID
@@ -49,14 +54,26 @@ class ModalView {
         const cancelBtn = document.getElementById(options.cancelBtnId);
         const confirmBtn = document.getElementById(options.confirmBtnId);
 
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                ModalView.closeModal(options.modalId);
-            });
+        // 이전 리스너 제거
+        if (cancelBtn && ModalView._currentCancelCallback) {
+            cancelBtn.removeEventListener('click', ModalView._currentCancelCallback);
+        }
+        if (confirmBtn && ModalView._currentConfirmCallback) {
+            confirmBtn.removeEventListener('click', ModalView._currentConfirmCallback);
         }
 
+        // 새 콜백 저장
+        ModalView._currentCancelCallback = () => {
+            ModalView.closeModal(options.modalId);
+        };
+        ModalView._currentConfirmCallback = options.onConfirm;
+
+        // 새 리스너 등록
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', ModalView._currentCancelCallback);
+        }
         if (confirmBtn) {
-            confirmBtn.addEventListener('click', options.onConfirm);
+            confirmBtn.addEventListener('click', ModalView._currentConfirmCallback);
         }
     }
 
