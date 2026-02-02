@@ -1,8 +1,9 @@
 // js/views/PostListView.js
 // 게시글 목록 렌더링 관련 로직
 
-import { formatDate, formatCount, truncateTitle, escapeHtml, escapeCssUrl } from '../utils/formatters.js';
+import { formatDate, formatCount, truncateTitle } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
+import { createElement } from '../utils/dom.js';
 
 /**
  * 게시글 목록 View 클래스
@@ -15,18 +16,9 @@ class PostListView {
      * @returns {HTMLElement} - 게시글 카드 요소
      */
     static createPostCard(post, onClick) {
-        const li = document.createElement('li');
-        li.className = 'post-card';
-
-        // 제목 자르기 및 이스케이프 (중요: 자르기 전에 이스케이프 하면 길이가 달라질 수 있으나, 일반적으로는 원본을 자르고 이스케이프하거나, 이스케이프 후 자르는게 안전.)
-        const safeTitle = escapeHtml(post.title);
-        const title = truncateTitle(safeTitle);
-
+        // 제목 자르기
         const titleText = truncateTitle(post.title);
-        const safeTitleStr = escapeHtml(titleText);
-
-        const safeNickname = escapeHtml(post.author?.nickname || '');
-
+        
         // 날짜 포맷팅
         const dateStr = formatDate(new Date(post.created_at));
 
@@ -36,30 +28,45 @@ class PostListView {
         const views = post.views_count || 0;
 
         // 작성자 프로필 이미지
-        const profileImg = escapeCssUrl(getImageUrl(post.author?.profileImageUrl));
+        const profileImgUrl = getImageUrl(post.author?.profileImageUrl);
+        const nickname = post.author?.nickname || '';
 
-        li.innerHTML = `
-            <div class="post-card-header">
-                <h3 class="post-title">${safeTitleStr}</h3>
-                <span class="post-date">${dateStr}</span>
-            </div>
-            <div class="post-stats">
-                <span>좋아요 ${formatCount(likes)}</span>
-                <span>댓글 ${formatCount(comments)}</span>
-                <span>조회수 ${formatCount(views)}</span>
-            </div>
-            <div class="post-divider"></div>
-            <div class="post-author">
-                <div class="author-profile-img" style="background-image: url('${profileImg}'); background-size: cover;"></div>
-                <span class="author-nickname">${safeNickname}</span>
-            </div>
-        `;
+        // DOM 생성 (createElement 사용)
+        const card = createElement('li', { className: 'post-card' }, [
+            // Header: Title & Date
+            createElement('div', { className: 'post-card-header' }, [
+                createElement('h3', { className: 'post-title' }, [titleText]),
+                createElement('span', { className: 'post-date' }, [dateStr])
+            ]),
+            
+            // Stats: Likes, Comments, Views
+            createElement('div', { className: 'post-stats' }, [
+                createElement('span', {}, [`좋아요 ${formatCount(likes)}`]),
+                createElement('span', {}, [`댓글 ${formatCount(comments)}`]),
+                createElement('span', {}, [`조회수 ${formatCount(views)}`])
+            ]),
+            
+            // Divider
+            createElement('div', { className: 'post-divider' }),
+            
+            // Author: Profile Img & Nickname
+            createElement('div', { className: 'post-author' }, [
+                createElement('div', { 
+                    className: 'author-profile-img',
+                    style: { 
+                        backgroundImage: `url('${profileImgUrl}')`,
+                        backgroundSize: 'cover'
+                    }
+                }),
+                createElement('span', { className: 'author-nickname' }, [nickname])
+            ])
+        ]);
 
         if (onClick) {
-            li.addEventListener('click', () => onClick(post.post_id));
+            card.addEventListener('click', () => onClick(post.post_id));
         }
 
-        return li;
+        return card;
     }
 
     /**
@@ -106,11 +113,12 @@ class PostListView {
      * @param {HTMLElement} container - 목록 컨테이너
      */
     static showEmptyState(container) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>등록된 게시글이 없습니다.</p>
-            </div>
-        `;
+        container.innerHTML = ''; // 기존 내용 제거
+        container.appendChild(
+            createElement('div', { className: 'empty-state' }, [
+                createElement('p', {}, ['등록된 게시글이 없습니다.'])
+            ])
+        );
     }
 }
 
