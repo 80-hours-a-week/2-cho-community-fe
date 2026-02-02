@@ -21,6 +21,21 @@ export const API_ENDPOINTS = {
     POSTS: {
         ROOT: '/v1/posts',
         IMAGE: '/v1/posts/image'
+    },
+    COMMENTS: {
+        /**
+         * 댓글 목록/생성 엔드포인트
+         * @param {string|number} postId - 게시글 ID
+         * @returns {string} - 엔드포인트 경로
+         */
+        ROOT: (postId) => `/v1/posts/${postId}/comments`,
+        /**
+         * 개별 댓글 엔드포인트 (수정/삭제)
+         * @param {string|number} postId - 게시글 ID
+         * @param {string|number} commentId - 댓글 ID
+         * @returns {string} - 엔드포인트 경로
+         */
+        DETAIL: (postId, commentId) => `/v1/posts/${postId}/comments/${commentId}`
     }
 };
 
