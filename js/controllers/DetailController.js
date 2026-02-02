@@ -200,16 +200,28 @@ class DetailController {
     async _handleLike() {
         const likeBox = document.getElementById('like-box');
         const countEl = document.getElementById('like-count');
-        let count = parseInt(countEl.innerText) || 0;
-        const isLiked = likeBox.classList.contains('active');
+        const originalCount = parseInt(countEl.innerText) || 0;
+        const wasLiked = likeBox.classList.contains('active');
 
         // 낙관적 UI 업데이트 (Optimistic UI Update)
-        if (isLiked) {
-            PostDetailView.updateLikeState(false, count > 0 ? count - 1 : 0);
-            await PostModel.unlikePost(this.currentPostId);
-        } else {
-            PostDetailView.updateLikeState(true, count + 1);
-            await PostModel.likePost(this.currentPostId);
+        const newCount = wasLiked ? Math.max(0, originalCount - 1) : originalCount + 1;
+        PostDetailView.updateLikeState(!wasLiked, newCount);
+
+        try {
+            const result = wasLiked
+                ? await PostModel.unlikePost(this.currentPostId)
+                : await PostModel.likePost(this.currentPostId);
+
+            if (!result.ok) {
+                // API 실패 시 롤백
+                PostDetailView.updateLikeState(wasLiked, originalCount);
+                PostDetailView.showToast('좋아요 처리에 실패했습니다.');
+            }
+        } catch (error) {
+            // 네트워크 에러 시 롤백
+            logger.error('좋아요 처리 실패', error);
+            PostDetailView.updateLikeState(wasLiked, originalCount);
+            PostDetailView.showToast('네트워크 오류가 발생했습니다.');
         }
     }
 
