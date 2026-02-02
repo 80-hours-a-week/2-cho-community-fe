@@ -8,6 +8,7 @@ import PostDetailView from '../views/PostDetailView.js';
 import CommentListView from '../views/CommentListView.js';
 import ModalView from '../views/ModalView.js';
 import Logger from '../utils/Logger.js';
+import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 
 const logger = Logger.createLogger('DetailController');
 
@@ -20,6 +21,7 @@ class DetailController {
         this.currentUserId = null;
         this.editingCommentId = null;
         this.deleteTarget = { type: null, id: null };
+        this.isLiking = false;
     }
 
     /**
@@ -30,9 +32,9 @@ class DetailController {
         const postId = urlParams.get('id');
 
         if (!postId) {
-            PostDetailView.showToast('잘못된 접근입니다.');
+            PostDetailView.showToast(UI_MESSAGES.INVALID_ACCESS);
             setTimeout(() => {
-                location.href = '/main';
+                location.href = NAV_PATHS.MAIN;
             }, 1000);
             return;
         }
@@ -52,16 +54,6 @@ class DetailController {
         try {
             const authStatus = await AuthModel.checkAuthStatus();
             if (authStatus.isAuthenticated) {
-                // user object structure depends on backend. Usually it has id or userId.
-                // Based on previous code analysis or standard, let's assume userId or id.
-                // Looking at AuthModel it just returns the user object.
-                // Let's console log or check logic used elsewhere.
-                // In HeaderController it uses user to create profile.
-                // In CommentListView it uses currentUserId vs comment.author.id.
-                // So we need to ensure we get the ID.
-                // Let's assume the user object has `userId` or just `id`.
-                // Checking previous ViewFile of UserModel or typical response...
-                // AuthModel.checkAuthStatus returns `result.data.data.user`.
                 this.currentUserId = authStatus.user.user_id || authStatus.user.id;
             } else {
                 this.currentUserId = null;
@@ -81,14 +73,14 @@ class DetailController {
             const result = await PostModel.getPost(this.currentPostId);
 
             if (!result.ok) {
-                throw new Error('게시글을 불러오지 못했습니다.');
+                throw new Error(UI_MESSAGES.POST_DETAIL_FAIL);
             }
 
             const data = result.data?.data;
             const post = data?.post || result.data?.data;
 
             if (!post) {
-                throw new Error('게시글 데이터가 없습니다.');
+                throw new Error(UI_MESSAGES.POST_NOT_FOUND);
             }
 
             // 댓글 별도 추출 (백엔드 응답 구조: data: { post: {...}, comments: [...] })
@@ -114,7 +106,7 @@ class DetailController {
             logger.error('게시글 로드 실패', error);
             PostDetailView.showToast(error.message);
             setTimeout(() => {
-                location.href = '/main';
+                location.href = NAV_PATHS.MAIN;
             }, 1500);
         }
     }
@@ -140,7 +132,7 @@ class DetailController {
         const backBtn = document.getElementById('back-btn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                location.href = '/main';
+                location.href = NAV_PATHS.MAIN;
             });
         }
 
@@ -148,7 +140,7 @@ class DetailController {
         const editBtn = document.getElementById('edit-post-btn');
         if (editBtn) {
             editBtn.addEventListener('click', () => {
-                location.href = `/edit?id=${this.currentPostId}`;
+                location.href = NAV_PATHS.EDIT(this.currentPostId);
             });
         }
 
@@ -198,6 +190,8 @@ class DetailController {
      * @private
      */
     async _handleLike() {
+        if (this.isLiking) return;
+
         const likeBox = document.getElementById('like-box');
         const countEl = document.getElementById('like-count');
         const originalCount = parseInt(countEl.innerText) || 0;
@@ -206,6 +200,8 @@ class DetailController {
         // 낙관적 UI 업데이트 (Optimistic UI Update)
         const newCount = wasLiked ? Math.max(0, originalCount - 1) : originalCount + 1;
         PostDetailView.updateLikeState(!wasLiked, newCount);
+        
+        this.isLiking = true;
 
         try {
             const result = wasLiked
@@ -215,13 +211,15 @@ class DetailController {
             if (!result.ok) {
                 // API 실패 시 롤백
                 PostDetailView.updateLikeState(wasLiked, originalCount);
-                PostDetailView.showToast('좋아요 처리에 실패했습니다.');
+                PostDetailView.showToast(UI_MESSAGES.LIKE_FAIL);
             }
         } catch (error) {
             // 네트워크 에러 시 롤백
             logger.error('좋아요 처리 실패', error);
             PostDetailView.updateLikeState(wasLiked, originalCount);
-            PostDetailView.showToast('네트워크 오류가 발생했습니다.');
+            PostDetailView.showToast(UI_MESSAGES.SERVER_ERROR);
+        } finally {
+            this.isLiking = false;
         }
     }
 
@@ -246,16 +244,16 @@ class DetailController {
             try {
                 const result = await PostModel.deletePost(this.deleteTarget.id);
                 if (result.ok) {
-                    PostDetailView.showToast('게시글이 삭제되었습니다.');
+                    PostDetailView.showToast(UI_MESSAGES.POST_DELETE_SUCCESS);
                     setTimeout(() => {
-                        location.href = '/main';
+                        location.href = NAV_PATHS.MAIN;
                     }, 1000);
                 } else {
-                    PostDetailView.showToast('삭제 실패');
+                    PostDetailView.showToast(UI_MESSAGES.DELETE_FAIL);
                 }
             } catch (e) {
                 logger.error('게시글 삭제 실패', e);
-                PostDetailView.showToast('오류가 발생했습니다.');
+                PostDetailView.showToast(UI_MESSAGES.UNKNOWN_ERROR);
             }
         } else if (this.deleteTarget.type === 'comment') {
             try {
@@ -263,11 +261,11 @@ class DetailController {
                 if (result.ok) {
                     await this._loadPostDetail();
                 } else {
-                    PostDetailView.showToast('삭제 실패');
+                    PostDetailView.showToast(UI_MESSAGES.DELETE_FAIL);
                 }
             } catch (e) {
                 logger.error('댓글 삭제 실패', e);
-                PostDetailView.showToast('오류가 발생했습니다.');
+                PostDetailView.showToast(UI_MESSAGES.UNKNOWN_ERROR);
             }
         }
 
@@ -315,11 +313,11 @@ class DetailController {
                 this.editingCommentId = null;
                 await this._loadPostDetail();
             } else {
-                PostDetailView.showToast(this.editingCommentId ? '댓글 수정 실패' : '댓글 등록 실패');
+                PostDetailView.showToast(this.editingCommentId ? UI_MESSAGES.COMMENT_UPDATE_FAIL : UI_MESSAGES.COMMENT_CREATE_FAIL);
             }
         } catch (e) {
             logger.error('댓글 제출 실패', e);
-            PostDetailView.showToast('오류가 발생했습니다.');
+            PostDetailView.showToast(UI_MESSAGES.UNKNOWN_ERROR);
         }
     }
 }
