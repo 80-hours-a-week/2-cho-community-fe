@@ -99,7 +99,12 @@ class PostFormView {
      */
     showImagePreview(imageUrl) {
         if (this.previewContainer) {
-            this.previewContainer.innerHTML = `<img src="${imageUrl}" alt="Preview" class="preview-img">`;
+            this.previewContainer.textContent = '';
+            const img = document.createElement('img');
+            img.setAttribute('src', imageUrl);
+            img.setAttribute('alt', 'Preview');
+            img.className = 'preview-img';
+            this.previewContainer.appendChild(img);
             this.previewContainer.classList.remove('hidden');
         }
     }
@@ -119,7 +124,7 @@ class PostFormView {
      */
     hideImagePreview() {
         if (this.previewContainer) {
-            this.previewContainer.innerHTML = '';
+            this.previewContainer.textContent = '';
             this.previewContainer.classList.add('hidden');
         }
     }

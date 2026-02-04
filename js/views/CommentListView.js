@@ -1,7 +1,7 @@
 // js/views/CommentListView.js
 // 댓글 목록 렌더링 관련 로직
 
-import { formatDate } from '../utils/formatters.js';
+import { formatDate, escapeCssUrl } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
 import { createElement } from '../utils/dom.js';
 
@@ -31,7 +31,7 @@ class CommentListView {
             createElement('div', { 
                 className: 'comment-author-img',
                 style: { 
-                    backgroundImage: `url('${profileImgUrl}')`,
+                    backgroundImage: `url('${escapeCssUrl(profileImgUrl)}')`,
                     backgroundSize: 'cover'
                 }
             }),
@@ -73,7 +73,7 @@ class CommentListView {
      * @param {object} handlers - 이벤트 핸들러 객체
      */
     static renderComments(container, comments, currentUserId, handlers) {
-        container.innerHTML = '';
+        container.textContent = '';
         
         const fragment = document.createDocumentFragment();
         comments.forEach(comment => {

@@ -1,7 +1,7 @@
 // js/views/PostListView.js
 // 게시글 목록 렌더링 관련 로직
 
-import { formatDate, formatCount, truncateTitle } from '../utils/formatters.js';
+import { formatDate, formatCount, truncateTitle, escapeCssUrl } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
 import { createElement } from '../utils/dom.js';
 
@@ -51,10 +51,10 @@ class PostListView {
             
             // Author: Profile Img & Nickname
             createElement('div', { className: 'post-author' }, [
-                createElement('div', { 
+                createElement('div', {
                     className: 'author-profile-img',
-                    style: { 
-                        backgroundImage: `url('${profileImgUrl}')`,
+                    style: {
+                        backgroundImage: `url('${escapeCssUrl(profileImgUrl)}')`,
                         backgroundSize: 'cover'
                     }
                 }),
@@ -113,7 +113,7 @@ class PostListView {
      * @param {HTMLElement} container - 목록 컨테이너
      */
     static showEmptyState(container) {
-        container.innerHTML = ''; // 기존 내용 제거
+        container.textContent = ''; // 기존 내용 제거
         container.appendChild(
             createElement('div', { className: 'empty-state' }, [
                 createElement('p', {}, ['등록된 게시글이 없습니다.'])

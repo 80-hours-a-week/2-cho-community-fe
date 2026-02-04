@@ -38,7 +38,7 @@ class HeaderController {
         if (!authSection) return;
 
         // 기존 내용 비우기
-        authSection.innerHTML = '';
+        authSection.textContent = '';
 
         try {
             const authStatus = await AuthModel.checkAuthStatus();

@@ -5,6 +5,8 @@
  * 헤더 View 클래스
  */
 import { getImageUrl } from './helpers.js';
+import { escapeCssUrl } from '../utils/formatters.js';
+import { createElement } from '../utils/dom.js';
 
 /**
  * 헤더 View 클래스
@@ -21,8 +23,8 @@ class HeaderView {
         profileCircle.id = 'header-profile';
 
         if (user && user.profileImageUrl) {
-            const fullUrl = getImageUrl(user.profileImageUrl);
-            profileCircle.style.backgroundImage = `url(${fullUrl})`;
+            const fullUrl = escapeCssUrl(getImageUrl(user.profileImageUrl));
+            profileCircle.style.backgroundImage = `url('${fullUrl}')`;
         } else {
             profileCircle.style.backgroundColor = '#555';
         }
@@ -47,13 +49,13 @@ class HeaderView {
             dropdown.id = 'header-dropdown';
             dropdown.className = 'header-dropdown hidden';
 
-            dropdown.innerHTML = `
-                <ul>
-                    <li id="menu-edit-info">회원정보수정</li>
-                    <li id="menu-change-pw">비밀번호수정</li>
-                    <li id="menu-logout">로그아웃</li>
-                </ul>
-            `;
+            dropdown.appendChild(
+                createElement('ul', {}, [
+                    createElement('li', { id: 'menu-edit-info' }, ['회원정보수정']),
+                    createElement('li', { id: 'menu-change-pw' }, ['비밀번호수정']),
+                    createElement('li', { id: 'menu-logout' }, ['로그아웃']),
+                ])
+            );
 
             const headerAuth = document.querySelector('.header-auth');
             if (headerAuth) {

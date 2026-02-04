@@ -76,19 +76,17 @@ class DetailController {
             }
 
             const data = result.data?.data;
-            const post = data?.post || result.data?.data;
+            const post = data?.post;
 
             if (!post) {
                 throw new Error(UI_MESSAGES.POST_NOT_FOUND);
             }
 
             // 댓글 별도 추출 (백엔드 응답 구조: data: { post: {...}, comments: [...] })
-            const comments = data?.comments || post.comments || [];
+            const comments = data?.comments || [];
 
-            // 댓글 수 동기화 (post.comments_count가 0이어도 실제 댓글이 있으면 업데이트)
-            if (comments.length > 0) {
-                post.comments_count = comments.length;
-            }
+            // 댓글 수 동기화
+            post.comments_count = comments.length;
 
             // 게시글 렌더링
             PostDetailView.renderPost(post);
@@ -104,13 +102,13 @@ class DetailController {
                     this.currentPostId,
                     this.currentUserId,
                     {
-                        onCommentChange: () => this._loadPostDetail() // 댓글 변경 시 전체 새로고침 (간단한 동기화)
+                        onCommentChange: () => this._reloadComments()
                     }
                 );
                 // 입력창 이벤트는 DOM이 그려진 후 한 번만 설정
                 this.commentController.setupInputEvents();
             }
-            
+
             this.commentController.render(comments);
 
         } catch (error) {
@@ -119,6 +117,29 @@ class DetailController {
             setTimeout(() => {
                 location.href = NAV_PATHS.MAIN;
             }, 1500);
+        }
+    }
+
+    /**
+     * 댓글 목록만 다시 로드 (게시글 전체를 다시 렌더링하지 않음)
+     * @private
+     */
+    async _reloadComments() {
+        try {
+            const result = await PostModel.getPost(this.currentPostId);
+            if (!result.ok) return;
+
+            const data = result.data?.data;
+            const comments = data?.comments || [];
+
+            // 댓글 수만 업데이트
+            const commentCount = document.getElementById('comment-count');
+            if (commentCount) commentCount.textContent = comments.length;
+
+            // 댓글 목록만 다시 렌더링
+            this.commentController.render(comments);
+        } catch (error) {
+            logger.error('댓글 목록 새로고침 실패', error);
         }
     }
 

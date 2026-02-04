@@ -286,6 +286,17 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
+- 2026-02-04
+  - 보안 일관성 개선
+    - `PostListView`, `HeaderView`, `CommentListView`에 `escapeCssUrl` 적용
+    - `PostFormView`, `HeaderView`의 `innerHTML` 사용을 `createElement`/`textContent`로 교체
+    - `CommentListView`, `HeaderController`의 `innerHTML = ''`을 `textContent = ''`로 교체
+  - 프론트엔드 코드 품질 개선
+    - `MainController.js` 불필요한 빈 줄 정리 (357줄 → 141줄) 및 미사용 import 제거
+    - `DetailController`의 불필요한 응답 fallback 코드 제거
+  - 성능 개선
+    - 댓글 변경 시 전체 게시글 리로드 대신 댓글 목록만 부분 업데이트 (`_reloadComments`)
+
 - 2026-02-02
   - XSS 공격 방어를 위한 이스케이프 함수 추가
   - 좋아요 에러 핸들링 및 롤백
@@ -302,6 +313,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
   - AI 에이전트 도입
   - 인피니티 스크롤 로직 개선
   - CSS 로딩 최적화
+
 - 2026-01-30
   - 401 에러 발생 시 로그인 페이지로 리다이렉션
   - UI 개선
