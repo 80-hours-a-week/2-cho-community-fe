@@ -7,6 +7,7 @@ import FormValidator from '../views/FormValidator.js';
 import Logger from '../utils/Logger.js';
 import { showToastAndRedirect } from '../views/helpers.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
+import { debounce } from '../utils/debounce.js';
 
 const logger = Logger.createLogger('SignupController');
 
@@ -45,10 +46,10 @@ class SignupController {
     _setupEventListeners() {
         this.view.bindEvents({
             onProfileChange: (e) => this._handleProfileChange(e),
-            onEmailInput: () => this._handleEmailInput(),
+            onEmailInput: debounce(() => this._handleEmailInput(), 300),
             onPasswordInput: () => this._handlePasswordInput(),
             onPasswordConfirmInput: () => this._handlePasswordConfirmInput(),
-            onNicknameInput: () => this._handleNicknameInput(),
+            onNicknameInput: debounce(() => this._handleNicknameInput(), 300),
             onSubmit: (e) => this._handleSubmit(e)
         });
     }

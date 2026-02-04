@@ -286,6 +286,13 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
+- 2026-02-04 (5차) - 성능 최적화
+  - 이미지 Lazy Loading 적용
+    - 게시글 상세 이미지에 `loading="lazy"` 속성 추가 (`PostDetailView.js`)
+  - 이벤트 성능 최적화
+    - `debounce` 유틸리티 추가 (`js/utils/debounce.js`)
+    - 회원가입 입력(닉네임, 이메일) 유효성 검사에 300ms 디바운스 적용
+
 - 2026-02-04 (4차) - 컴포넌트 개선
   - 에러 바운더리 및 재시도 로직 도입 (`js/utils/ErrorBoundary.js`)
     - 지수 백오프(Exponential Backoff) 기반 재시도

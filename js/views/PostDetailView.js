@@ -40,6 +40,7 @@ class PostDetailView {
         const imgEl = document.getElementById('post-image');
         if (imgEl && post.image_url) {
             imgEl.src = getImageUrl(post.image_url);
+            imgEl.loading = 'lazy'; // Lazy Loading 적용
             imgEl.classList.remove('hidden');
         }
 
