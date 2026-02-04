@@ -55,7 +55,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
                                   ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                        MySQL Database                           │
-│   Tables: user, user_session, post, comment, post_like, image   │
+│   Tables: user, user_session, post, comment, post_like      │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -286,7 +286,16 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
-- 2026-02-04
+- 2026-02-04 (2차)
+  - 코드 리팩토링
+    - `SignupView.js`의 반복적인 에러 표시/숨기기 메서드를 `showFieldError`/`hideFieldError`로 통합
+    - `WriteController`, `EditController`, `DetailController`의 중복된 리다이렉트 로직을 `showToastAndRedirect` 헬퍼로 통합
+    - 하드코딩된 내비게이션 경로를 `NAV_PATHS` 상수로 통일 (`js/constants.js`)
+    - UI 메시지를 `UI_MESSAGES` 상수로 통합하고 `IMAGE_UPLOAD_FAIL`, `POST_CREATE_SUCCESS` 등 누락된 메시지 추가
+    - 이미지 업로드 결과 처리 로직(`extractUploadedImageUrl`)을 `helpers.js`로 캡슐화
+    - `SignupController.js` 리팩토링: `showToastAndRedirect`, `NAV_PATHS` 적용 및 코드 중복 제거
+
+- 2026-02-04 (1차)
   - 보안 일관성 개선
     - `PostListView`, `HeaderView`, `CommentListView`에 `escapeCssUrl` 적용
     - `PostFormView`, `HeaderView`의 `innerHTML` 사용을 `createElement`/`textContent`로 교체

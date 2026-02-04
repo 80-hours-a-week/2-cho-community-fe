@@ -8,6 +8,7 @@ import ModalView from '../views/ModalView.js';
 import CommentController from './CommentController.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
+import { showToastAndRedirect } from '../views/helpers.js';
 
 const logger = Logger.createLogger('DetailController');
 
@@ -31,10 +32,7 @@ class DetailController {
         const postId = urlParams.get('id');
 
         if (!postId) {
-            PostDetailView.showToast(UI_MESSAGES.INVALID_ACCESS);
-            setTimeout(() => {
-                location.href = NAV_PATHS.MAIN;
-            }, 1000);
+            showToastAndRedirect(UI_MESSAGES.INVALID_ACCESS, NAV_PATHS.MAIN);
             return;
         }
 
@@ -113,10 +111,7 @@ class DetailController {
 
         } catch (error) {
             logger.error('게시글 로드 실패', error);
-            PostDetailView.showToast(error.message);
-            setTimeout(() => {
-                location.href = NAV_PATHS.MAIN;
-            }, 1500);
+            showToastAndRedirect(error.message, NAV_PATHS.MAIN, 1500);
         }
     }
 
@@ -202,7 +197,7 @@ class DetailController {
         // 낙관적 UI 업데이트 (Optimistic UI Update)
         const newCount = wasLiked ? Math.max(0, originalCount - 1) : originalCount + 1;
         PostDetailView.updateLikeState(!wasLiked, newCount);
-        
+
         this.isLiking = true;
 
         try {
@@ -231,7 +226,7 @@ class DetailController {
      */
     _openDeleteModal() {
         this.deleteTargetId = this.currentPostId;
-        
+
         // 모달 콜백 설정 (게시글 삭제용)
         ModalView.setupDeleteModal({
             modalId: 'confirm-modal',
@@ -253,10 +248,7 @@ class DetailController {
         try {
             const result = await PostModel.deletePost(this.deleteTargetId);
             if (result.ok) {
-                PostDetailView.showToast(UI_MESSAGES.POST_DELETE_SUCCESS);
-                setTimeout(() => {
-                    location.href = NAV_PATHS.MAIN;
-                }, 1000);
+                showToastAndRedirect(UI_MESSAGES.POST_DELETE_SUCCESS, NAV_PATHS.MAIN);
             } else {
                 PostDetailView.showToast(UI_MESSAGES.DELETE_FAIL);
             }

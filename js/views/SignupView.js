@@ -89,79 +89,41 @@ class SignupView {
     }
 
     /**
-     * 프로필 에러 표시
+     * 필드별 에러 표시 (통합 메서드)
+     * @param {string} fieldName - 필드명 (helper 요소의 접두사)
      * @param {string} message - 에러 메시지
      */
-    showProfileError(message) {
-        showError(this.profileHelper, message);
+    showFieldError(fieldName, message) {
+        const helper = this[`${fieldName}Helper`];
+        showError(helper, message);
     }
 
     /**
-     * 프로필 에러 숨기기
+     * 필드별 에러 숨기기 (통합 메서드)
+     * @param {string} fieldName - 필드명
      */
-    hideProfileError() {
-        hideError(this.profileHelper);
+    hideFieldError(fieldName) {
+        const helper = this[`${fieldName}Helper`];
+        hideError(helper);
     }
 
-    /**
-     * 이메일 에러 표시
-     * @param {string} message - 에러 메시지
-     */
-    showEmailError(message) {
-        showError(this.emailHelper, message);
-    }
+    // 하위 호환성을 위한 래퍼 메서드들 (필요한 경우 유지, 아니면 컨트롤러 수정 필요)
+    // 컨트롤러 수정을 최소화하기 위해 기존 메서드들이 내부적으로 통합 메서드를 호출하도록 변경
 
-    /**
-     * 이메일 에러 숨기기
-     */
-    hideEmailError() {
-        hideError(this.emailHelper);
-    }
+    showProfileError(message) { this.showFieldError('profile', message); }
+    hideProfileError() { this.hideFieldError('profile'); }
 
-    /**
-     * 비밀번호 에러 표시
-     * @param {string} message - 에러 메시지
-     */
-    showPasswordError(message) {
-        showError(this.passwordHelper, message);
-    }
+    showEmailError(message) { this.showFieldError('email', message); }
+    hideEmailError() { this.hideFieldError('email'); }
 
-    /**
-     * 비밀번호 에러 숨기기
-     */
-    hidePasswordError() {
-        hideError(this.passwordHelper);
-    }
+    showPasswordError(message) { this.showFieldError('password', message); }
+    hidePasswordError() { this.hideFieldError('password'); }
 
-    /**
-     * 비밀번호 확인 에러 표시
-     * @param {string} message - 에러 메시지
-     */
-    showPasswordConfirmError(message) {
-        showError(this.passwordConfirmHelper, message);
-    }
+    showPasswordConfirmError(message) { this.showFieldError('passwordConfirm', message); }
+    hidePasswordConfirmError() { this.hideFieldError('passwordConfirm'); }
 
-    /**
-     * 비밀번호 확인 에러 숨기기
-     */
-    hidePasswordConfirmError() {
-        hideError(this.passwordConfirmHelper);
-    }
-
-    /**
-     * 닉네임 에러 표시
-     * @param {string} message - 에러 메시지
-     */
-    showNicknameError(message) {
-        showError(this.nicknameHelper, message);
-    }
-
-    /**
-     * 닉네임 에러 숨기기
-     */
-    hideNicknameError() {
-        hideError(this.nicknameHelper);
-    }
+    showNicknameError(message) { this.showFieldError('nickname', message); }
+    hideNicknameError() { this.hideFieldError('nickname'); }
 
     /**
      * 프로필 이미지 미리보기 표시

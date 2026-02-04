@@ -65,13 +65,10 @@ uv run uvicorn main:app --reload --port 8000
 *   Access the app at: `http://localhost:8000`
 
 ## Testing
-The project uses **Vitest** for unit testing and **Playwright** for end-to-end (E2E) testing.
+The project uses **Playwright** for end-to-end (E2E) testing. Unit tests are currently not implemented.
 
 ### Commands
-*   **Run All Tests:** `npm test`
-*   **Unit Tests (Vitest):**
-    *   Run once: `npm run test:unit`
-    *   Watch mode: `npm run test:unit:watch`
+*   **Run All Tests:** `npm test` (Runs E2E tests)
 *   **E2E Tests (Playwright):**
     *   Run headless: `npm run test:e2e`
     *   Run with UI: `npm run test:e2e:ui`

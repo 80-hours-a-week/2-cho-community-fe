@@ -57,6 +57,19 @@ export function showToast(message, toastId = 'toast', duration = 3000) {
 }
 
 /**
+ * 토스트 알림 표시 후 리다이렉트
+ * @param {string} message - 표시할 메시지
+ * @param {string} url - 이동할 URL
+ * @param {number} [delay=1000] - 지연 시간 (ms)
+ */
+export function showToastAndRedirect(message, url, delay = 1000) {
+    showToast(message);
+    setTimeout(() => {
+        location.href = url;
+    }, delay);
+}
+
+/**
  * 업로드 응답에서 이미지 URL 추출
  * 백엔드 응답 구조가 다양할 수 있어 여러 케이스 처리
  * @param {object} uploadResult - API 응답 객체

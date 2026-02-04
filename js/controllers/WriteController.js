@@ -3,8 +3,9 @@
 
 import PostModel from '../models/PostModel.js';
 import WriteView from '../views/WriteView.js';
-import { extractUploadedImageUrl, readFileAsDataURL } from '../views/helpers.js';
+import { extractUploadedImageUrl, readFileAsDataURL, showToastAndRedirect } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
+import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 
 const logger = Logger.createLogger('WriteController');
 
@@ -120,7 +121,7 @@ class WriteController {
                 imageUrl = extractUploadedImageUrl(uploadResult);
 
                 if (!imageUrl && this.selectedFile) {
-                    this.view.showToast('이미지 업로드 실패');
+                    this.view.showToast(UI_MESSAGES.IMAGE_UPLOAD_FAIL);
                     return;
                 }
             }
@@ -135,17 +136,14 @@ class WriteController {
             const result = await PostModel.createPost(postPayload);
 
             if (result.ok) {
-                this.view.showToast('게시글이 작성되었습니다.');
-                setTimeout(() => {
-                    location.href = '/main';
-                }, 1000);
+                showToastAndRedirect(UI_MESSAGES.POST_CREATE_SUCCESS, NAV_PATHS.MAIN);
             } else {
-                this.view.showToast('게시글 작성 실패');
+                this.view.showToast(UI_MESSAGES.POST_CREATE_FAIL || '게시글 작성 실패');
             }
 
         } catch (error) {
             logger.error('게시글 작성 실패', error);
-            this.view.showToast('오류가 발생했습니다.');
+            this.view.showToast(UI_MESSAGES.UNKNOWN_ERROR);
         }
     }
 }

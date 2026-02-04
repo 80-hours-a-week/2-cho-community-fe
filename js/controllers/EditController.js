@@ -3,8 +3,9 @@
 
 import PostModel from '../models/PostModel.js';
 import EditView from '../views/EditView.js';
-import { extractUploadedImageUrl, readFileAsDataURL } from '../views/helpers.js';
+import { extractUploadedImageUrl, readFileAsDataURL, showToastAndRedirect } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
+import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 
 const logger = Logger.createLogger('EditController');
 
@@ -28,10 +29,7 @@ class EditController {
         this.postId = urlParams.get('id');
 
         if (!this.postId) {
-            this.view.showToast('잘못된 접근입니다.');
-            setTimeout(() => {
-                location.href = '/main';
-            }, 1000);
+            showToastAndRedirect(UI_MESSAGES.INVALID_ACCESS, NAV_PATHS.MAIN);
             return;
         }
 
@@ -50,7 +48,7 @@ class EditController {
         try {
             const result = await PostModel.getPost(this.postId);
 
-            if (!result.ok) throw new Error('게시글을 불러오지 못했습니다.');
+            if (!result.ok) throw new Error(UI_MESSAGES.POST_LOAD_FAIL);
 
             const post = result.data?.data?.post || result.data?.data;
 
@@ -79,10 +77,7 @@ class EditController {
 
         } catch (error) {
             logger.error('게시글 데이터 로드 실패', error);
-            this.view.showToast(error.message);
-            setTimeout(() => {
-                location.href = '/main';
-            }, 1000);
+            showToastAndRedirect(error.message, NAV_PATHS.MAIN);
         }
     }
 
@@ -177,7 +172,7 @@ class EditController {
                 newImageUrl = extractUploadedImageUrl(uploadResult);
 
                 if (!newImageUrl) {
-                    this.view.showToast('이미지 업로드 실패');
+                    this.view.showToast(UI_MESSAGES.IMAGE_UPLOAD_FAIL);
                     return;
                 }
             }
@@ -194,16 +189,13 @@ class EditController {
             const result = await PostModel.updatePost(this.postId, payload);
 
             if (result.ok) {
-                this.view.showToast('게시글이 수정되었습니다.');
-                setTimeout(() => {
-                    location.href = `/detail?id=${this.postId}`;
-                }, 1000);
+                showToastAndRedirect(UI_MESSAGES.POST_UPDATE_SUCCESS, NAV_PATHS.DETAIL(this.postId));
             } else {
-                this.view.showToast('게시글 수정 실패');
+                this.view.showToast(UI_MESSAGES.POST_UPDATE_FAIL || '게시글 수정 실패');
             }
         } catch (error) {
             logger.error('게시글 수정 실패', error);
-            this.view.showToast('오류가 발생했습니다.');
+            this.view.showToast(UI_MESSAGES.UNKNOWN_ERROR);
         }
     }
 }
