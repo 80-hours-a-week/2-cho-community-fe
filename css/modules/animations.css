@@ -1,0 +1,278 @@
+/* css/modules/animations.css */
+/* 페이지 전환, 로딩, 버튼 애니메이션 */
+
+/* ============================= */
+/* 페이지 전환 효과 (Page Transitions) */
+/* ============================= */
+body {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================= */
+/* 로딩 스켈레톤 (Skeleton Loading) */
+/* ============================= */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 스켈레톤 변형 */
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 8px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-text.medium {
+    width: 80%;
+}
+
+.skeleton-title {
+    height: 24px;
+    width: 70%;
+    margin-bottom: 12px;
+}
+
+.skeleton-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.skeleton-card {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+/* 게시글 목록 스켈레톤 */
+.skeleton-post {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.skeleton-post-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.skeleton-post-meta {
+    display: flex;
+    gap: 8px;
+}
+
+.skeleton-post-meta .skeleton-text {
+    width: 60px;
+    height: 12px;
+}
+
+/* ============================= */
+/* 버튼 애니메이션 (Button Animations) */
+/* ============================= */
+
+/* 기본 버튼 전환 효과 */
+.btn,
+button,
+[type="submit"],
+[type="button"] {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Hover 효과 */
+.btn:hover:not(:disabled),
+button:hover:not(:disabled),
+[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(127, 106, 238, 0.3);
+}
+
+/* Active 효과 */
+.btn:active:not(:disabled),
+button:active:not(:disabled),
+[type="submit"]:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(127, 106, 238, 0.2);
+}
+
+/* 비활성 버튼 */
+.btn:disabled,
+button:disabled,
+[type="submit"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ============================= */
+/* 리스트 아이템 애니메이션 */
+/* ============================= */
+.post-item,
+.comment-list-item {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.post-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* ============================= */
+/* 모달 애니메이션 */
+/* ============================= */
+.modal-overlay {
+    transition: opacity 0.2s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.modal-overlay.hidden .modal-content {
+    transform: scale(0.95);
+    opacity: 0;
+}
+
+/* ============================= */
+/* 토스트 애니메이션 */
+/* ============================= */
+.toast {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ============================= */
+/* 좋아요 버튼 애니메이션 */
+/* ============================= */
+.like-button {
+    transition: transform 0.15s ease;
+}
+
+.like-button:active {
+    transform: scale(1.2);
+}
+
+.like-button.liked {
+    animation: heartPop 0.3s ease;
+}
+
+@keyframes heartPop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ============================= */
+/* 입력 필드 포커스 애니메이션 */
+/* ============================= */
+input,
+textarea,
+select {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #7F6AEE;
+    box-shadow: 0 0 0 3px rgba(127, 106, 238, 0.1);
+}
+
+/* ============================= */
+/* 스피너 (로딩 인디케이터) */
+/* ============================= */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f0f0f0;
+    border-top-color: #7F6AEE;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.spinner.small {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.spinner.large {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 버튼 내 스피너 */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}

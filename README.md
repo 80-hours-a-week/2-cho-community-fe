@@ -286,6 +286,17 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
+- 2026-02-04 (3차) - UX 개선
+  - 애니메이션 모듈 추가 (`css/modules/animations.css`)
+    - 페이지 전환 fade 효과 (body fadeIn)
+    - 로딩 스켈레톤 스타일 (.skeleton, .skeleton-post, .skeleton-avatar)
+    - 버튼 hover/active 애니메이션 (translateY, box-shadow)
+    - 스피너 컴포넌트 (.spinner, .btn-loading)
+    - 입력 필드 포커스 효과 (border-color, box-shadow)
+    - 좋아요 버튼 heartPop 애니메이션
+    - 토스트 slideUp 애니메이션
+    - 모달 scale 전환 효과
+
 - 2026-02-04 (2차)
   - 코드 리팩토링
     - `SignupView.js`의 반복적인 에러 표시/숨기기 메서드를 `showFieldError`/`hideFieldError`로 통합
