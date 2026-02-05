@@ -293,6 +293,10 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
+- 2026-02-06: XSS 취약점 방어
+  - innerHTML 대신 DOM API를 사용
+  - XSS 테스트 코드 추가
+
 - 2026-02-04: 성능 최적화
   - 이미지 Lazy Loading 적용
     - 게시글 상세 이미지에 `loading="lazy"` 속성 추가 (`PostDetailView.js`)

@@ -130,20 +130,32 @@ class ErrorBoundary {
      * @param {Function} retryFn - 재시도 함수 (선택)
      */
     static showError(container, message, retryFn = null) {
-        const errorHtml = `
-            <div class="error-boundary">
-                <div class="error-icon">⚠️</div>
-                <p class="error-message">${message}</p>
-                ${retryFn ? '<button class="error-retry-btn btn btn-secondary">다시 시도</button>' : ''}
-            </div>
-        `;
+        // XSS 방지: innerHTML 대신 DOM API 사용
+        const errorBoundary = document.createElement('div');
+        errorBoundary.className = 'error-boundary';
 
-        container.innerHTML = errorHtml;
+        const errorIcon = document.createElement('div');
+        errorIcon.className = 'error-icon';
+        errorIcon.textContent = '⚠️';
+
+        const errorMessage = document.createElement('p');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = message;  // XSS 안전: textContent 사용
+
+        errorBoundary.appendChild(errorIcon);
+        errorBoundary.appendChild(errorMessage);
 
         if (retryFn) {
-            const retryBtn = container.querySelector('.error-retry-btn');
-            retryBtn?.addEventListener('click', retryFn);
+            const retryBtn = document.createElement('button');
+            retryBtn.className = 'error-retry-btn btn btn-secondary';
+            retryBtn.textContent = '다시 시도';
+            retryBtn.addEventListener('click', retryFn);
+            errorBoundary.appendChild(retryBtn);
         }
+
+        // 기존 내용 제거 후 새 에러 UI 추가
+        container.innerHTML = '';
+        container.appendChild(errorBoundary);
     }
 
     /**
@@ -152,12 +164,23 @@ class ErrorBoundary {
      * @param {string} message - 로딩 메시지 (선택)
      */
     static showLoading(container, message = '로딩 중...') {
-        container.innerHTML = `
-            <div class="loading-boundary">
-                <div class="spinner"></div>
-                <p class="loading-message">${message}</p>
-            </div>
-        `;
+        // XSS 방지: innerHTML 대신 DOM API 사용
+        const loadingBoundary = document.createElement('div');
+        loadingBoundary.className = 'loading-boundary';
+
+        const spinner = document.createElement('div');
+        spinner.className = 'spinner';
+
+        const loadingMessage = document.createElement('p');
+        loadingMessage.className = 'loading-message';
+        loadingMessage.textContent = message;  // XSS 안전: textContent 사용
+
+        loadingBoundary.appendChild(spinner);
+        loadingBoundary.appendChild(loadingMessage);
+
+        // 기존 내용 제거 후 새 로딩 UI 추가
+        container.innerHTML = '';
+        container.appendChild(loadingBoundary);
     }
 
     /**
