@@ -277,7 +277,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 - **JWT vs Session**: JWT는 stateless하여 확장성이 좋으나, 로그아웃 시 토큰 무효화가 복잡함. 이 프로젝트는 단일 서버 환경이므로 세션 기반 인증이 더 단순하고 적합하다고 판단.
 - **ORM vs Raw SQL**: SQLAlchemy 등 ORM 사용을 고려했으나, 학습 목적으로 raw SQL을 직접 작성하여 쿼리 최적화 경험을 쌓기로 결정.
-- **SPA Framework**: React, Vue 등 프레임워크 대신 Vanilla JS를 선택. 프레임워크 학습 비용 없이 JavaScript 기본기를 다지는 것이 목표.
+- **Vanilla JS**: React, Vue 등 프레임워크 대신 Vanilla JS를 선택. 프레임워크 학습 비용 없이 JavaScript 기본기를 다지는 것이 목표.
 - **이미지 저장소**: S3 등 외부 스토리지 대신 로컬 파일시스템 사용. 프로젝트 규모상 충분하며, 인프라 비용 절감.
 - **Soft Delete**: 물리적 삭제 대신 `deleted_at` 컬럼 사용. 데이터 복구 가능성 확보 및 FK 무결성 유지.
 
@@ -293,14 +293,14 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
-- 2026-02-04 (5차) - 성능 최적화
+- 2026-02-04: 성능 최적화
   - 이미지 Lazy Loading 적용
     - 게시글 상세 이미지에 `loading="lazy"` 속성 추가 (`PostDetailView.js`)
   - 이벤트 성능 최적화
     - `debounce` 유틸리티 추가 (`js/utils/debounce.js`)
     - 회원가입 입력(닉네임, 이메일) 유효성 검사에 300ms 디바운스 적용
 
-- 2026-02-04 (4차) - 컴포넌트 개선
+- 2026-02-04: 컴포넌트 개선
   - 에러 바운더리 및 재시도 로직 도입 (`js/utils/ErrorBoundary.js`)
     - 지수 백오프(Exponential Backoff) 기반 재시도
     - 네트워크 에러 및 5xx/429 에러 자동 복구
@@ -308,7 +308,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
     - GET 요청에 대해 자동 재시도 적용 (최대 2회)
     - 에러/로딩 UI 스타일 추가 (`css/modules/animations.css`)
 
-- 2026-02-04 (3차) - UX 개선
+- 2026-02-04: UX 개선
   - 애니메이션 모듈 추가 (`css/modules/animations.css`)
     - 페이지 전환 fade 효과 (body fadeIn)
     - 로딩 스켈레톤 스타일 (`.skeleton`, `.skeleton-post`, `.skeleton-avatar`)
@@ -319,7 +319,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
     - 토스트 `slideUp` 애니메이션
     - 모달 `scale` 전환 효과
 
-- 2026-02-04 (2차)
+- 2026-02-04
   - 코드 리팩토링
     - `SignupView.js`의 반복적인 에러 표시/숨기기 메서드를 `showFieldError`/`hideFieldError`로 통합
     - `WriteController`, `EditController`, `DetailController`의 중복된 리다이렉트 로직을 `showToastAndRedirect` 헬퍼로 통합
@@ -328,7 +328,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
     - 이미지 업로드 결과 처리 로직(`extractUploadedImageUrl`)을 `helpers.js`로 캡슐화
     - `SignupController.js` 리팩토링: `showToastAndRedirect`, `NAV_PATHS` 적용 및 코드 중복 제거
 
-- 2026-02-04 (1차)
+- 2026-02-04
   - 보안 일관성 개선
     - `PostListView`, `HeaderView`, `CommentListView`에 `escapeCssUrl` 적용
     - `PostFormView`, `HeaderView`의 `innerHTML` 사용을 `createElement`/`textContent`로 교체
