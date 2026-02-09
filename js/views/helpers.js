@@ -5,14 +5,41 @@ import { API_BASE_URL } from '../config.js';
 
 /**
  * 이미지 URL 처리 (상대 경로인 경우 API_BASE_URL 추가)
+ * XSS 방어: 안전한 프로토콜만 허용 (http, https, data:image, 상대경로)
  * @param {string|null} url - 이미지 URL
  * @returns {string} - 처리된 URL
  */
 export function getImageUrl(url) {
     if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+
+    // 위험한 프로토콜 차단 (javascript:, vbscript:, data:text/html 등)
+    const urlLower = url.toLowerCase().trim();
+
+    // javascript:, vbscript:, file: 등 위험한 프로토콜 명시적 차단
+    const dangerousProtocols = ['javascript:', 'vbscript:', 'file:', 'about:'];
+    for (const protocol of dangerousProtocols) {
+        if (urlLower.startsWith(protocol)) {
+            console.warn('[XSS] Blocked dangerous protocol:', protocol);
+            return ''; // 빈 문자열 반환으로 이미지 로드 차단
+        }
+    }
+
+    // data: URL은 이미지 MIME type만 허용
+    if (urlLower.startsWith('data:')) {
+        // data:image/png, data:image/jpeg 등만 허용
+        if (urlLower.startsWith('data:image/')) {
+            return url;
+        }
+        console.warn('[XSS] Blocked non-image data URL');
+        return '';
+    }
+
+    // http:, https: 허용
+    if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
+
+    // 상대 경로: API_BASE_URL 추가
     return `${API_BASE_URL}${url}`;
 }
 

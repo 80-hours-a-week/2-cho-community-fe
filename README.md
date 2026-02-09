@@ -293,6 +293,18 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
+- 2026-02-09: XSS 정책 100% 준수 완료
+  - innerHTML 완전 제거
+    - `js/utils/ErrorBoundary.js`: innerHTML 사용 제거, clearElement() 사용
+  - CSS Injection 방어
+    - `js/views/ProfileView.js`: escapeCssUrl 누락 수정 (setProfileImage, showProfilePreview)
+    - 모든 backgroundImage에 escapeCssUrl 적용 완료
+  - URL Sanitization 강화
+    - `js/views/helpers.js::getImageUrl()`: 위험한 프로토콜 명시적 차단
+    - javascript:, vbscript:, file:, data:text/html 등 차단
+    - data:image/* MIME type만 허용하는 whitelist 방식 적용
+  - Defense in Depth: 브라우저 자체 방어 + 애플리케이션 레벨 검증
+
 - 2026-02-06: XSS 취약점 방어
   - innerHTML 대신 DOM API를 사용
   - XSS 테스트 코드 추가
