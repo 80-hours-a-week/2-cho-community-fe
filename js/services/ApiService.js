@@ -12,6 +12,15 @@ const logger = Logger.createLogger('ApiService');
  */
 class ApiService {
     /**
+     * CSRF 토큰 쿠키에서 읽기
+     * @returns {string|null} - CSRF 토큰 또는 null
+     */
+    static getCsrfToken() {
+        const match = document.cookie.match(/csrf_token=([^;]+)/);
+        return match ? match[1] : null;
+    }
+
+    /**
      * GET 요청 (자동 재시도 적용)
      * @param {string} endpoint - API 엔드포인트 (예: '/v1/users/me')
      * @returns {Promise<any>} - 응답 데이터
@@ -57,9 +66,15 @@ class ApiService {
     static async post(endpoint, data) {
         logger.debug(`POST 요청: ${endpoint}`);
         try {
+            const headers = { 'Content-Type': 'application/json' };
+            const csrfToken = ApiService.getCsrfToken();
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
@@ -78,8 +93,16 @@ class ApiService {
     static async postFormData(endpoint, formData) {
         logger.debug(`POST FormData 요청: ${endpoint}`);
         try {
+            const headers = {};
+            const csrfToken = ApiService.getCsrfToken();
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+            // Content-Type은 브라우저가 자동 설정 (multipart/form-data boundary 포함)
+
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
+                headers: headers,
                 body: formData,
                 credentials: 'include'
             });
@@ -98,9 +121,15 @@ class ApiService {
     static async patch(endpoint, data) {
         logger.debug(`PATCH 요청: ${endpoint}`);
         try {
+            const headers = { 'Content-Type': 'application/json' };
+            const csrfToken = ApiService.getCsrfToken();
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
@@ -119,9 +148,15 @@ class ApiService {
     static async put(endpoint, data) {
         logger.debug(`PUT 요청: ${endpoint}`);
         try {
+            const headers = { 'Content-Type': 'application/json' };
+            const csrfToken = ApiService.getCsrfToken();
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
@@ -140,9 +175,15 @@ class ApiService {
     static async delete(endpoint, data = null) {
         logger.debug(`DELETE 요청: ${endpoint}`);
         try {
+            const headers = { 'Content-Type': 'application/json' };
+            const csrfToken = ApiService.getCsrfToken();
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+
             const options = {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: headers,
                 credentials: 'include'
             };
             if (data) {

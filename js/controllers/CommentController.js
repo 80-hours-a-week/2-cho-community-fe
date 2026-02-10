@@ -22,6 +22,7 @@ class CommentController {
         this.currentUserId = currentUserId;
         this.callbacks = callbacks;
         this.editingCommentId = null;
+        this.isSubmitting = false; // 중복 제출 방지 플래그
     }
 
     /**
@@ -118,11 +119,23 @@ class CommentController {
 
     /**
      * 댓글 제출 (생성 또는 수정)
+     * 중복 제출 방지: 제출 중에는 추가 요청 차단
      */
     async submitComment() {
+        // 중복 제출 방지
+        if (this.isSubmitting) return;
+
         const input = document.getElementById('comment-input');
+        const submitBtn = document.getElementById('comment-submit-btn');
         const content = input.value.trim();
         if (!content) return;
+
+        // 제출 중 상태로 전환
+        this.isSubmitting = true;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('btn-loading');
+        }
 
         try {
             let result;
@@ -143,6 +156,13 @@ class CommentController {
         } catch (e) {
             logger.error('댓글 제출 실패', e);
             PostDetailView.showToast(UI_MESSAGES.UNKNOWN_ERROR);
+        } finally {
+            // 제출 완료 후 상태 복원
+            this.isSubmitting = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-loading');
+            }
         }
     }
 

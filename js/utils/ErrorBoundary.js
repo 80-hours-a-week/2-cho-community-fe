@@ -2,6 +2,7 @@
 // 에러 바운더리 유틸리티 - 네트워크 에러 처리 및 재시도 로직
 
 import Logger from './Logger.js';
+import { clearElement } from './dom.js';
 
 const logger = Logger.createLogger('ErrorBoundary');
 
@@ -153,8 +154,8 @@ class ErrorBoundary {
             errorBoundary.appendChild(retryBtn);
         }
 
-        // 기존 내용 제거 후 새 에러 UI 추가
-        container.innerHTML = '';
+        // 기존 내용 제거 후 새 에러 UI 추가 (XSS 안전)
+        clearElement(container);
         container.appendChild(errorBoundary);
     }
 
@@ -178,8 +179,8 @@ class ErrorBoundary {
         loadingBoundary.appendChild(spinner);
         loadingBoundary.appendChild(loadingMessage);
 
-        // 기존 내용 제거 후 새 로딩 UI 추가
-        container.innerHTML = '';
+        // 기존 내용 제거 후 새 로딩 UI 추가 (XSS 안전)
+        clearElement(container);
         container.appendChild(loadingBoundary);
     }
 

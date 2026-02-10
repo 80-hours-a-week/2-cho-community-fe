@@ -127,6 +127,23 @@ class HeaderView {
             dropdown.classList.add('hidden');
         }
     }
+
+    /**
+     * 이벤트 리스너 정리 (메모리 누수 방지)
+     */
+    static cleanup() {
+        if (HeaderView._documentClickListener) {
+            document.removeEventListener('click', HeaderView._documentClickListener);
+            HeaderView._documentClickListener = null;
+        }
+        if (HeaderView._profileClickListener) {
+            const profileBtn = document.getElementById('header-profile');
+            if (profileBtn) {
+                profileBtn.removeEventListener('click', HeaderView._profileClickListener);
+            }
+            HeaderView._profileClickListener = null;
+        }
+    }
 }
 
 export default HeaderView;

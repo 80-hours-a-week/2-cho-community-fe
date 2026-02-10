@@ -2,6 +2,7 @@
 // 프로필 수정 페이지 View - DOM 조작 담당
 
 import { showError, hideError, showToast, getImageUrl, updateButtonState as updateBtnState } from './helpers.js';
+import { escapeCssUrl } from '../utils/formatters.js';
 
 /**
  * 프로필 수정 페이지 View 클래스
@@ -72,8 +73,8 @@ class ProfileView {
         if (!this.imgWrapper) return;
 
         if (imageUrl) {
-            const fullUrl = getImageUrl(imageUrl);
-            this.imgWrapper.style.backgroundImage = `url(${fullUrl})`;
+            const fullUrl = escapeCssUrl(getImageUrl(imageUrl));
+            this.imgWrapper.style.backgroundImage = `url('${fullUrl}')`;
         } else {
             this.imgWrapper.style.backgroundColor = '#555';
         }
@@ -85,7 +86,8 @@ class ProfileView {
      */
     showProfilePreview(dataUrl) {
         if (this.imgWrapper) {
-            this.imgWrapper.style.backgroundImage = `url(${dataUrl})`;
+            // Data URL은 브라우저가 생성하므로 상대적으로 안전하지만 일관성을 위해 escapeCssUrl 적용
+            this.imgWrapper.style.backgroundImage = `url('${escapeCssUrl(dataUrl)}')`;
         }
     }
 

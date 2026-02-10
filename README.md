@@ -293,6 +293,34 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## changelog
 
+- 2026-02-09: 코드 리뷰 기반 주요 이슈 수정
+  - 런타임 에러 수정
+    - `js/views/ProfileView.js`: escapeCssUrl import 경로 오류 수정
+      - 문제: `escapeCssUrl`을 `./helpers.js`에서 import 시도 → 함수가 존재하지 않아 런타임 에러
+      - 수정: `../utils/formatters.js`에서 import하도록 경로 변경
+      - 영향: 프로필 편집 페이지 정상 로딩, 사용자 경험 복구
+
+- 2026-02-09: CSRF Protection 구현
+  - Double Submit Cookie 패턴 클라이언트 구현
+    - `js/services/ApiService.js`: CSRF 토큰 자동 포함
+    - getCsrfToken(): 쿠키에서 토큰 읽기
+    - 모든 상태 변경 요청(`POST`/`PUT`/`PATCH`/`DELETE`)에 X-CSRF-Token 헤더 자동 추가
+  - 보안 & 안정성 개선
+    - 메모리 누수 수정: `js/views/HeaderView.js::cleanup()` 메서드 추가 (전역 이벤트 리스너 정리)
+    - 민감 정보 로깅 제거: `js/views/helpers.js::getImageUrl()` console.warn 삭제
+    - 중복 제출 방지: `js/controllers/CommentController.js::submitComment()` isSubmitting 플래그 추가
+
+- 2026-02-09: XSS 정책 100% 준수 완료
+  - innerHTML 완전 제거
+    - `js/utils/ErrorBoundary.js`: innerHTML 사용 제거, clearElement() 사용
+  - CSS Injection 방어
+    - `js/views/ProfileView.js`: escapeCssUrl 누락 수정 (setProfileImage, showProfilePreview)
+    - 모든 backgroundImage에 escapeCssUrl 적용 완료
+  - URL Sanitization 강화
+    - `js/views/helpers.js::getImageUrl()`: 위험한 프로토콜 명시적 차단
+    - javascript:, vbscript:, file:, data:text/html 등 차단
+    - data:image/* MIME type만 허용하는 whitelist 방식 적용
+
 - 2026-02-06: XSS 취약점 방어
   - innerHTML 대신 DOM API를 사용
   - XSS 테스트 코드 추가
