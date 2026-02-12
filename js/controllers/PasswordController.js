@@ -6,6 +6,7 @@ import AuthModel from '../models/AuthModel.js';
 import PasswordView from '../views/PasswordView.js';
 import FormValidator from '../views/FormValidator.js';
 import Logger from '../utils/Logger.js';
+import { resolveNavPath } from '../config.js';
 
 const logger = Logger.createLogger('PasswordController');
 
@@ -147,7 +148,7 @@ class PasswordController {
 
                 this.view.showSuccessToast();
                 setTimeout(() => {
-                    location.href = '/login';
+                    location.href = resolveNavPath('/login');
                 }, 1000);
             } else {
                 this.view.showNewPasswordError(result.data?.message || '* 비밀번호 변경에 실패했습니다.');

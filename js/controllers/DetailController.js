@@ -9,6 +9,7 @@ import CommentController from './CommentController.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 import { showToastAndRedirect } from '../views/helpers.js';
+import { resolveNavPath } from '../config.js';
 
 const logger = Logger.createLogger('DetailController');
 
@@ -151,7 +152,7 @@ class DetailController {
         const backBtn = document.getElementById('back-btn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                location.href = NAV_PATHS.MAIN;
+                location.href = resolveNavPath(NAV_PATHS.MAIN);
             });
         }
 
@@ -159,7 +160,7 @@ class DetailController {
         const editBtn = document.getElementById('edit-post-btn');
         if (editBtn) {
             editBtn.addEventListener('click', () => {
-                location.href = NAV_PATHS.EDIT(this.currentPostId);
+                location.href = resolveNavPath(NAV_PATHS.EDIT(this.currentPostId));
             });
         }
 

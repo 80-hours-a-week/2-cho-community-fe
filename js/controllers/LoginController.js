@@ -5,6 +5,7 @@ import AuthModel from '../models/AuthModel.js';
 import LoginView from '../views/LoginView.js';
 import FormValidator from '../views/FormValidator.js';
 import Logger from '../utils/Logger.js';
+import { resolveNavPath } from '../config.js';
 
 const logger = Logger.createLogger('LoginController');
 
@@ -31,7 +32,7 @@ class LoginController {
             const authStatus = await AuthModel.checkAuthStatus();
             if (authStatus.isAuthenticated) {
                 logger.info('이미 로그인됨, 메인 페이지로 리다이렉트');
-                window.location.href = '/main';
+                window.location.href = resolveNavPath('/main');
                 return;
             }
         } catch (error) {
@@ -132,7 +133,7 @@ class LoginController {
             const result = await AuthModel.login(email, password);
 
             if (result.ok) {
-                window.location.href = '/main';
+                window.location.href = resolveNavPath('/main');
             } else {
                 this.view.showPasswordError('* 아이디 또는 비밀번호를 확인해주세요');
                 this.view.setButtonLoading(false);

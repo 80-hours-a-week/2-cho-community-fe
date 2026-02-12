@@ -7,6 +7,7 @@ import ProfileView from '../views/ProfileView.js';
 import ModalView from '../views/ModalView.js';
 import { extractUploadedImageUrl, readFileAsDataURL } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
+import { resolveNavPath } from '../config.js';
 
 const logger = Logger.createLogger('ProfileController');
 
@@ -50,7 +51,7 @@ class ProfileController {
                 this.originalNickname = user.nickname;
                 this._validateNickname();
             } else {
-                location.href = '/login';
+                location.href = resolveNavPath('/login');
             }
         } catch (error) {
             logger.error('프로필 데이터 로드 실패', error);
@@ -177,7 +178,7 @@ class ProfileController {
             if (result.ok) {
                 this.view.showSuccessToast();
                 setTimeout(() => {
-                    location.href = '/';
+                    location.href = resolveNavPath('/main');
                 }, 1000);
             } else {
                 const detail = result.data?.detail;
@@ -250,7 +251,7 @@ class ProfileController {
             if (result.ok) {
                 this.view.showToast('회원탈퇴가 완료되었습니다.');
                 setTimeout(() => {
-                    location.href = '/login';
+                    location.href = resolveNavPath('/login');
                 }, 1000);
             } else {
                 this.view.showToast('탈퇴 실패. 비밀번호를 확인해주세요.');

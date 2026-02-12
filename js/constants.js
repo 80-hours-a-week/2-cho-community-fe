@@ -62,9 +62,23 @@ export const UI_MESSAGES = {
 export const NAV_PATHS = {
     MAIN: '/main',
     LOGIN: '/login',
+    SIGNUP: '/signup',
     WRITE: '/write',
     DETAIL: (id) => `/detail?id=${id}`,
     EDIT: (id) => `/edit?id=${id}`,
     PASSWORD: '/password',
     EDIT_PROFILE: '/edit-profile',
+};
+
+// S3 deployment: Map clean URLs to actual HTML filenames
+export const HTML_PATHS = {
+    '/': '/user_login.html',
+    '/main': '/post_list.html',
+    '/login': '/user_login.html',
+    '/signup': '/user_signup.html',
+    '/write': '/post_write.html',
+    '/detail': '/post_detail.html',
+    '/edit': '/post_edit.html',
+    '/password': '/user_password.html',
+    '/edit-profile': '/user_edit.html',
 };
