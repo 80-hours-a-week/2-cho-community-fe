@@ -2,6 +2,7 @@
 // 회원가입 페이지 View - DOM 조작 담당
 
 import { showError, hideError, showToast, updateButtonState as updateBtnState } from './helpers.js';
+import { resolveNavPath } from '../config.js';
 
 /**
  * 회원가입 페이지 View 클래스
@@ -219,7 +220,7 @@ class SignupView {
             backBtn.addEventListener('click', () => {
                 window.history.back();
                 if (document.referrer === '') {
-                    window.location.href = '/login';
+                    window.location.href = resolveNavPath('/login');
                 }
             });
         }

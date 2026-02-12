@@ -1,7 +1,7 @@
 // js/views/helpers.js
 // DOM 조작 관련 헬퍼 함수 (View 전용)
 
-import { API_BASE_URL } from '../config.js';
+import { API_BASE_URL, resolveNavPath } from '../config.js';
 
 /**
  * 이미지 URL 처리 (상대 경로인 경우 API_BASE_URL 추가)
@@ -92,7 +92,7 @@ export function showToast(message, toastId = 'toast', duration = 3000) {
 export function showToastAndRedirect(message, url, delay = 1000) {
     showToast(message);
     setTimeout(() => {
-        location.href = url;
+        location.href = resolveNavPath(url);
     }, delay);
 }
 

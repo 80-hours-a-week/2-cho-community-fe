@@ -5,6 +5,7 @@ import AuthModel from '../models/AuthModel.js';
 import HeaderView from '../views/HeaderView.js';
 import { showToast } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
+import { resolveNavPath } from '../config.js';
 
 const logger = Logger.createLogger('HeaderController');
 
@@ -25,7 +26,7 @@ class HeaderController {
         window.addEventListener('auth:session-expired', () => {
             logger.warn('세션 만료 이벤트 수신 - 로그인 페이지로 이동');
             if (!this._isAuthPage()) {
-                location.href = '/login?session=expired';
+                location.href = resolveNavPath('/login?session=expired');
             }
         });
     }
@@ -59,13 +60,13 @@ class HeaderController {
             } else {
                 // 로그인/회원가입 페이지가 아니면 로그인으로 리다이렉트
                 if (!this._isAuthPage()) {
-                    location.href = '/login';
+                    location.href = resolveNavPath('/login');
                 }
             }
         } catch (error) {
             logger.error('헤더 인증 확인 실패', error);
             if (!this._isAuthPage()) {
-                location.href = '/login';
+                location.href = resolveNavPath('/login');
             }
         }
     }
@@ -85,7 +86,9 @@ class HeaderController {
      */
     _isAuthPage() {
         const path = location.pathname;
-        return path === '/login' || path === '/signup';
+        // Support both clean URLs (Nginx) and HTML files (S3)
+        return path === '/login' || path === '/signup'
+            || path === '/user_login.html' || path === '/user_signup.html';
     }
 
     /**
@@ -93,7 +96,7 @@ class HeaderController {
      * @private
      */
     _handleEditInfo() {
-        location.href = '/edit-profile';
+        location.href = resolveNavPath('/edit-profile');
     }
 
     /**
@@ -101,7 +104,7 @@ class HeaderController {
      * @private
      */
     _handleChangePassword() {
-        location.href = '/password';
+        location.href = resolveNavPath('/password');
     }
 
     /**
@@ -114,14 +117,14 @@ class HeaderController {
             if (result.ok) {
                 showToast('로그아웃 되었습니다.');
                 setTimeout(() => {
-                    location.href = '/login';
+                    location.href = resolveNavPath('/login');
                 }, 1000);
             } else {
                 showToast('로그아웃 실패');
             }
         } catch (error) {
             logger.error('로그아웃 실패', error);
-            location.href = '/login';
+            location.href = resolveNavPath('/login');
         }
     }
 }

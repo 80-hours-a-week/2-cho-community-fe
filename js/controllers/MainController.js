@@ -5,6 +5,7 @@ import PostModel from '../models/PostModel.js';
 import PostListView from '../views/PostListView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
+import { resolveNavPath } from '../config.js';
 
 const logger = Logger.createLogger('MainController');
 
@@ -35,7 +36,7 @@ class MainController {
         const writeBtn = document.getElementById('write-btn');
         if (writeBtn) {
             writeBtn.addEventListener('click', () => {
-                location.href = NAV_PATHS.WRITE;
+                location.href = resolveNavPath(NAV_PATHS.WRITE);
             });
         }
     }
@@ -128,7 +129,7 @@ class MainController {
             // 새로운 게시물만 렌더링
             if (newPosts.length > 0) {
                 PostListView.renderPosts(listElement, newPosts, (postId) => {
-                    location.href = NAV_PATHS.DETAIL(postId);
+                    location.href = resolveNavPath(NAV_PATHS.DETAIL(postId));
                 });
             }
 
