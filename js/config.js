@@ -6,10 +6,12 @@ import { HTML_PATHS } from './constants.js';
 // Environment detection
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-// API Base URL - IMPORTANT: Update this with your EC2 backend URL for production
+// API Base URL
+// For same-origin deployment (frontend EC2 + nginx reverse proxy to backend EC2):
+// Use empty string "" to make requests to same domain, nginx will proxy to backend
 export const API_BASE_URL = IS_LOCAL
-    ? "http://127.0.0.1:8000"
-    : "http://YOUR_EC2_IP_OR_DOMAIN";  // TODO: Replace with actual EC2 public IP (e.g., "http://13.55.10.192")
+    ? "http://127.0.0.1:8000"  // Local development: direct backend connection
+    : "";  // Production: same-origin (nginx proxies /v1/* to backend EC2)
 
 /**
  * Resolve navigation path to actual file for S3 deployment
