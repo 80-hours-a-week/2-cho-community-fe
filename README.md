@@ -8,6 +8,27 @@ AWS AI School 2기 4주차 과제
 
 **개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 nginx를 사용합니다.
 
+## Quick Start (Development)
+
+### 로컬 개발 환경
+
+```bash
+# 1. 백엔드 실행 (별도 터미널)
+cd ../2-cho-community-be
+source .venv/bin/activate
+uvicorn main:app --reload --port 8000
+
+# 2. 프론트엔드 실행
+cd 2-cho-community-fe
+npm install  # 최초 1회만 실행
+npm run dev  # Port 8080
+
+# 3. 브라우저에서 접속
+# http://localhost:8080
+```
+
+**참고**: 프론트엔드는 순수 정적 파일(HTML/CSS/JS)로 구성되어 있으며 Python 의존성이 없습니다. 개발 환경에서는 `npm serve`를 사용하여 정적 파일을 서빙합니다.
+
 ## 배경 (Background)
 
 AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해야 합니다. 수강생들이 자유롭게 소통할 수 있는 공간이 필요하며, 실무에서 자주 사용되는 기술 스택(FastAPI, MySQL, Vanilla JS)을 학습하고 적용하는 것이 목표입니다.
@@ -62,6 +83,90 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 │   Tables: user, user_session, post, comment, post_like          │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+## 프로덕션 배포 (Production Deployment)
+
+프로덕션 환경에서는 **nginx**로 정적 파일을 서빙하고 백엔드 API를 reverse proxy합니다. `npm serve`는 개발 환경에서만 사용합니다.
+
+### Single-Origin Nginx Reverse Proxy Architecture
+
+```text
+Internet
+    │
+    ▼
+Frontend EC2 (nginx, Port 80/443)
+    ├── /css/, /js/, /html/        → Serve static files directly
+    ├── /user_login.html (root)    → Default page
+    └── /v1/*, /health             → Reverse proxy to Backend EC2:8000
+                                       │
+                                       ▼
+                                Backend EC2 (FastAPI, Port 8000)
+                                    Private IP only (127.0.0.1 or VPC)
+```
+
+### 주요 특징
+
+- **Same-Origin Architecture**: 브라우저는 단일 도메인(Frontend EC2)만 인식하므로 CORS 이슈가 없습니다
+- **Cookie Security**: `SameSite=Lax` (세션 쿠키), `SameSite=Strict` (CSRF 쿠키) 사용 가능
+- **Backend Security**: 백엔드는 외부에 노출되지 않고 nginx를 통해서만 접근 가능
+- **Optional HTTPS**: HTTP로도 동작하며, HTTPS는 선택 사항 (Let's Encrypt로 쉽게 추가 가능)
+
+### 배포 가이드
+
+자세한 배포 방법은 다음 문서를 참조하세요:
+
+- **`NGINX_REVERSE_PROXY_SETUP.md`** - 완전한 nginx 설정 가이드
+- **`SINGLE_ORIGIN_DEPLOYMENT_SUMMARY.md`** - 아키텍처 개요 및 변경 사항 요약
+- **`DEPLOYMENT_OPTIONS.md`** - 다양한 배포 옵션 비교
+
+### 핵심 설정
+
+**프론트엔드 API 설정** (`js/config.js`):
+
+```javascript
+const IS_LOCAL = window.location.hostname === 'localhost' ||
+                 window.location.hostname === '127.0.0.1';
+
+export const API_BASE_URL = IS_LOCAL
+    ? "http://127.0.0.1:8000"  // 로컬: 백엔드 직접 연결
+    : "";  // 프로덕션: same-origin (nginx가 /v1/* 를 프록시)
+```
+
+**Nginx 설정 예시**:
+
+```nginx
+server {
+    listen 80;
+    root /var/www/community-frontend;
+
+    # 정적 파일 서빙
+    location / {
+        try_files $uri $uri/ /user_login.html;
+    }
+
+    # API 요청을 백엔드로 프록시
+    location /v1/ {
+        proxy_pass http://BACKEND_PRIVATE_IP:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /health {
+        proxy_pass http://BACKEND_PRIVATE_IP:8000;
+    }
+}
+```
+
+### 배포 체크리스트
+
+- [ ] Frontend 파일을 `/var/www/community-frontend`에 업로드
+- [ ] Nginx 설치 및 설정 파일 작성
+- [ ] `js/config.js`에서 `API_BASE_URL` 확인 (프로덕션: 빈 문자열)
+- [ ] Backend EC2의 Security Group에서 Frontend EC2 IP 허용 (Port 8000)
+- [ ] Backend `.env`에서 `HTTPS_ONLY` 설정 (HTTP: false, HTTPS: true)
+- [ ] Backend CORS origins에 Frontend 도메인/IP 추가
+- [ ] Nginx 테스트: `sudo nginx -t`
+- [ ] 브라우저에서 로그인 플로우 테스트
 
 ### 2. 데이터베이스 설계
 
@@ -296,6 +401,30 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 | 5단계 | 5주차 | 문서화, 코드 리뷰, 최종 배포 |
 
 ## changelog
+
+### 최근 변경사항 (Recent Changes)
+
+#### 2026-02-12: Single-Origin Nginx Deployment 설정
+
+**아키텍처 변경**:
+
+- Cross-Domain (S3 + EC2) → **Single-Origin (Nginx Reverse Proxy)**
+- Frontend EC2 (nginx)가 정적 파일을 서빙하고 `/v1/*` 요청을 Backend EC2로 프록시
+
+**코드 변경**:
+
+1. **`js/config.js`**: API_BASE_URL 설정 변경
+   ```javascript
+   // 프로덕션: 빈 문자열 (same-origin)
+   export const API_BASE_URL = IS_LOCAL ? "http://127.0.0.1:8000" : "";
+   ```
+
+2. **쿠키 설정** (백엔드 변경 사항):
+   - Session Cookie: `SameSite=Lax` (cross-domain용 `None` 대신)
+   - CSRF Cookie: `SameSite=Strict` (더 강력한 보안)
+   - `Secure` 플래그: `HTTPS_ONLY` 환경변수로 제어 (선택적 HTTPS)
+
+---
 
 - 2026-02-12: 프론트엔드 개발 환경 정리 및 `npm serve` 마이그레이션 완료
   - Python 의존성 완전 제거
