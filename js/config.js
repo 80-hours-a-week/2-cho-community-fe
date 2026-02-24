@@ -11,7 +11,7 @@ const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hos
 // Use empty string "" to make requests to same domain, nginx will proxy to backend
 export const API_BASE_URL = IS_LOCAL
     ? "http://127.0.0.1:8000"  // Local development: direct backend connection
-    : "";  // Production: same-origin (nginx proxies /v1/* to backend EC2)
+    : "https://my-community.shop";  // Production: same-origin (nginx proxies /v1/* to backend EC2)
 
 /**
  * Resolve navigation path to actual file for S3 deployment
