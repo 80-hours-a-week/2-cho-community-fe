@@ -6,7 +6,7 @@ AWS AI School 2기 4주차 과제
 
 커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, 세션 기반 인증과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글, 좋아요, 회원 관리 기능을 제공합니다.
 
-**개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 nginx를 사용합니다.
+**개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 CloudFront + S3를 사용합니다.
 
 ## Quick Start (Development)
 
@@ -63,7 +63,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 ┌─────────────────────────────────────────────────────────────────┐
 │                         Client (Browser)                        │
 │              Vanilla JS MPA (정적 파일: HTML/CSS/JS)              │
-│              개발: npm serve (8080) | 프로덕션: nginx              │
+│         개발: npm serve (8080) | 프로덕션: CloudFront + S3          │
 └─────────────────────────────────┬───────────────────────────────┘
                                   │ HTTP (JSON/FormData)
                                   │ credentials: include (Cookie)
@@ -86,38 +86,40 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ## 프로덕션 배포 (Production Deployment)
 
-프로덕션 환경에서는 **nginx**로 정적 파일을 서빙하고 백엔드 API를 reverse proxy합니다. `npm serve`는 개발 환경에서만 사용합니다.
+프로덕션 환경에서는 **CloudFront + S3**로 정적 파일을 서빙하고, CloudFront가 `/v1/*` 요청을 **ELB → EC2**로 라우팅합니다. `npm serve`는 개발 환경에서만 사용합니다.
 
-### Single-Origin Nginx Reverse Proxy Architecture
+### CloudFront + S3 + ELB Architecture
 
 ```text
 Internet
     │
     ▼
-Frontend EC2 (nginx, Port 80/443)
-    ├── /css/, /js/, /html/        → Serve static files directly
-    ├── /user_login.html (root)    → Default page
-    └── /v1/*, /health             → Reverse proxy to Backend EC2:8000
-                                       │
-                                       ▼
-                                Backend EC2 (FastAPI, Port 8000)
-                                    Private IP only (127.0.0.1 or VPC)
+CloudFront (d1waeja4u5zbzs.cloudfront.net, Distribution: E3OC1FKP16VP4S)
+    ├── /*       → S3 (my-community-s3-fe) + WAF + URL Rewrite Function
+    ├── /v1/*    → ELB (my-community-elb) → EC2:8000 (uvicorn)
+    └── /health  → ELB → EC2:8000 (uvicorn)
 ```
 
 ### 주요 특징
 
-- **Same-Origin Architecture**: 브라우저는 단일 도메인(Frontend EC2)만 인식하므로 CORS 이슈가 없습니다
-- **Cookie Security**: `SameSite=Lax` (세션 쿠키), `SameSite=Strict` (CSRF 쿠키) 사용 가능
-- **Backend Security**: 백엔드는 외부에 노출되지 않고 nginx를 통해서만 접근 가능
-- **Optional HTTPS**: HTTP로도 동작하며, HTTPS는 선택 사항 (Let's Encrypt로 쉽게 추가 가능)
+- **Same-Origin Architecture**: 브라우저는 단일 도메인(CloudFront)만 인식하므로 CORS 이슈가 없습니다
+- **Cookie Security**: `SameSite=Lax` (세션 쿠키), `SameSite=Strict` (CSRF 쿠키)
+- **WAF 보호**: AWS Managed Rule Group (IP Reputation, Common Rule Set, Known Bad Inputs)
+- **CloudFront HTTPS**: AWS Certificate Manager로 자동 HTTPS 제공
 
-### 배포 가이드
+### 배포 방법
 
-자세한 배포 방법은 다음 문서를 참조하세요:
+```bash
+# 1. S3에 정적 파일 업로드 (민감 파일 제외)
+aws s3 sync . s3://my-community-s3-fe/ \
+    --exclude ".env" --exclude ".git/*" --exclude "node_modules/*" \
+    --delete
 
-- **`NGINX_REVERSE_PROXY_SETUP.md`** - 완전한 nginx 설정 가이드
-- **`SINGLE_ORIGIN_DEPLOYMENT_SUMMARY.md`** - 아키텍처 개요 및 변경 사항 요약
-- **`DEPLOYMENT_OPTIONS.md`** - 다양한 배포 옵션 비교
+# 2. CloudFront 캐시 무효화 (즉시 반영)
+aws cloudfront create-invalidation \
+    --distribution-id E3OC1FKP16VP4S \
+    --paths "/*"
+```
 
 ### 핵심 설정
 
@@ -129,33 +131,12 @@ const IS_LOCAL = window.location.hostname === 'localhost' ||
 
 export const API_BASE_URL = IS_LOCAL
     ? "http://127.0.0.1:8000"  // 로컬: 백엔드 직접 연결
-    : "";  // 프로덕션: same-origin (nginx가 /v1/* 를 프록시)
+    : "";  // 프로덕션: same-origin (CloudFront가 /v1/* 를 ELB로 라우팅)
 ```
 
-**Nginx 설정 예시**:
+### 대안: nginx 배포
 
-```nginx
-server {
-    listen 80;
-    root /var/www/community-frontend;
-
-    # 정적 파일 서빙
-    location / {
-        try_files $uri $uri/ /user_login.html;
-    }
-
-    # API 요청을 백엔드로 프록시
-    location /v1/ {
-        proxy_pass http://BACKEND_PRIVATE_IP:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location /health {
-        proxy_pass http://BACKEND_PRIVATE_IP:8000;
-    }
-}
-```
+EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백엔드로 프록시하는 방식도 지원합니다.
 
 ### 2. 데이터베이스 설계
 
@@ -376,7 +357,7 @@ server {
 - **JWT vs Session**: JWT는 stateless하여 확장성이 좋으나, 로그아웃 시 토큰 무효화가 복잡함. 이 프로젝트는 단일 서버 환경이므로 세션 기반 인증이 더 단순하고 적합하다고 판단.
 - **ORM vs Raw SQL**: SQLAlchemy 등 ORM 사용을 고려했으나, 학습 목적으로 raw SQL을 직접 작성하여 쿼리 최적화 경험을 쌓기로 결정.
 - **Vanilla JS**: React, Vue 등 프레임워크 대신 Vanilla JS를 선택. 프레임워크 학습 비용 없이 JavaScript 기본기를 다지는 것이 목표.
-- **이미지 저장소**: S3 등 외부 스토리지 대신 로컬 파일시스템 사용. 프로젝트 규모상 충분하며, 인프라 비용 절감.
+- **이미지 저장소**: 초기에는 로컬 파일시스템을 사용했으나, CloudFront+S3 배포로 전환하면서 이미지도 S3에 저장하고 CloudFront URL로 서빙. 백엔드 `CLOUDFRONT_DOMAIN` 환경변수로 제어.
 - **Soft Delete**: 물리적 삭제 대신 `deleted_at` 컬럼 사용. 데이터 복구 가능성 확보 및 FK 무결성 유지.
 
 ## 마일스톤 (Milestones)
@@ -392,6 +373,24 @@ server {
 ## changelog
 
 ### 최근 변경사항 (Recent Changes)
+
+#### 2026-02-19: CloudFront + S3 배포 전환
+
+**아키텍처 변경**:
+
+- Single-Origin Nginx (EC2) → **CloudFront + S3 + ELB**
+- 정적 파일: S3 버킷 (`my-community-s3-fe`) + CloudFront CDN
+- API 요청: CloudFront `/v1/*` behavior → ELB → EC2:8000 (uvicorn)
+- WAF WebACL 연결 (`CreatedByCloudFront-82329080`) — IP Reputation, CRS, Known Bad Inputs
+
+**주요 변경 사항**:
+
+1. `aws s3 sync`으로 정적 파일 배포 (scp → S3)
+2. WAF `SizeRestrictions_BODY` 규칙 COUNT 모드 오버라이드 (이미지 업로드 8KB 제한 해제)
+3. 이미지 파일을 S3에 저장하고 CloudFront URL로 서빙 (로컬 파일시스템 → S3)
+4. 백엔드 `.env`에 `CLOUDFRONT_DOMAIN=d1waeja4u5zbzs.cloudfront.net` 추가
+
+---
 
 #### 2026-02-12: Single-Origin Nginx Deployment 설정
 

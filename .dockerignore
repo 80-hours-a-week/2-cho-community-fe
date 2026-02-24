@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+
+# Environment files
+.env
+.env.*
+
+# Documentation
+*.md
+LICENSE
+
+# Tests
+tests/
+playwright.config.js
+playwright-report/
+test-results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.log
