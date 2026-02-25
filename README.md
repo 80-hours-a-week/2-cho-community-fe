@@ -6,7 +6,7 @@ AWS AI School 2기 4주차 과제
 
 커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, 세션 기반 인증과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글, 좋아요, 회원 관리 기능을 제공합니다.
 
-**개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 CloudFront + S3를 사용합니다.
+**개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 Docker Compose + nginx를 사용합니다.
 
 ## Quick Start (Development)
 
@@ -62,7 +62,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 ```mermaid
 flowchart TD
     subgraph Client["Client (Browser)"]
-        FE["Vanilla JS MPA<br/>정적 파일: HTML/CSS/JS<br/>개발: npm serve :8080 | 프로덕션: CloudFront + S3"]
+        FE["Vanilla JS MPA<br/>정적 파일: HTML/CSS/JS<br/>개발: npm serve :8080 | 프로덕션: Docker + nginx"]
     end
 
     Client -->|"HTTP (JSON/FormData)<br/>credentials: include (Cookie)"| Backend
@@ -116,15 +116,16 @@ flowchart TD
 ### 배포 방법
 
 ```bash
-# 1. S3에 정적 파일 업로드 (민감 파일 제외)
-aws s3 sync . s3://my-community-s3-fe/ \
-    --exclude ".env" --exclude ".git/*" --exclude "node_modules/*" \
-    --delete
+# EC2에서 Docker Compose로 배포
+cd /path/to/my-community
 
-# 2. CloudFront 캐시 무효화 (즉시 반영)
-aws cloudfront create-invalidation \
-    --distribution-id E3OC1FKP16VP4S \
-    --paths "/*"
+# 이미지 빌드 (최초 또는 변경 시)
+docker build -t my-community-db:latest ./2-cho-community-be/database
+docker build -t my-community-backend:latest ./2-cho-community-be
+docker build -t my-community-frontend:latest ./2-cho-community-fe
+
+# 컨테이너 실행
+docker compose -f docker-compose.prod.yml up -d --no-pull
 ```
 
 ### 핵심 설정
@@ -137,12 +138,8 @@ const IS_LOCAL = window.location.hostname === 'localhost' ||
 
 export const API_BASE_URL = IS_LOCAL
     ? "http://127.0.0.1:8000"  // 로컬: 백엔드 직접 연결
-    : "";  // 프로덕션: same-origin (CloudFront가 /v1/* 를 ELB로 라우팅)
+    : "";  // 프로덕션: same-origin (nginx가 /v1/* 를 backend:8000으로 프록시)
 ```
-
-### 대안: nginx 배포
-
-EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백엔드로 프록시하는 방식도 지원합니다.
 
 ### 2. 데이터베이스 설계
 
@@ -372,7 +369,7 @@ sequenceDiagram
 - **JWT vs Session**: JWT는 stateless하여 확장성이 좋으나, 로그아웃 시 토큰 무효화가 복잡함. 이 프로젝트는 단일 서버 환경이므로 세션 기반 인증이 더 단순하고 적합하다고 판단.
 - **ORM vs Raw SQL**: SQLAlchemy 등 ORM 사용을 고려했으나, 학습 목적으로 raw SQL을 직접 작성하여 쿼리 최적화 경험을 쌓기로 결정.
 - **Vanilla JS**: React, Vue 등 프레임워크 대신 Vanilla JS를 선택. 프레임워크 학습 비용 없이 JavaScript 기본기를 다지는 것이 목표.
-- **이미지 저장소**: 초기에는 로컬 파일시스템을 사용했으나, CloudFront+S3 배포로 전환하면서 이미지도 S3에 저장하고 CloudFront URL로 서빙. 백엔드 `CLOUDFRONT_DOMAIN` 환경변수로 제어.
+- **이미지 저장소**: Docker 환경에서는 `/app/uploads` 볼륨에 저장. 로컬 개발 시에도 로컬 파일시스템 사용.
 - **Soft Delete**: 물리적 삭제 대신 `deleted_at` 컬럼 사용. 데이터 복구 가능성 확보 및 FK 무결성 유지.
 
 ## 마일스톤 (Milestones)
@@ -389,21 +386,31 @@ sequenceDiagram
 
 ### 최근 변경사항 (Recent Changes)
 
-#### 2026-02-19: CloudFront + S3 배포 전환
+#### 2026-02-24: Docker Compose + 단일 EC2 배포로 전환
 
 **아키텍처 변경**:
 
-- Single-Origin Nginx (EC2) → **CloudFront + S3 + ELB**
-- 정적 파일: S3 버킷 (`my-community-s3-fe`) + CloudFront CDN
-- API 요청: CloudFront `/v1/*` behavior → ELB → EC2:8000 (uvicorn)
-- WAF WebACL 연결 (`CreatedByCloudFront-82329080`) — IP Reputation, CRS, Known Bad Inputs
+- CloudFront + S3 + ELB → Docker Compose + 단일 EC2
+- nginx 컨테이너: 정적 파일 서빙 + 리버스 프록시 (`/v1/*` → backend:8000)
+- 백엔드 컨테이너: FastAPI + uvicorn
+- 데이터베이스 컨테이너: MySQL 9.6
 
 **주요 변경 사항**:
 
-1. `aws s3 sync`으로 정적 파일 배포 (scp → S3)
-2. WAF `SizeRestrictions_BODY` 규칙 COUNT 모드 오버라이드 (이미지 업로드 8KB 제한 해제)
-3. 이미지 파일을 S3에 저장하고 CloudFront URL로 서빙 (로컬 파일시스템 → S3)
-4. 백엔드 `.env`에 `CLOUDFRONT_DOMAIN=d1waeja4u5zbzs.cloudfront.net` 추가
+1. `docker-compose.prod.yml`로 전체 스택 통합 관리
+2. nginx가 Let's Encrypt SSL 처리 (`/etc/letsencrypt/`)
+3. Clean URL 지원 (`/main` → `post_list.html`)
+4. 이미지 저장소를 Docker 볼륨으로 변경 (`/app/uploads`)
+
+---
+
+#### 2026-02-19: CloudFront + S3 배포 전환 (현재 미사용)
+
+**아키텍처 변경** (이전 방식):
+
+- Single-Origin Nginx (EC2) → CloudFront + S3 + ELB
+- 정적 파일: S3 버킷 (`my-community-s3-fe`) + CloudFront CDN
+- API 요청: CloudFront `/v1/*` behavior → ELB → EC2:8000 (uvicorn)
 
 ---
 
