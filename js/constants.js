@@ -9,6 +9,8 @@ export const API_ENDPOINTS = {
     AUTH: {
         LOGIN: '/v1/auth/session',
         LOGOUT: '/v1/auth/session',
+        REFRESH: '/v1/auth/token/refresh',
+        ME: '/v1/auth/me',
     },
     USERS: {
         ROOT: '/v1/users',

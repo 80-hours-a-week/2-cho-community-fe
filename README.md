@@ -4,9 +4,9 @@ AWS AI School 2기 4주차 과제
 
 ## 요약 (Summary)
 
-커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, 세션 기반 인증과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글, 좋아요, 회원 관리 기능을 제공합니다.
+커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글, 좋아요, 회원 관리 기능을 제공합니다.
 
-**개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 CloudFront + S3를 사용합니다.
+**개발 환경**: 프론트엔드는 `npm serve`를 사용하여 정적 파일을 서빙하며, Python 의존성이 없습니다. 프로덕션에서는 Docker Compose + nginx를 사용합니다.
 
 ## Quick Start (Development)
 
@@ -59,66 +59,73 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 
 ### 1. 시스템 아키텍처
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                         Client (Browser)                        │
-│              Vanilla JS MPA (정적 파일: HTML/CSS/JS)              │
-│         개발: npm serve (8080) | 프로덕션: CloudFront + S3          │
-└─────────────────────────────────┬───────────────────────────────┘
-                                  │ HTTP (JSON/FormData)
-                                  │ credentials: include (Cookie)
-                                  ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                      FastAPI Backend (Port 8000)                             │
-│  ┌──────────┐  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────┐  │
-│  │ Routers  │→ │Controllers │→ │ Services │→ │  Models  │→ │ aiomysql Pool│  │
-│  └──────────┘  └────────────┘  └──────────┘  └──────────┘  └──────────────┘  │
-│                                                                              │
-│  Middleware: CORS → Session → Logging → Timing                               │
-└─────────────────────────────────┬────────────────────────────────────────────┘
-                                  │ Async Connection Pool
-                                  ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                        MySQL Database                           │
-│   Tables: user, user_session, post, comment, post_like          │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Client["Client (Browser)"]
+        FE["Vanilla JS MPA<br/>정적 파일: HTML/CSS/JS<br/>개발: npm serve :8080 | 프로덕션: Docker + nginx"]
+    end
+
+    Client -->|"HTTP (JSON/FormData)<br/>Bearer Token + HttpOnly Cookie"| Backend
+
+    subgraph Backend["FastAPI Backend (Port 8000)"]
+        direction LR
+        Routers --> Controllers --> Services --> Models --> Pool["aiomysql Pool"]
+    end
+
+    note["Middleware: CORS → Logging → Timing → RateLimit"]
+
+    Backend -->|"Async Connection Pool"| DB
+
+    subgraph DB["MySQL Database"]
+        Tables["user, refresh_token, post,<br/>comment, post_like"]
+    end
 ```
 
 ## 프로덕션 배포 (Production Deployment)
 
-프로덕션 환경에서는 **CloudFront + S3**로 정적 파일을 서빙하고, CloudFront가 `/v1/*` 요청을 **ELB → EC2**로 라우팅합니다. `npm serve`는 개발 환경에서만 사용합니다.
+프로덕션 환경에서는 **Docker Compose + 단일 EC2**로 운영합니다. nginx가 정적 파일 서빙과 API 리버스 프록시를 담당합니다.
 
-### CloudFront + S3 + ELB Architecture
+### Docker Compose Architecture
 
-```text
-Internet
-    │
-    ▼
-CloudFront (d1waeja4u5zbzs.cloudfront.net, Distribution: E3OC1FKP16VP4S)
-    ├── /*       → S3 (my-community-s3-fe) + WAF + URL Rewrite Function
-    ├── /v1/*    → ELB (my-community-elb) → EC2:8000 (uvicorn)
-    └── /health  → ELB → EC2:8000 (uvicorn)
+```mermaid
+flowchart TD
+    Internet["Internet"]
+
+    Internet -->|"HTTPS (443)"| Nginx
+
+    subgraph EC2["EC2 Instance"]
+        subgraph Docker["Docker Compose"]
+            Nginx["nginx:alpine<br/>정적 파일 + 리버스 프록시"]
+            Backend["FastAPI + uvicorn<br/>Port 8000"]
+            MySQL["MySQL 9.6<br/>Port 3306"]
+        end
+    end
+
+    Nginx -->|"/*"| Static["정적 파일 서빙<br/>(HTML/CSS/JS)"]
+    Nginx -->|"/v1/*, /health"| Backend
+    Backend --> MySQL
 ```
 
 ### 주요 특징
 
-- **Same-Origin Architecture**: 브라우저는 단일 도메인(CloudFront)만 인식하므로 CORS 이슈가 없습니다
-- **Cookie Security**: `SameSite=Lax` (세션 쿠키), `SameSite=Strict` (CSRF 쿠키)
-- **WAF 보호**: AWS Managed Rule Group (IP Reputation, Common Rule Set, Known Bad Inputs)
-- **CloudFront HTTPS**: AWS Certificate Manager로 자동 HTTPS 제공
+- **Same-Origin Architecture**: nginx가 단일 도메인에서 정적 파일과 API를 모두 서빙하여 CORS 이슈 없음
+- **Cookie Security**: `SameSite=Lax` (Refresh Token 쿠키, HttpOnly)
+- **Let's Encrypt SSL**: nginx에서 HTTPS 처리 (`/etc/letsencrypt/live/my-community.shop/`)
+- **Clean URLs**: nginx rewrite로 `/main` → `post_list.html` 등 지원
 
 ### 배포 방법
 
 ```bash
-# 1. S3에 정적 파일 업로드 (민감 파일 제외)
-aws s3 sync . s3://my-community-s3-fe/ \
-    --exclude ".env" --exclude ".git/*" --exclude "node_modules/*" \
-    --delete
+# EC2에서 Docker Compose로 배포
+cd /path/to/my-community
 
-# 2. CloudFront 캐시 무효화 (즉시 반영)
-aws cloudfront create-invalidation \
-    --distribution-id E3OC1FKP16VP4S \
-    --paths "/*"
+# 이미지 빌드 (최초 또는 변경 시)
+docker build -t my-community-db:latest ./2-cho-community-be/database
+docker build -t my-community-backend:latest ./2-cho-community-be
+docker build -t my-community-frontend:latest ./2-cho-community-fe
+
+# 컨테이너 실행
+docker compose -f docker-compose.prod.yml up -d --no-pull
 ```
 
 ### 핵심 설정
@@ -131,65 +138,74 @@ const IS_LOCAL = window.location.hostname === 'localhost' ||
 
 export const API_BASE_URL = IS_LOCAL
     ? "http://127.0.0.1:8000"  // 로컬: 백엔드 직접 연결
-    : "";  // 프로덕션: same-origin (CloudFront가 /v1/* 를 ELB로 라우팅)
+    : "";  // 프로덕션: same-origin (nginx가 /v1/* 를 backend:8000으로 프록시)
 ```
-
-### 대안: nginx 배포
-
-EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백엔드로 프록시하는 방식도 지원합니다.
 
 ### 2. 데이터베이스 설계
 
 #### ERD
 
-```text
-┌──────────────────┐       ┌──────────────────┐
-│      user        │       │   user_session   │
-├──────────────────┤       ├──────────────────┤
-│ id (PK)          │───┐   │ id (PK)          │
-│ email (UNIQUE)   │   │   │ user_id (FK)     │←─┐
-│ password_hash    │   │   │ session_id       │  │
-│ nickname (UNIQUE)│   │   │ expires_at       │  │
-│ profile_image    │   │   │ created_at       │  │
-│ deleted_at       │   │   └──────────────────┘  │
-│ created_at       │   │                         │
-└──────────────────┘   └─────────────────────────┘
-         │
-         │ 1:N
-         ▼
-┌──────────────────┐       ┌──────────────────┐
-│      post        │       │     comment      │
-├──────────────────┤       ├──────────────────┤
-│ id (PK)          │───┐   │ id (PK)          │
-│ author_id (FK)   │   │   │ post_id (FK)     │←─┐
-│ title            │   │   │ author_id (FK)   │  │
-│ content          │   │   │ content          │  │
-│ image_url        │   │   │ deleted_at       │  │
-│ view_count       │   │   │ created_at       │  │
-│ deleted_at       │   │   └──────────────────┘  │
-│ created_at       │   │                         │
-└──────────────────┘   └─────────────────────────┘
-         │
-         │ 1:N
-         ▼
-┌──────────────────┐
-│    post_like     │
-├──────────────────┤
-│ id (PK)          │
-│ post_id (FK)     │
-│ user_id (FK)     │
-│ created_at       │
-│ UNIQUE(post_id,  │
-│        user_id)  │
-└──────────────────┘
+```mermaid
+erDiagram
+    user ||--o{ refresh_token : "has tokens"
+    user ||--o{ post : "creates"
+    user ||--o{ comment : "writes"
+    user ||--o{ post_like : "likes"
+    post ||--o{ comment : "has"
+    post ||--o{ post_like : "receives"
+
+    user {
+        int id PK
+        varchar email UK
+        varchar password_hash
+        varchar nickname UK
+        varchar profile_image
+        datetime deleted_at
+        datetime created_at
+    }
+
+    refresh_token {
+        int id PK
+        int user_id FK
+        varchar token_hash UK
+        datetime expires_at
+        datetime created_at
+    }
+
+    post {
+        int id PK
+        int author_id FK
+        varchar title
+        text content
+        varchar image_url
+        int view_count
+        datetime deleted_at
+        datetime created_at
+    }
+
+    comment {
+        int id PK
+        int post_id FK
+        int author_id FK
+        text content
+        datetime deleted_at
+        datetime created_at
+    }
+
+    post_like {
+        int id PK
+        int post_id FK
+        int user_id FK
+        datetime created_at
+    }
 ```
 
 #### 주요 설계 결정
 
 - **Soft Delete**: `user`, `post`, `comment` 테이블에 `deleted_at` 컬럼 사용. 물리적 삭제 대신 논리적 삭제로 데이터 보존.
-- **Session 기반 인증**: JWT 대신 서버 사이드 세션 사용. `user_session` 테이블에 세션 정보 저장, 24시간 만료.
+- **JWT 기반 인증**: Access Token(30분, HS256) + Refresh Token(7일, opaque random). Access Token은 프론트엔드 in-memory 저장, Refresh Token은 HttpOnly 쿠키 + SHA-256 해시 DB 저장. JWT payload에는 `sub`(user_id)만 포함하여 PII 노출 방지. 토큰 회전(rotation)으로 탈취 시 자동 무효화.
 - **인덱스 전략**:
-  - `idx_user_session_session_id`: 매 요청마다 세션 조회
+  - `idx_refresh_token_hash`: Refresh Token 해시 조회
   - `idx_post_created_deleted`: 최신순 게시글 목록 조회
   - `idx_comment_post_deleted`: 게시글별 댓글 목록 조회
 
@@ -199,8 +215,9 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 
 | Method | Endpoint | 설명 | 인증 |
 | ------ | -------- | ---- | ---- |
-| POST | `/v1/auth/session` | 로그인 | X |
-| DELETE | `/v1/auth/session` | 로그아웃 | O |
+| POST | `/v1/auth/session` | 로그인 (Access Token + Refresh Token 발급) | X |
+| DELETE | `/v1/auth/session` | 로그아웃 (Refresh Token 무효화) | O |
+| POST | `/v1/auth/token/refresh` | 토큰 갱신 (Refresh Token → 새 Access Token) | X (쿠키) |
 | GET | `/v1/auth/me` | 현재 사용자 정보 | O |
 
 #### 사용자 API (`/v1/users`)
@@ -247,7 +264,7 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 | HTTP Status | 설명 |
 | ----------- | ---- |
 | 400 | 잘못된 요청 (유효성 검사 실패) |
-| 401 | 인증 필요 (세션 만료/미로그인) |
+| 401 | 인증 필요 (토큰 만료/미로그인) |
 | 403 | 권한 없음 (타인의 게시글 수정 시도 등) |
 | 404 | 리소스 없음 |
 | 409 | 충돌 (이메일/닉네임 중복) |
@@ -255,34 +272,43 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 
 ### 4. 인증 흐름
 
-```text
-┌────────┐                    ┌────────┐                    ┌────────┐
-│ Client │                    │ Server │                    │  MySQL │
-└────┬───┘                    └────┬───┘                    └────┬───┘
-     │                             │                             │
-     │  POST /v1/auth/session      │                             │
-     │  {email, password}          │                             │
-     │────────────────────────────>│                             │
-     │                             │  SELECT user WHERE email    │
-     │                             │────────────────────────────>│
-     │                             │<────────────────────────────│
-     │                             │  bcrypt.verify(password)    │
-     │                             │                             │
-     │                             │  INSERT user_session        │
-     │                             │────────────────────────────>│
-     │                             │<────────────────────────────│
-     │  Set-Cookie: session_id     │                             │
-     │<────────────────────────────│                             │
-     │                             │                             │
-     │  GET /v1/posts (with cookie)│                             │
-     │────────────────────────────>│                             │
-     │                             │  SELECT session, user       │
-     │                             │  WHERE session_id AND       │
-     │                             │  expires_at > NOW()         │
-     │                             │────────────────────────────>│
-     │                             │<────────────────────────────│
-     │  200 OK + posts data        │                             │
-     │<────────────────────────────│                             │
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server as FastAPI Server
+    participant MySQL
+
+    rect rgb(240, 248, 255)
+        Note over Client,MySQL: 로그인 절차
+        Client->>Server: POST /v1/auth/session<br/>{email, password}
+        Server->>MySQL: SELECT user WHERE email
+        MySQL-->>Server: user data
+        Server->>Server: bcrypt.verify(password)
+        Server->>Server: JWT Access Token 생성 (30분)
+        Server->>Server: Refresh Token 생성 (opaque random)
+        Server->>MySQL: INSERT refresh_token (SHA-256 hash)
+        MySQL-->>Server: token stored
+        Server-->>Client: {access_token} + Set-Cookie: refresh_token (HttpOnly)
+    end
+
+    rect rgb(255, 248, 240)
+        Note over Client,MySQL: 인증된 요청
+        Client->>Server: GET /v1/posts<br/>Authorization: Bearer {access_token}
+        Server->>Server: JWT 디코딩 + 검증 (stateless)
+        Server->>MySQL: SELECT user WHERE id = sub
+        MySQL-->>Server: user data
+        Server-->>Client: 200 OK + posts data
+    end
+
+    rect rgb(240, 255, 240)
+        Note over Client,MySQL: 토큰 갱신 (Access Token 만료 시)
+        Client->>Server: POST /v1/auth/token/refresh<br/>Cookie: refresh_token
+        Server->>MySQL: SELECT refresh_token WHERE hash
+        MySQL-->>Server: token record
+        Server->>Server: 새 Access Token + Refresh Token 생성
+        Server->>MySQL: DELETE old + INSERT new (atomic rotation)
+        Server-->>Client: {new_access_token} + Set-Cookie: new_refresh_token
+    end
 ```
 
 ### 5. 프론트엔드 아키텍처
@@ -329,7 +355,7 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 
 - **정적 메서드**: 모든 클래스가 static 메서드만 사용
 - **IntersectionObserver**: 무한 스크롤 구현
-- **Custom Event**: `auth:session-expired` 이벤트로 401 처리
+- **Custom Event**: `auth:session-expired` 이벤트로 401 처리 (silent refresh 실패 시 발생)
 - **XSS 방지**: `escapeHtml()` 유틸리티로 사용자 입력 이스케이프
 - **성능 최적화**: 
   - **Lazy Loading**: `loading="lazy"` 속성으로 이미지 로딩 지연
@@ -341,7 +367,7 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 | 항목 | 구현 방식 |
 | ---- | --------- |
 | 비밀번호 해싱 | `bcrypt` (cost factor 12) |
-| 세션 관리 | HTTP-Only Cookie, 24시간 만료 |
+| JWT 인증 | Access Token(30분, in-memory) + Refresh Token(7일, HttpOnly Cookie, SHA-256 해시 DB 저장) |
 | CORS | 허용 출처 명시적 설정 (`localhost:8080`) |
 | SQL Injection | Parameterized queries (`aiomysql`) |
 | XSS | 프론트엔드에서 `escapeHtml()` 적용 |
@@ -354,10 +380,10 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 
 ## 이외 고려 사항들 (Other Considerations)
 
-- **JWT vs Session**: JWT는 stateless하여 확장성이 좋으나, 로그아웃 시 토큰 무효화가 복잡함. 이 프로젝트는 단일 서버 환경이므로 세션 기반 인증이 더 단순하고 적합하다고 판단.
+- **JWT 인증**: Access Token(HS256, 30분) + Refresh Token(opaque random, 7일) 이중 토큰 전략 사용. Access Token은 프론트엔드 in-memory(JS 변수)에 저장하여 XSS 노출 최소화, Refresh Token은 HttpOnly 쿠키로 전달하고 SHA-256 해시로 DB에 저장. 토큰 회전(rotation)을 통해 Refresh Token 탈취 시 자동 무효화. CSRF 미들웨어는 제거됨 (Bearer 토큰이 CSRF 방어 역할).
 - **ORM vs Raw SQL**: SQLAlchemy 등 ORM 사용을 고려했으나, 학습 목적으로 raw SQL을 직접 작성하여 쿼리 최적화 경험을 쌓기로 결정.
 - **Vanilla JS**: React, Vue 등 프레임워크 대신 Vanilla JS를 선택. 프레임워크 학습 비용 없이 JavaScript 기본기를 다지는 것이 목표.
-- **이미지 저장소**: 초기에는 로컬 파일시스템을 사용했으나, CloudFront+S3 배포로 전환하면서 이미지도 S3에 저장하고 CloudFront URL로 서빙. 백엔드 `CLOUDFRONT_DOMAIN` 환경변수로 제어.
+- **이미지 저장소**: Docker 환경에서는 `/app/uploads` 볼륨에 저장. 로컬 개발 시에도 로컬 파일시스템 사용.
 - **Soft Delete**: 물리적 삭제 대신 `deleted_at` 컬럼 사용. 데이터 복구 가능성 확보 및 FK 무결성 유지.
 
 ## 마일스톤 (Milestones)
@@ -374,21 +400,51 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
 
 ### 최근 변경사항 (Recent Changes)
 
-#### 2026-02-19: CloudFront + S3 배포 전환
+#### 2026-02-25: JWT payload 최소화 + 코드 리뷰 수정
+
+- JWT payload에서 PII 제거: `email`, `nickname`, `role` 클레임 삭제, `sub`(user_id)만 유지
+- 백엔드 파일명/변수명 개선, 주석 정리
+
+#### 2026-02-25: JWT 인증으로 전환 (세션 기반 → JWT)
+
+**인증 방식 변경**:
+- 서버 사이드 세션 → JWT (Access Token 30분 + Refresh Token 7일)
+- CSRF 미들웨어 제거 (Bearer 토큰이 CSRF 방어 역할)
+- SessionMiddleware 제거
+
+**프론트엔드 변경**:
+- `ApiService.js`: Bearer 토큰 관리 (`Authorization: Bearer <token>` 헤더), silent refresh, thundering herd 보호 (`_refreshing` 싱글턴 Promise)
+- `AuthModel.js`: 페이지 새로고침 시 HttpOnly 쿠키로 silent refresh (`POST /v1/auth/token/refresh`)
+- `constants.js`: `AUTH.REFRESH`, `AUTH.ME` 엔드포인트 상수 추가
+- CSRF 토큰 관련 코드 완전 제거 (`getCsrfToken()`, `X-CSRF-Token` 헤더)
+
+---
+
+#### 2026-02-24: Docker Compose + 단일 EC2 배포로 전환
 
 **아키텍처 변경**:
 
-- Single-Origin Nginx (EC2) → **CloudFront + S3 + ELB**
-- 정적 파일: S3 버킷 (`my-community-s3-fe`) + CloudFront CDN
-- API 요청: CloudFront `/v1/*` behavior → ELB → EC2:8000 (uvicorn)
-- WAF WebACL 연결 (`CreatedByCloudFront-82329080`) — IP Reputation, CRS, Known Bad Inputs
+- CloudFront + S3 + ELB → Docker Compose + 단일 EC2
+- nginx 컨테이너: 정적 파일 서빙 + 리버스 프록시 (`/v1/*` → backend:8000)
+- 백엔드 컨테이너: FastAPI + uvicorn
+- 데이터베이스 컨테이너: MySQL 9.6
 
 **주요 변경 사항**:
 
-1. `aws s3 sync`으로 정적 파일 배포 (scp → S3)
-2. WAF `SizeRestrictions_BODY` 규칙 COUNT 모드 오버라이드 (이미지 업로드 8KB 제한 해제)
-3. 이미지 파일을 S3에 저장하고 CloudFront URL로 서빙 (로컬 파일시스템 → S3)
-4. 백엔드 `.env`에 `CLOUDFRONT_DOMAIN=d1waeja4u5zbzs.cloudfront.net` 추가
+1. `docker-compose.prod.yml`로 전체 스택 통합 관리
+2. nginx가 Let's Encrypt SSL 처리 (`/etc/letsencrypt/`)
+3. Clean URL 지원 (`/main` → `post_list.html`)
+4. 이미지 저장소를 Docker 볼륨으로 변경 (`/app/uploads`)
+
+---
+
+#### 2026-02-19: CloudFront + S3 배포 전환 (현재 미사용)
+
+**아키텍처 변경** (이전 방식):
+
+- Single-Origin Nginx (EC2) → CloudFront + S3 + ELB
+- 정적 파일: S3 버킷 (`my-community-s3-fe`) + CloudFront CDN
+- API 요청: CloudFront `/v1/*` behavior → ELB → EC2:8000 (uvicorn)
 
 ---
 
@@ -408,9 +464,9 @@ EC2에 nginx를 직접 설치하여 정적 파일을 서빙하고 `/v1/*`을 백
    ```
 
 2. **쿠키 설정** (백엔드 변경 사항):
-   - Session Cookie: `SameSite=Lax` (cross-domain용 `None` 대신)
-   - CSRF Cookie: `SameSite=Strict` (더 강력한 보안)
+   - Refresh Token Cookie: `SameSite=Lax`, `HttpOnly`, `path=/v1/auth`
    - `Secure` 플래그: `HTTPS_ONLY` 환경변수로 제어 (선택적 HTTPS)
+   - *(참고: 2026-02-25에 세션/CSRF 쿠키가 JWT로 대체됨)*
 
 ---
 

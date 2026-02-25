@@ -1,5 +1,5 @@
 // js/services/ApiService.js
-// HTTP 클라이언트 서비스 - 공통 API 호출 로직
+// HTTP 클라이언트 서비스 - JWT Bearer Token 기반 API 호출
 
 import { API_BASE_URL } from '../config.js';
 import Logger from '../utils/Logger.js';
@@ -7,17 +7,83 @@ import ErrorBoundary from '../utils/ErrorBoundary.js';
 
 const logger = Logger.createLogger('ApiService');
 
+// ─── In-memory Access Token Store ───────────────────────────────────────────
+// 모듈 스코프 변수 — window/localStorage 사용하지 않아 XSS 노출 방지
+let _accessToken = null;
+let _refreshing = null; // Promise | null — 동시 401 대응 (thundering herd 방지)
+
+/**
+ * Access Token을 설정합니다 (로그인 성공 후 호출).
+ * @param {string|null} token
+ */
+export function setAccessToken(token) {
+    _accessToken = token;
+}
+
+/**
+ * Access Token을 반환합니다.
+ * @returns {string|null}
+ */
+export function getAccessToken() {
+    return _accessToken;
+}
+
 /**
  * HTTP 요청을 처리하는 API 서비스 클래스
  */
 class ApiService {
     /**
-     * CSRF 토큰 쿠키에서 읽기
-     * @returns {string|null} - CSRF 토큰 또는 null
+     * Authorization 헤더를 포함한 공통 헤더를 반환합니다.
+     * @param {object} extra - 추가 헤더
+     * @returns {object}
      */
-    static getCsrfToken() {
-        const match = document.cookie.match(/csrf_token=([^;]+)/);
-        return match ? match[1] : null;
+    static _buildHeaders(extra = {}) {
+        const headers = { 'Content-Type': 'application/json', ...extra };
+        if (_accessToken) {
+            headers['Authorization'] = `Bearer ${_accessToken}`;
+        }
+        return headers;
+    }
+
+    /**
+     * Refresh Token 쿠키로 새 Access Token을 요청합니다.
+     * 동시에 여러 요청이 401을 받아도 refresh는 1번만 실행됩니다.
+     * @returns {Promise<boolean>} 성공 여부
+     */
+    static async _tryRefresh() {
+        if (_refreshing) {
+            return _refreshing;
+        }
+
+        _refreshing = (async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/v1/auth/token/refresh`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const newToken = data?.data?.access_token;
+                    if (newToken) {
+                        _accessToken = newToken;
+                        logger.info('Access Token 갱신 성공');
+                        return true;
+                    }
+                }
+
+                _accessToken = null;
+                return false;
+            } catch (e) {
+                _accessToken = null;
+                return false;
+            } finally {
+                _refreshing = null;
+            }
+        })();
+
+        return _refreshing;
     }
 
     /**
@@ -33,7 +99,7 @@ class ApiService {
             return await ErrorBoundary.withRetry(async () => {
                 const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                     method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: ApiService._buildHeaders(),
                     credentials: 'include'
                 });
 
@@ -66,15 +132,9 @@ class ApiService {
     static async post(endpoint, data) {
         logger.debug(`POST 요청: ${endpoint}`);
         try {
-            const headers = { 'Content-Type': 'application/json' };
-            const csrfToken = ApiService.getCsrfToken();
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
-            }
-
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
-                headers: headers,
+                headers: ApiService._buildHeaders(),
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
@@ -93,12 +153,11 @@ class ApiService {
     static async postFormData(endpoint, formData) {
         logger.debug(`POST FormData 요청: ${endpoint}`);
         try {
+            // FormData는 Content-Type을 브라우저가 자동 설정 (multipart/form-data boundary 포함)
             const headers = {};
-            const csrfToken = ApiService.getCsrfToken();
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
+            if (_accessToken) {
+                headers['Authorization'] = `Bearer ${_accessToken}`;
             }
-            // Content-Type은 브라우저가 자동 설정 (multipart/form-data boundary 포함)
 
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
@@ -121,15 +180,9 @@ class ApiService {
     static async patch(endpoint, data) {
         logger.debug(`PATCH 요청: ${endpoint}`);
         try {
-            const headers = { 'Content-Type': 'application/json' };
-            const csrfToken = ApiService.getCsrfToken();
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
-            }
-
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'PATCH',
-                headers: headers,
+                headers: ApiService._buildHeaders(),
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
@@ -148,15 +201,9 @@ class ApiService {
     static async put(endpoint, data) {
         logger.debug(`PUT 요청: ${endpoint}`);
         try {
-            const headers = { 'Content-Type': 'application/json' };
-            const csrfToken = ApiService.getCsrfToken();
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
-            }
-
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'PUT',
-                headers: headers,
+                headers: ApiService._buildHeaders(),
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
@@ -175,15 +222,9 @@ class ApiService {
     static async delete(endpoint, data = null) {
         logger.debug(`DELETE 요청: ${endpoint}`);
         try {
-            const headers = { 'Content-Type': 'application/json' };
-            const csrfToken = ApiService.getCsrfToken();
-            if (csrfToken) {
-                headers['X-CSRF-Token'] = csrfToken;
-            }
-
             const options = {
                 method: 'DELETE',
-                headers: headers,
+                headers: ApiService._buildHeaders(),
                 credentials: 'include'
             };
             if (data) {
@@ -198,6 +239,7 @@ class ApiService {
 
     /**
      * 응답 처리 공통 로직
+     * 401 수신 시 silent refresh 시도 후 auth:session-expired 이벤트 발생.
      * @param {Response} response - fetch 응답 객체
      * @param {string} method - HTTP 메서드
      * @param {string} endpoint - API 엔드포인트
@@ -212,10 +254,6 @@ class ApiService {
             if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
             } else {
-                // JSON이 아닌 경우 (예: 500 HTML 에러 페이지) 텍스트로 읽음
-                // 백엔드 프레임워크나 프록시(Nginx 등)가 JSON이 아닌 HTML 에러 페이지를 반환하는 경우가 많으므로
-                // 무조건 JSON 파싱을 시도하면 SyntaxError가 발생하여 에러 내용을 확인할 수 없게 됨.
-                // 따라서 Content-Type을 확인하여 유연하게 처리함.
                 const text = await response.text();
                 if (text) {
                     data = { message: text, _isText: true };
@@ -233,13 +271,15 @@ class ApiService {
             logger.error(`${method} ${endpoint} 실패 (${response.status})`, data);
         }
 
-        // 인증 만료 (401) 전역 처리
-        // 로그인/조회 등 일부 API는 제외해야 할 수 있으나, 일반적으로 브라우저 세션 기반이므로
-        // 401은 세션 만료를 의미함.
-        if (response.status === 401 && !endpoint.includes('check-email') && !endpoint.includes('check-nickname') && !endpoint.includes('login')) {
-            // Service 레벨에서 View를 직접 제어하지 않고 이벤트 발생
-            logger.warn('세션 만료 감지 - 이벤트 발생');
-            window.dispatchEvent(new CustomEvent('auth:session-expired'));
+        // 401 처리: auth 엔드포인트가 아닌 경우 refresh 시도
+        const isAuthEndpoint = endpoint.includes('/auth/');
+        if (response.status === 401 && !isAuthEndpoint) {
+            logger.warn('401 감지 — silent refresh 시도');
+            const refreshed = await ApiService._tryRefresh();
+            if (!refreshed) {
+                logger.warn('Refresh 실패 — 세션 만료 이벤트 발생');
+                window.dispatchEvent(new CustomEvent('auth:session-expired'));
+            }
         }
 
         return {
