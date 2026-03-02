@@ -179,8 +179,8 @@ class PostListView {
 
         categories.forEach(cat => {
             const tab = createElement('button', {
-                className: `category-tab${activeCategoryId === cat.id ? ' active' : ''}`,
-                onClick: () => onSelect(cat.id),
+                className: `category-tab${activeCategoryId === cat.category_id ? ' active' : ''}`,
+                onClick: () => onSelect(cat.category_id),
             }, [cat.name]);
             container.appendChild(tab);
         });

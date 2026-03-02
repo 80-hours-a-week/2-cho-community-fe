@@ -2,7 +2,6 @@
 // 댓글 관리 컨트롤러
 
 import CommentModel from '../models/CommentModel.js';
-import ReportModel from '../models/ReportModel.js';
 import CommentListView from '../views/CommentListView.js';
 import PostDetailView from '../views/PostDetailView.js'; // 토스트 메시지 및 입력창 제어용
 import ModalView from '../views/ModalView.js';
@@ -236,37 +235,13 @@ class CommentController {
     }
 
     /**
-     * 댓글 신고
+     * 댓글 신고 — DetailController의 신고 모달로 위임
      * @param {object} comment - 신고 대상 댓글
      * @private
      */
-    async _reportComment(comment) {
-        // 간단히 기본 사유로 신고 (게시글 신고처럼 모달을 사용하려면 복잡해지므로, 확인 prompt 사용)
-        const reason = prompt('신고 사유를 선택해주세요:\n1. 스팸\n2. 욕설/비방\n3. 부적절한 내용\n4. 기타');
-        if (!reason) return;
-
-        const reasonMap = { '1': 'spam', '2': 'abuse', '3': 'inappropriate', '4': 'other' };
-        const selectedReason = reasonMap[reason] || 'other';
-
-        try {
-            const result = await ReportModel.createReport({
-                target_type: 'comment',
-                target_id: comment.comment_id,
-                reason: selectedReason,
-            });
-
-            if (result.ok) {
-                PostDetailView.showToast(UI_MESSAGES.REPORT_SUCCESS);
-            } else if (result.status === 409) {
-                PostDetailView.showToast(UI_MESSAGES.REPORT_DUPLICATE);
-            } else if (result.status === 400) {
-                PostDetailView.showToast(UI_MESSAGES.REPORT_OWN_CONTENT);
-            } else {
-                PostDetailView.showToast(UI_MESSAGES.UNKNOWN_ERROR);
-            }
-        } catch (error) {
-            logger.error('댓글 신고 실패', error);
-            PostDetailView.showToast(UI_MESSAGES.UNKNOWN_ERROR);
+    _reportComment(comment) {
+        if (this.callbacks.onReport) {
+            this.callbacks.onReport('comment', comment.comment_id);
         }
     }
 

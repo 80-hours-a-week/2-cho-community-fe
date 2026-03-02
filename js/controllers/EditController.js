@@ -6,7 +6,7 @@ import CategoryModel from '../models/CategoryModel.js';
 import EditView from '../views/EditView.js';
 import { extractUploadedImageUrl, readFileAsDataURL, showToastAndRedirect } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
-import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
+import { NAV_PATHS, UI_MESSAGES, NOTICE_CATEGORY_SLUG } from '../constants.js';
 
 const logger = Logger.createLogger('EditController');
 
@@ -63,9 +63,9 @@ class EditController {
 
             categories.forEach(cat => {
                 const option = document.createElement('option');
-                option.value = cat.id;
+                option.value = cat.category_id;
                 option.textContent = cat.name;
-                if (cat.id === 4 && !isAdmin) {
+                if (cat.slug === NOTICE_CATEGORY_SLUG && !isAdmin) {
                     option.disabled = true;
                 }
                 categorySelect.appendChild(option);

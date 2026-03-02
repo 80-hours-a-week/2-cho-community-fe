@@ -160,6 +160,9 @@ export const CATEGORY_LABELS = {
     4: '공지사항',
 };
 
+// 공지사항 카테고리 slug (관리자만 선택 가능)
+export const NOTICE_CATEGORY_SLUG = 'notice';
+
 export const REPORT_REASONS = {
     spam: '스팸',
     abuse: '욕설/비방',

@@ -25,6 +25,7 @@ class DetailController {
         this.isLiking = false;
         this.commentController = null;
         this.currentPost = null; // 현재 게시글 데이터 (pin 상태 등)
+        this.reportTarget = null; // { type: 'post'|'comment', id: number }
     }
 
     /**
@@ -127,7 +128,8 @@ class DetailController {
                     this.currentPostId,
                     this.currentUserId,
                     {
-                        onCommentChange: () => this._reloadComments()
+                        onCommentChange: () => this._reloadComments(),
+                        onReport: (targetType, targetId) => this._openReportModal(targetType, targetId),
                     },
                     this._isAdmin
                 );
@@ -217,7 +219,7 @@ class DetailController {
         // 신고 버튼
         const reportBtn = document.getElementById('report-post-btn');
         if (reportBtn) {
-            reportBtn.addEventListener('click', () => this._openReportModal());
+            reportBtn.addEventListener('click', () => this._openReportModal('post'));
         }
 
         // 신고 모달 제출
@@ -324,12 +326,25 @@ class DetailController {
     }
 
     /**
-     * 신고 모달 열기
+     * 신고 모달 열기 (게시글 또는 댓글)
+     * @param {string} [targetType='post'] - 'post' 또는 'comment'
+     * @param {number} [targetId] - 대상 ID (생략 시 현재 게시글)
      * @private
      */
-    _openReportModal() {
+    _openReportModal(targetType = 'post', targetId = null) {
         const modal = document.getElementById('report-modal');
         if (modal) {
+            this.reportTarget = {
+                type: targetType,
+                id: targetId || Number(this.currentPostId),
+            };
+
+            // 모달 제목 변경
+            const titleEl = modal.querySelector('h3');
+            if (titleEl) {
+                titleEl.textContent = targetType === 'comment' ? '댓글 신고' : '게시글 신고';
+            }
+
             // 폼 초기화
             const reasonSelect = document.getElementById('report-reason');
             const descInput = document.getElementById('report-description');
@@ -342,10 +357,12 @@ class DetailController {
     }
 
     /**
-     * 게시글 신고 제출
+     * 신고 제출 (게시글 또는 댓글)
      * @private
      */
     async _submitReport() {
+        if (!this.reportTarget) return;
+
         const reasonSelect = document.getElementById('report-reason');
         const descInput = document.getElementById('report-description');
 
@@ -354,8 +371,8 @@ class DetailController {
 
         try {
             const result = await ReportModel.createReport({
-                target_type: 'post',
-                target_id: Number(this.currentPostId),
+                target_type: this.reportTarget.type,
+                target_id: this.reportTarget.id,
                 reason,
                 description,
             });
@@ -375,6 +392,8 @@ class DetailController {
             logger.error('신고 제출 실패', error);
             ModalView.closeModal('report-modal');
             showToast(UI_MESSAGES.UNKNOWN_ERROR);
+        } finally {
+            this.reportTarget = null;
         }
     }
 

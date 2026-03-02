@@ -148,6 +148,10 @@ class AdminReportController {
             showToast(UI_MESSAGES.UNKNOWN_ERROR);
         } finally {
             this.isLoading = false;
+            if (!this.hasMore) {
+                const s = document.getElementById('loading-sentinel');
+                if (s) AdminReportView.toggleLoadingSentinel(s, false);
+            }
         }
     }
 
