@@ -1,24 +1,26 @@
 /* css/modules/toast.css */
+/* 통합 토스트 알림 */
 #toast {
     visibility: hidden;
     min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 8px;
-    padding: 16px;
     position: fixed;
-    z-index: 1000;
     left: 50%;
-    bottom: 30px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    bottom: 40px;
+    transform: translateX(-50%);
+    background-color: var(--color-text-primary);
+    color: var(--color-text-white);
+    text-align: center;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md) var(--spacing-2xl);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-toast);
     opacity: 0;
-    transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+    transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
 }
 
 #toast.show {
     visibility: visible;
     opacity: 1;
-    bottom: 50px;
 }

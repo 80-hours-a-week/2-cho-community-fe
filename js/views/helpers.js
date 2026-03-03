@@ -52,7 +52,7 @@ export function showError(helperEl, message) {
     if (helperEl) {
         helperEl.textContent = message;
         helperEl.style.display = 'block';
-        helperEl.style.color = '#FF3333';
+        helperEl.style.color = 'var(--color-error)';
     }
 }
 
@@ -138,10 +138,10 @@ export function readFileAsDataURL(file, onLoad, onError) {
  * 버튼 상태 업데이트 (활성/비활성)
  * @param {HTMLButtonElement} button - 버튼 요소
  * @param {boolean} isValid - 유효 여부
- * @param {string} [activeColor='#7F6AEE'] - 활성 색상
- * @param {string} [inactiveColor='#ACA0EB'] - 비활성 색상
+ * @param {string} [activeColor='var(--color-primary-hover)'] - 활성 색상
+ * @param {string} [inactiveColor='var(--color-primary)'] - 비활성 색상
  */
-export function updateButtonState(button, isValid, activeColor = '#7F6AEE', inactiveColor = '#ACA0EB') {
+export function updateButtonState(button, isValid, activeColor = 'var(--color-primary-hover)', inactiveColor = 'var(--color-primary)') {
     if (!button) return;
 
     button.disabled = !isValid;

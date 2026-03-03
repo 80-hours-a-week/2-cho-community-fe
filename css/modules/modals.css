@@ -97,27 +97,3 @@
     border-radius: var(--radius-sm);
 }
 
-/* ============================= */
-/* 토스트 알림 (Toast Notification) */
-/* ============================= */
-.toast {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ACA0EB;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
-    z-index: 3000;
-}
-
-.toast.show {
-    opacity: 1;
-}
