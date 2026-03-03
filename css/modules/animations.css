@@ -213,25 +213,6 @@ button:disabled,
 }
 
 /* ============================= */
-/* 토스트 애니메이션 */
-/* ============================= */
-.toast {
-    animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* ============================= */
 /* 좋아요 버튼 애니메이션 */
 /* ============================= */
 .like-button {

@@ -47,7 +47,7 @@
     min-height: 200px;
     margin: 30px 0;
     line-height: var(--line-height-relaxed);
-    font-size: 16px;
+    font-size: var(--font-size-md);
 }
 
 .post-image {
@@ -215,5 +215,5 @@
 }
 
 .comment-like-btn .like-icon {
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }

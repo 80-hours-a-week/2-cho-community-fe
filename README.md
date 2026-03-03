@@ -397,7 +397,8 @@ sequenceDiagram
 │   └── constants.js         # 엔드포인트, 메시지, 라우트
 │
 └── css/
-    ├── style.css            # 마스터 import
+    ├── style.css            # 마스터 import (@import 진입점)
+    ├── variables.css         # 디자인 토큰 (60+ CSS Custom Properties)
     ├── base.css             # 리셋, 타이포그래피
     ├── layout.css           # 헤더, 컨테이너
     ├── modules/             # 재사용 컴포넌트 (버튼, 폼, 카드, 모달, 토스트)
@@ -463,6 +464,12 @@ sequenceDiagram
 ## Changelog
 
 ### 2026-03 (Mar)
+
+- **03-03: CSS 디자인 토큰 시스템 (Design System Cleanup Stage 1)**
+  - `css/variables.css` 신규: 60+ 디자인 토큰 (색상, 타이포그래피, 간격, 반경, 그림자, z-index, 트랜지션)
+  - 21개 CSS 파일 하드코딩 값 → `var()` 참조 전환 (200+ 교체)
+  - `helpers.js` 내 하드코딩 색상 → CSS 변수 참조로 변경
+  - 토스트 시스템 통합: `modals.css` 중복 `.toast` 제거 → `toast.css`의 `#toast` 단일 시스템
 
 - **03-02: 핵심 커뮤니티 기능 (북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 인기 게시글)**
   - 북마크: 게시글 상세 stat-box + 낙관적 UI 토글, 내 활동 > 북마크 탭 추가

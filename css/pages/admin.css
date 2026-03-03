@@ -134,7 +134,7 @@
     color: var(--color-text-tertiary);
     min-width: 60px;
     flex-shrink: 0;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 }
 
 /* ============================= */

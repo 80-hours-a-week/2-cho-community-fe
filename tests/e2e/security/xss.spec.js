@@ -94,11 +94,11 @@ test.describe('XSS 방어 테스트', () => {
         await page.click('button[type="submit"]');
 
         // 에러 메시지가 표시될 때까지 대기
-        await page.waitForSelector('.toast.error, .error-message', { timeout: 5000 });
+        await page.waitForSelector('#toast.show, .error-message', { timeout: 5000 });
 
         // 에러 메시지에 스크립트가 텍스트로 표시되는지 확인
         const hasScriptText = await page.evaluate(() => {
-            const errorElements = document.querySelectorAll('.toast.error, .error-message');
+            const errorElements = document.querySelectorAll('#toast.show, .error-message');
             for (const el of errorElements) {
                 if (el.textContent.includes('<script>')) {
                     return true;

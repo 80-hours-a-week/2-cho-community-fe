@@ -44,7 +44,7 @@
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     margin: 0;
-    line-height: 1.4;
+    line-height: var(--line-height-tight);
     word-break: break-word;
     flex: 1;
     margin-right: var(--spacing-xl);

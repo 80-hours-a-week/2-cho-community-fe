@@ -55,7 +55,7 @@
 
 .result-box strong {
     color: var(--color-primary-hover);
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
 }
 
 /* ============================= */

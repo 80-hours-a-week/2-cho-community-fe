@@ -34,7 +34,7 @@
 }
 
 .action-btn:hover {
-    background: var(--color-bg-tertiary);
+    background: #f0f0f0;
 }
 
 /* ============================= */
@@ -116,7 +116,7 @@
 /* 보조/기본 버튼 (Secondary/Primary Buttons) */
 /* ============================= */
 .secondary-btn {
-    background: var(--color-bg-tertiary);
+    background: #f0f0f0;
     color: var(--color-text-primary);
 }
 
