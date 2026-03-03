@@ -26,6 +26,7 @@ class CommentController {
         this.editingCommentId = null;
         this.isSubmitting = false; // 중복 제출 방지 플래그
         this.replyingToComment = null; // 답글 대상 댓글 정보
+        this.commentSort = 'oldest'; // 댓글 정렬 상태
     }
 
     /**
@@ -42,7 +43,28 @@ class CommentController {
             onReply: (comment) => this.startReply(comment),
             onReport: (comment) => this._reportComment(comment),
             onLike: (comment) => this._handleCommentLike(comment),
-        }, this.isAdmin);
+        }, this.isAdmin, this.commentSort);
+
+        // 정렬 버튼 이벤트 바인딩
+        this._bindSortEvents(listEl);
+    }
+
+    /**
+     * 정렬 버튼 클릭 이벤트 바인딩
+     * @param {HTMLElement} container
+     * @private
+     */
+    _bindSortEvents(container) {
+        container.addEventListener('click', (e) => {
+            const sortBtn = e.target.closest('.comment-sort-btn');
+            if (!sortBtn) return;
+
+            const sort = sortBtn.dataset.sort;
+            if (sort === this.commentSort) return;
+
+            this.commentSort = sort;
+            this._notifyChange();
+        });
     }
 
     /**

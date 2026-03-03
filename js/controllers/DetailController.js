@@ -156,7 +156,8 @@ class DetailController {
      */
     async _reloadComments() {
         try {
-            const result = await PostModel.getPost(this.currentPostId);
+            const commentSort = this.commentController?.commentSort || 'oldest';
+            const result = await PostModel.getPost(this.currentPostId, commentSort);
             if (!result.ok) return;
 
             const data = result.data?.data;

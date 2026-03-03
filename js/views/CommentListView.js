@@ -142,10 +142,24 @@ class CommentListView {
      * @param {object} handlers - 이벤트 핸들러 객체
      * @param {boolean} [isAdmin=false] - 관리자 여부
      */
-    static renderComments(container, comments, currentUserId, handlers, isAdmin = false) {
+    static renderComments(container, comments, currentUserId, handlers, isAdmin = false, currentSort = 'oldest') {
         container.textContent = '';
 
         const fragment = document.createDocumentFragment();
+
+        // 정렬 바
+        const sortBar = createElement('div', { className: 'comment-sort-bar' }, [
+            createElement('button', {
+                className: `comment-sort-btn${currentSort === 'oldest' ? ' active' : ''}`,
+                dataset: { sort: 'oldest' },
+            }, ['오래된순']),
+            createElement('button', {
+                className: `comment-sort-btn${currentSort === 'latest' ? ' active' : ''}`,
+                dataset: { sort: 'latest' },
+            }, ['최신순']),
+        ]);
+        fragment.appendChild(sortBar);
+
         comments.forEach(comment => {
             // 루트 댓글
             const element = CommentListView.createCommentElement(

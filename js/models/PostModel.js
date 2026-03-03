@@ -36,8 +36,12 @@ class PostModel {
      * @param {string|number} postId - 게시글 ID
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
-    static async getPost(postId) {
-        return ApiService.get(`${API_ENDPOINTS.POSTS.ROOT}/${postId}`);
+    static async getPost(postId, commentSort = 'oldest') {
+        let url = `${API_ENDPOINTS.POSTS.ROOT}/${postId}`;
+        if (commentSort !== 'oldest') {
+            url += `?comment_sort=${commentSort}`;
+        }
+        return ApiService.get(url);
     }
 
     /**
