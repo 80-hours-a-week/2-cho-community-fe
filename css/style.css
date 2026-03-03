@@ -1,4 +1,5 @@
 /* css/style.css */
+@import url('variables.css');
 /* SMACSS 기반 CSS 구조화 - 모든 모듈 Import */
 
 /* ============================= */
