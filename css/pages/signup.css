@@ -57,7 +57,7 @@
 .signup-profile-circle {
     width: 120px;
     height: 120px;
-    background-color: #d9d9d9;
+    background-color: var(--color-gray-300);
     border-radius: var(--radius-full);
     display: flex;
     justify-content: center;
@@ -69,7 +69,7 @@
 
 .plus-icon {
     font-size: 40px;
-    color: #777;
+    color: var(--color-gray-600);
     font-weight: 300;
 }
 
@@ -133,7 +133,7 @@
 }
 
 .signup-btn:disabled {
-    background-color: #dccaff;
+    background-color: var(--color-primary-lightest);
     /* 가이드에 없는 경우 임의 설정, 필요시 수정 */
     cursor: not-allowed;
 }

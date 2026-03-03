@@ -8,7 +8,7 @@
     display: flex;
     gap: 0;
     margin-bottom: var(--spacing-2xl);
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--color-gray-200);
 }
 
 .tab-btn {
@@ -41,9 +41,9 @@
 .result-box {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-lg);
-    background-color: #f8f7ff;
+    background-color: var(--color-primary-bg);
     border-radius: var(--radius-md);
-    border: 1px solid #e0ddf5;
+    border: 1px solid var(--color-primary-subtle);
     text-align: center;
 }
 

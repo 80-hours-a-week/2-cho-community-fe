@@ -76,7 +76,7 @@ class ProfileView {
             const fullUrl = escapeCssUrl(getImageUrl(imageUrl));
             this.imgWrapper.style.backgroundImage = `url('${fullUrl}')`;
         } else {
-            this.imgWrapper.style.backgroundColor = '#555';
+            this.imgWrapper.style.backgroundColor = 'var(--color-gray-700)';
         }
     }
 

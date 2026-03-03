@@ -182,9 +182,9 @@ class PostDetailView {
         const hasContent = content.trim().length > 0;
 
         if (hasContent) {
-            button.style.backgroundColor = '#7F6AEE';
+            button.style.backgroundColor = 'var(--color-primary-hover)';
         } else {
-            button.style.backgroundColor = '#ACA0EB';
+            button.style.backgroundColor = 'var(--color-primary)';
         }
 
         button.textContent = isEditing ? '댓글 수정' : '댓글 등록';
@@ -200,7 +200,7 @@ class PostDetailView {
         if (input) input.value = '';
         if (button) {
             button.textContent = '댓글 등록';
-            button.style.backgroundColor = '#ACA0EB';
+            button.style.backgroundColor = 'var(--color-primary)';
         }
     }
     /**

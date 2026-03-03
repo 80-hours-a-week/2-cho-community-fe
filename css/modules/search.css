@@ -15,7 +15,7 @@
 .category-tab {
     padding: 6px 14px;
     background: var(--color-bg-tertiary);
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-pill);
     font-size: 13px;
     cursor: pointer;
@@ -73,7 +73,7 @@
 }
 
 .search-btn:hover {
-    background: #651FFF;
+    background: var(--color-primary-deep);
 }
 
 .sort-buttons {
@@ -85,7 +85,7 @@
 .sort-btn {
     padding: 6px 14px;
     background: var(--color-bg-tertiary);
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-pill);
     font-size: 13px;
     cursor: pointer;

@@ -81,10 +81,10 @@ class LoginView {
     /**
      * 버튼 상태 업데이트
      * @param {boolean} isValid - 유효 여부
-     * @param {string} [activeColor='#7F6AEE'] - 활성 색상
-     * @param {string} [inactiveColor='#ACA0EB'] - 비활성 색상
+     * @param {string} [activeColor='var(--color-primary-hover)'] - 활성 색상
+     * @param {string} [inactiveColor='var(--color-primary)'] - 비활성 색상
      */
-    updateButtonState(isValid, activeColor = '#7F6AEE', inactiveColor = '#ACA0EB') {
+    updateButtonState(isValid, activeColor = 'var(--color-primary-hover)', inactiveColor = 'var(--color-primary)') {
         updateBtnState(this.loginBtn, isValid, activeColor, inactiveColor);
     }
 
@@ -101,7 +101,7 @@ class LoginView {
         } else {
             this.loginBtn.disabled = false;
             this.loginBtn.textContent = '로그인';
-            this.loginBtn.style.backgroundColor = '#7F6AEE';
+            this.loginBtn.style.backgroundColor = 'var(--color-primary-hover)';
         }
     }
 

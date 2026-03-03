@@ -69,7 +69,7 @@
 
 /* 카드 구분선 - 검정 (Card Divider - Black) */
 .post-card .post-divider {
-    background-color: #000;
+    background-color: var(--color-gray-900);
 }
 
 /* ============================= */
