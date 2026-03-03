@@ -99,6 +99,23 @@ header h2 {
     cursor: pointer;
 }
 
+/* Theme Toggle */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    line-height: 1;
+    transition: transform var(--transition-fast);
+    opacity: 0.8;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
 /* Header Dropdown */
 .header-dropdown {
     position: absolute;

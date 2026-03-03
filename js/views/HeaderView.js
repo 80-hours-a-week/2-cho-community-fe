@@ -134,6 +134,31 @@ class HeaderView {
     }
 
     /**
+     * 테마 토글 버튼 생성
+     * @param {string} currentTheme - 현재 테마 ('light' 또는 'dark')
+     * @returns {HTMLElement}
+     */
+    static createThemeToggle(currentTheme) {
+        const btn = document.createElement('button');
+        btn.id = 'theme-toggle';
+        btn.className = 'theme-toggle-btn';
+        btn.setAttribute('aria-label', '다크 모드 전환');
+        btn.textContent = currentTheme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        return btn;
+    }
+
+    /**
+     * 테마 토글 아이콘 업데이트
+     * @param {string} theme - 새 테마
+     */
+    static updateThemeToggle(theme) {
+        const btn = document.getElementById('theme-toggle');
+        if (btn) {
+            btn.textContent = theme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+        }
+    }
+
+    /**
      * 드롭다운 숨기기
      */
     static hideDropdown() {
