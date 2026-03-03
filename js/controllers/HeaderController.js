@@ -4,6 +4,7 @@
 import AuthModel from '../models/AuthModel.js';
 import NotificationModel from '../models/NotificationModel.js';
 import HeaderView from '../views/HeaderView.js';
+import { ThemeService } from '../services/ThemeService.js';
 import { showToast } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
 import { resolveNavPath } from '../config.js';
@@ -43,6 +44,15 @@ class HeaderController {
 
         // 기존 내용 비우기
         authSection.textContent = '';
+
+        // 테마 토글 (로그인 여부 무관하게 항상 표시)
+        ThemeService.initTheme();
+        const themeToggle = HeaderView.createThemeToggle(ThemeService.getCurrentTheme());
+        themeToggle.addEventListener('click', () => {
+            const newTheme = ThemeService.toggleTheme();
+            HeaderView.updateThemeToggle(newTheme);
+        });
+        authSection.appendChild(themeToggle);
 
         try {
             const authStatus = await AuthModel.checkAuthStatus();
