@@ -6,9 +6,9 @@
 /* ============================= */
 .admin-page-title {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-xl);
     font-size: 22px;
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
 }
 
 /* ============================= */
@@ -16,31 +16,31 @@
 /* ============================= */
 .report-filter-tabs {
     display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
     padding: 0 16px;
 }
 
 .report-filter-tab {
     padding: 8px 18px;
-    background: #f5f5f5;
+    background: var(--color-bg-tertiary);
     border: 1px solid #e0e0e0;
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
     font-size: 13px;
     cursor: pointer;
-    transition: all 0.2s;
-    color: #666;
+    transition: all var(--transition-fast);
+    color: var(--color-text-secondary);
 }
 
 .report-filter-tab:hover {
-    background: #ede7f6;
-    border-color: #7C4DFF;
+    background: var(--color-badge-category-bg);
+    border-color: var(--color-primary-accent);
 }
 
 .report-filter-tab.active {
-    background: #7C4DFF;
-    color: white;
-    border-color: #7C4DFF;
+    background: var(--color-primary-accent);
+    color: var(--color-text-white);
+    border-color: var(--color-primary-accent);
 }
 
 /* ============================= */
@@ -49,7 +49,7 @@
 .report-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-lg);
     padding: 0 16px;
 }
 
@@ -57,11 +57,11 @@
 /* 신고 카드 */
 /* ============================= */
 .report-card {
-    background: #fff;
-    border-radius: 12px;
+    background: var(--color-bg-primary);
+    border-radius: var(--radius-lg);
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eee;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border-light);
 }
 
 .report-card-header {
@@ -79,13 +79,13 @@
 
 .report-target-type {
     font-size: 13px;
-    font-weight: 600;
-    color: #333;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
 }
 
 .report-date {
-    font-size: 12px;
-    color: #888;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
 }
 
 /* ============================= */
@@ -94,24 +94,24 @@
 .report-status-badge {
     display: inline-block;
     padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
 }
 
 .report-status-badge.status-pending {
-    background: #FFF3E0;
-    color: #E65100;
+    background: var(--color-badge-pending-bg);
+    color: var(--color-badge-pending-text);
 }
 
 .report-status-badge.status-resolved {
-    background: #E8F5E9;
-    color: #2E7D32;
+    background: var(--color-badge-resolved-bg);
+    color: var(--color-badge-resolved-text);
 }
 
 .report-status-badge.status-dismissed {
-    background: #ECEFF1;
-    color: #546E7A;
+    background: var(--color-badge-dismissed-bg);
+    color: var(--color-badge-dismissed-text);
 }
 
 /* ============================= */
@@ -127,11 +127,11 @@
     display: flex;
     gap: 8px;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: var(--line-height-normal);
 }
 
 .report-label {
-    color: #888;
+    color: var(--color-text-tertiary);
     min-width: 60px;
     flex-shrink: 0;
     font-weight: 500;
@@ -142,26 +142,26 @@
 /* ============================= */
 .report-card-actions {
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-sm);
     margin-top: 14px;
     padding-top: 14px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--color-border-light);
 }
 
 .report-action-btn {
     flex: 1;
-    padding: 8px 16px;
+    padding: var(--spacing-sm) var(--spacing-lg);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
 }
 
 .resolve-btn {
     background: #FF5252;
-    color: white;
+    color: var(--color-text-white);
 }
 
 .resolve-btn:hover {
@@ -170,7 +170,7 @@
 
 .dismiss-btn {
     background: #E0E0E0;
-    color: #333;
+    color: var(--color-text-primary);
 }
 
 .dismiss-btn:hover {
@@ -189,21 +189,21 @@
 
 .report-form label {
     font-size: 13px;
-    font-weight: 600;
-    color: #333;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
 }
 
 .report-form textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
     resize: vertical;
     font-family: inherit;
 }
 
 .report-form textarea:focus {
     outline: none;
-    border-color: #7C4DFF;
+    border-color: var(--color-primary-accent);
 }

@@ -5,15 +5,15 @@
 /* 로그인 컨테이너 (Login Container) */
 /* ============================= */
 .login-container {
-    padding: 20px;
-    border-radius: 16px;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
     width: 100%;
     max-width: 400px;
 }
 
 .login-container h2 {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: var(--spacing-2xl);
 }
 
 /* ============================= */
@@ -21,16 +21,16 @@
 /* ============================= */
 .links {
     text-align: center;
-    margin-top: 20px;
+    margin-top: var(--spacing-xl);
 }
 
 .links a {
-    color: #666;
+    color: var(--color-text-secondary);
     text-decoration: none;
-    font-size: 14px;
+    font-size: var(--font-size-base);
 }
 
 .links a:hover {
-    color: #ACA0EB;
+    color: var(--color-primary);
     text-decoration: underline;
 }

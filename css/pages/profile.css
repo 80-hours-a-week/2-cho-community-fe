@@ -26,11 +26,11 @@
     align-items: center;
     width: 140px;
     height: 140px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     position: relative;
     cursor: pointer;
     overflow: hidden;
-    background-color: #ddd;
+    background-color: var(--color-border);
     background-size: cover;
     background-position: center;
 
@@ -52,13 +52,13 @@
     opacity: 1;
     /* 명확성을 위해 항상 표시 */
     pointer-events: none;
-    transition: background-color 0.2s;
+    transition: background-color var(--transition-fast);
 
     /* 클릭이 래퍼로 전달되도록 설정 */
 }
 
 .change-btn-text {
-    color: #fff;
+    color: var(--color-text-white);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
 }

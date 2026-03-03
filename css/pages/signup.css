@@ -6,16 +6,16 @@
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
-    padding: 20px;
+    padding: var(--spacing-xl);
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
 }
 
 .signup-title {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
     margin-top: 40px;
     margin-bottom: 30px;
     text-align: center;
@@ -27,7 +27,7 @@
     flex-direction: column;
     align-items: flex-start;
     width: 100%;
-    margin-bottom: 24px;
+    margin-bottom: var(--spacing-2xl);
 }
 
 .profile-label-group {
@@ -35,15 +35,15 @@
 }
 
 .profile-label {
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
     display: block;
     margin-bottom: 4px;
 }
 
 .helper-text {
-    font-size: 11px;
-    color: #FF3333;
+    font-size: var(--font-size-xs);
+    color: var(--color-error);
     display: block;
 }
 
@@ -58,7 +58,7 @@
     width: 120px;
     height: 120px;
     background-color: #d9d9d9;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -86,34 +86,34 @@
 }
 
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-xl);
 }
 
 .input-label {
-    font-weight: 700;
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-sm);
     display: block;
 }
 
 .input-field {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border-dark);
     border-radius: 5px;
-    font-size: 14px;
+    font-size: var(--font-size-base);
     box-sizing: border-box;
-    background-color: #f5f5f5;
+    background-color: var(--color-bg-tertiary);
 }
 
 .input-field::placeholder {
-    color: #999;
+    color: var(--color-text-placeholder);
 }
 
 .error-msg {
-    color: #FF3333;
-    font-size: 11px;
-    margin-top: 4px;
+    color: var(--color-error);
+    font-size: var(--font-size-xs);
+    margin-top: var(--spacing-xs);
     min-height: 16px;
     display: block;
 }
@@ -122,12 +122,12 @@
 .signup-btn {
     width: 100%;
     padding: 14px;
-    background-color: #ACA0EB;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-text-white);
     border: none;
     border-radius: 5px;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
     cursor: pointer;
     margin-top: 10px;
 }
@@ -144,10 +144,10 @@
 }
 
 .login-link {
-    color: #333;
-    font-size: 14px;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
     text-decoration: none;
-    font-weight: 400;
+    font-weight: var(--font-weight-normal);
 }
 
 .login-link:hover {
