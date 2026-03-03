@@ -24,7 +24,7 @@
 .report-filter-tab {
     padding: 8px 18px;
     background: var(--color-bg-tertiary);
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-pill);
     font-size: 13px;
     cursor: pointer;
@@ -160,21 +160,21 @@
 }
 
 .resolve-btn {
-    background: #FF5252;
+    background: var(--color-danger-light);
     color: var(--color-text-white);
 }
 
 .resolve-btn:hover {
-    background: #D32F2F;
+    background: var(--color-danger-dark);
 }
 
 .dismiss-btn {
-    background: #E0E0E0;
+    background: var(--color-gray-200);
     color: var(--color-text-primary);
 }
 
 .dismiss-btn:hover {
-    background: #BDBDBD;
+    background: var(--color-gray-500);
 }
 
 /* ============================= */

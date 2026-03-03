@@ -58,6 +58,35 @@
   --color-notification-badge: #ff4444;
   --color-reply-indicator-bg: #f3e5f5;
 
+  /* Gray Scale */
+  --color-gray-900: #000;
+  --color-gray-700: #555;
+  --color-gray-600: #777;
+  --color-gray-500: #aaa;
+  --color-gray-300: #d9d9d9;
+  --color-gray-200: #e0e0e0;
+  --color-gray-100: #eee;
+  --color-gray-50: #f0f0f0;
+  --color-gray-25: #f8f9fa;
+
+  /* Danger */
+  --color-danger: #E74C3C;
+  --color-danger-dark: #D32F2F;
+  --color-danger-light: #FF5252;
+  --color-danger-bg: #FFEBEE;
+  --color-danger-bg-light: #FFCDD2;
+
+  /* Warning */
+  --color-warning-bg: #FFF3E0;
+  --color-warning-bg-light: #FFE0B2;
+  --color-warning-dark: #FF6D00;
+
+  /* Primary extended */
+  --color-primary-muted: #9286d8;
+  --color-primary-lightest: #dccaff;
+  --color-primary-subtle: #e0ddf5;
+  --color-primary-deep: #651FFF;
+
   /* ============================= */
   /* Spacing (4px 기반)             */
   /* ============================= */

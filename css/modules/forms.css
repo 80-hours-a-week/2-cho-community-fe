@@ -130,8 +130,8 @@
 }
 
 .profile-input:disabled {
-    background-color: #eee;
-    color: #777;
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-600);
     cursor: default;
 }
 
@@ -159,7 +159,7 @@
 .upload-label {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #e0e0e0;
+    background-color: var(--color-gray-200);
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: var(--font-size-base);
@@ -209,7 +209,7 @@
 }
 
 #post-title::placeholder {
-    color: #aaa;
+    color: var(--color-gray-500);
 }
 
 #post-content {
@@ -226,7 +226,7 @@
 }
 
 #post-content::placeholder {
-    color: #aaa;
+    color: var(--color-gray-500);
 }
 
 /* ============================= */
@@ -290,7 +290,7 @@
 }
 
 .file-select-btn:hover {
-    background-color: #e0e0e0;
+    background-color: var(--color-gray-200);
 }
 
 .file-name-text {

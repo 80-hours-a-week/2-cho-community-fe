@@ -26,7 +26,7 @@ class HeaderView {
             const fullUrl = escapeCssUrl(getImageUrl(user.profileImageUrl));
             profileCircle.style.backgroundImage = `url('${fullUrl}')`;
         } else {
-            profileCircle.style.backgroundColor = '#555';
+            profileCircle.style.backgroundColor = 'var(--color-gray-700)';
         }
 
         return profileCircle;

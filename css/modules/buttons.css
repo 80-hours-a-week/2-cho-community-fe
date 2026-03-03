@@ -126,7 +126,7 @@
 }
 
 .primary-btn:hover {
-    background: #9286d8;
+    background: var(--color-primary-muted);
 }
 
 /* ============================= */
@@ -134,12 +134,12 @@
 /* ============================= */
 .report-btn {
     color: var(--color-error-dark);
-    border-color: #FFCDD2;
+    border-color: var(--color-danger-bg-light);
 }
 
 .report-btn:hover {
-    background: #FFEBEE;
-    border-color: #E53935;
+    background: var(--color-danger-bg);
+    border-color: var(--color-error-dark);
 }
 
 /* ============================= */
@@ -147,12 +147,12 @@
 /* ============================= */
 .pin-btn {
     color: var(--color-warning);
-    border-color: #FFE0B2;
+    border-color: var(--color-warning-bg-light);
 }
 
 .pin-btn:hover {
-    background: #FFF3E0;
-    border-color: #FF6D00;
+    background: var(--color-warning-bg);
+    border-color: var(--color-warning-dark);
 }
 
 /* ============================= */

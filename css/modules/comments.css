@@ -120,7 +120,7 @@
 /* ============================= */
 .comment-reply {
     margin-left: var(--spacing-4xl);
-    border-left: 2px solid #e0e0e0;
+    border-left: 2px solid var(--color-gray-200);
     padding-left: var(--spacing-lg);
 }
 

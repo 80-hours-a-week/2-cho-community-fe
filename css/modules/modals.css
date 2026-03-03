@@ -73,7 +73,7 @@
 }
 
 .modal-buttons .secondary-btn:hover {
-    background-color: #555;
+    background-color: var(--color-gray-700);
 }
 
 /* 확인 버튼 - 보라색 (Confirm Button - Purple) */
