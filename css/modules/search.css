@@ -2,7 +2,7 @@
 .category-tabs {
     display: flex;
     gap: var(--spacing-sm);
-    padding: 0 16px 12px;
+    padding: 4px 16px 12px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
