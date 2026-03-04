@@ -104,6 +104,7 @@ ol {
     color: var(--color-error);
     margin-bottom: var(--spacing-sm);
     display: none;
+    white-space: pre-line;
 }
 
 .helper-text.visible,

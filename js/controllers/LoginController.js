@@ -46,10 +46,13 @@ class LoginController {
         this._setupEventListeners();
         this.view.updateButtonState(false);
 
-        // 세션 만료 메시지 확인
+        // 세션 만료/정지 메시지 확인
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('session') === 'expired') {
             this.view.showToast('로그인 세션이 만료되었습니다. 다시 로그인해주세요.');
+        }
+        if (urlParams.get('suspended') === 'true') {
+            this.view.showToast('계정이 정지되어 로그아웃되었습니다.');
         }
     }
 
@@ -134,6 +137,17 @@ class LoginController {
 
             if (result.ok) {
                 window.location.href = resolveNavPath('/main');
+            } else if (result.status === 403 && result.data?.detail?.error === 'account_suspended') {
+                const detail = result.data.detail;
+                const until = detail.suspended_until
+                    ? new Date(detail.suspended_until).toLocaleDateString('ko-KR')
+                    : '';
+                const reason = detail.suspended_reason || '';
+                let msg = '* 계정이 정지되었습니다.';
+                if (until) msg += `\n해제 예정: ${until}`;
+                if (reason) msg += `\n사유: ${reason}`;
+                this.view.showPasswordError(msg);
+                this.view.setButtonLoading(false);
             } else {
                 this.view.showPasswordError('* 아이디 또는 비밀번호를 확인해주세요');
                 this.view.setButtonLoading(false);

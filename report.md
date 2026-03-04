@@ -54,6 +54,7 @@
 | **알림 폴링** (30초 간격, 로그인 사용자 전원) | 사용자 수에 비례하는 상시 요청 발생 | DAU 300+ 시 WebSocket 전환 검토 필요 |
 | **인증 토큰 관리** (JWT 발급·갱신·폐기) | 토큰 저장소 정합성, 브루트포스 방어 | DB 행 잠금, Rate Limiting (분산 환경 한계 존재) |
 | **동시 쓰기** (좋아요·북마크·댓글 동시 요청) | 경쟁 상태 방지, 트랜잭션 격리 | UNIQUE 제약, READ COMMITTED 격리 수준 |
+| **계정 정지** (관리자 기간 정지 + 신고 연동) | 정지 상태 3중 검증 (로그인·토큰·갱신) | `suspended_until` 시간 비교, 자동 해제 (배치 불필요) |
 
 ---
 
@@ -327,6 +328,8 @@ sequenceDiagram
         Lambda->>RDS: 이메일로 사용자 조회 (파라미터화 쿼리)
         RDS-->>Lambda: 사용자 레코드
         Lambda->>Lambda: 비밀번호 검증 (bcrypt, 별도 스레드)
+        Lambda->>Lambda: 계정 정지 확인 (suspended_until > NOW?)
+        Note right of Lambda: 정지 중이면 403 반환<br/>(해제 예정일 + 사유 포함)
         Lambda->>Lambda: JWT Access Token 생성 (HS256, 30분)
         Lambda->>Lambda: Refresh Token 생성 (무작위 문자열)
         Lambda->>RDS: INSERT refresh_token (SHA-256 해시)
@@ -338,7 +341,8 @@ sequenceDiagram
         Client->>APIGW: GET /v1/posts (Bearer 토큰 포함)
         APIGW->>Lambda: 프록시 통합
         Lambda->>Lambda: JWT 토큰 디코딩 + 서명 검증
-        Lambda->>RDS: 사용자 존재 확인 (탈퇴 여부 포함)
+        Lambda->>RDS: 사용자 존재 확인 (탈퇴·정지 여부 포함)
+        Note right of Lambda: 정지 중이면 403 반환<br/>(프론트엔드가 auth:account-suspended<br/>이벤트 발생 → 로그인 페이지 이동)
         Lambda-->>Client: 200 OK + 데이터
     end
 
@@ -360,6 +364,7 @@ sequenceDiagram
 - DB 조회 시 행 잠금(`SELECT ... FOR UPDATE`)으로 동시 토큰 재사용 공격을 방지합니다.
 - bcrypt 비밀번호 해싱은 별도 스레드에서 실행하여 다른 요청 처리를 지연시키지 않습니다.
 - 존재하지 않는 이메일로 로그인 시에도 동일한 비밀번호 검증 절차를 수행하여, 응답 시간 차이로 이메일 존재 여부를 추측하는 공격(타이밍 공격)을 방지합니다.
+- 계정 정지는 로그인(403), 토큰 검증(403), 토큰 갱신(403) 3중으로 차단하여 정지된 사용자가 어떤 경로로도 서비스를 이용할 수 없도록 합니다. 프론트엔드는 `auth:account-suspended` 커스텀 이벤트를 통해 세션 중 정지를 감지하고 즉시 로그인 페이지로 이동합니다.
 
 ### 2.4 CI/CD 파이프라인
 

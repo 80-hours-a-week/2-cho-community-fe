@@ -30,6 +30,9 @@ export const API_ENDPOINTS = {
     ADMIN: {
         REPORTS: '/v1/admin/reports',
         RESOLVE_REPORT: (id) => `/v1/admin/reports/${id}`,
+        // POST/DELETE 메서드로 구분 (같은 URL)
+        SUSPEND_USER: (userId) => `/v1/admin/users/${userId}/suspend`,
+        UNSUSPEND_USER: (userId) => `/v1/admin/users/${userId}/suspend`,
     },
     LIKES: {
         ROOT: (postId) => `/v1/posts/${postId}/likes`,
@@ -122,6 +125,10 @@ export const UI_MESSAGES = {
     BLOCK_FAIL: '차단 처리에 실패했습니다.',
     BLOCK_SELF: '자기 자신을 차단할 수 없습니다.',
     SHARE_COPIED: '링크가 복사되었습니다.',
+    SUSPEND_SUCCESS: '사용자가 정지되었습니다.',
+    UNSUSPEND_SUCCESS: '정지가 해제되었습니다.',
+    SUSPEND_FAIL: '정지 처리에 실패했습니다.',
+    ACCOUNT_SUSPENDED: '계정이 정지되었습니다.',
 };
 
 export const NAV_PATHS = {

@@ -34,6 +34,13 @@ class HeaderController {
                 location.href = resolveNavPath('/login?session=expired');
             }
         });
+
+        window.addEventListener('auth:account-suspended', () => {
+            logger.warn('계정 정지 이벤트 수신 - 로그인 페이지로 이동');
+            if (!this._isAuthPage()) {
+                location.href = resolveNavPath('/login?suspended=true');
+            }
+        });
     }
 
     /**

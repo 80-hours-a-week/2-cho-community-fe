@@ -115,6 +115,27 @@ class UserModel {
     static async getMyBlocks(offset = 0, limit = 10) {
         return ApiService.get(`${API_ENDPOINTS.ACTIVITY.MY_BLOCKS}?offset=${offset}&limit=${limit}`);
     }
+
+    /**
+     * 사용자 정지 (관리자)
+     * @param {number} userId - 정지할 사용자 ID
+     * @param {number} durationDays - 정지 기간 (일)
+     * @param {string} reason - 정지 사유
+     */
+    static async suspendUser(userId, durationDays, reason) {
+        return ApiService.post(API_ENDPOINTS.ADMIN.SUSPEND_USER(userId), {
+            duration_days: durationDays,
+            reason: reason,
+        });
+    }
+
+    /**
+     * 사용자 정지 해제 (관리자)
+     * @param {number} userId - 정지 해제할 사용자 ID
+     */
+    static async unsuspendUser(userId) {
+        return ApiService.delete(API_ENDPOINTS.ADMIN.UNSUSPEND_USER(userId));
+    }
 }
 
 export default UserModel;

@@ -314,6 +314,14 @@ class ApiService {
             }
         }
 
+        // 403 계정 정지: 본인 세션이 정지된 경우에만 이벤트 전파 (관리자 API 제외)
+        const isAdminEndpoint = endpoint.includes('/v1/admin/');
+        if (response.status === 403 && data?.detail?.error === 'account_suspended' && !isAdminEndpoint) {
+            window.dispatchEvent(new CustomEvent('auth:account-suspended', {
+                detail: data.detail
+            }));
+        }
+
         return {
             ok: response.ok,
             status: response.status,

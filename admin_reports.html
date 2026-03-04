@@ -49,6 +49,13 @@
         <div class="modal-content">
             <h3 id="modal-title">신고를 처리하시겠습니까?</h3>
             <p id="modal-desc">이 작업은 되돌릴 수 없습니다.</p>
+            <div id="suspend-option" class="suspend-option hidden">
+                <label class="suspend-checkbox-label">
+                    <input type="checkbox" id="suspend-checkbox"> 작성자 계정 정지
+                </label>
+                <input type="number" id="report-suspend-days" class="modal-input"
+                       min="1" max="365" value="7" disabled placeholder="정지 기간 (일)">
+            </div>
             <div class="modal-buttons">
                 <button id="modal-cancel-btn" class="secondary-btn">취소</button>
                 <button id="modal-confirm-btn" class="primary-btn">확인</button>

@@ -169,6 +169,28 @@ class AdminReportController {
             ? '신고를 처리하시겠습니까?\n대상 콘텐츠가 삭제됩니다.'
             : '신고를 기각하시겠습니까?';
 
+        // resolved 시에만 정지 옵션 표시
+        const suspendOption = document.getElementById('suspend-option');
+        const suspendCheckbox = document.getElementById('suspend-checkbox');
+        const suspendDaysInput = document.getElementById('report-suspend-days');
+
+        if (suspendOption) {
+            suspendOption.classList.toggle('hidden', action !== 'resolved');
+        }
+        // 초기화
+        if (suspendCheckbox) {
+            suspendCheckbox.checked = false;
+            suspendCheckbox.onchange = () => {
+                if (suspendDaysInput) {
+                    suspendDaysInput.disabled = !suspendCheckbox.checked;
+                }
+            };
+        }
+        if (suspendDaysInput) {
+            suspendDaysInput.value = '7';
+            suspendDaysInput.disabled = true;
+        }
+
         ModalView.setupDeleteModal({
             modalId: 'confirm-modal',
             cancelBtnId: 'modal-cancel-btn',
@@ -186,9 +208,19 @@ class AdminReportController {
     async _executeResolve() {
         if (!this.resolveTargetId || !this.resolveAction) return;
 
+        // resolved + 체크박스 선택 시 정지 기간 전달
+        let suspendDays = null;
+        if (this.resolveAction === 'resolved') {
+            const checkbox = document.getElementById('suspend-checkbox');
+            const daysInput = document.getElementById('report-suspend-days');
+            if (checkbox?.checked && daysInput?.value) {
+                suspendDays = parseInt(daysInput.value);
+            }
+        }
+
         try {
             const result = await ReportModel.resolveReport(
-                this.resolveTargetId, this.resolveAction
+                this.resolveTargetId, this.resolveAction, suspendDays
             );
 
             ModalView.closeModal('confirm-modal');

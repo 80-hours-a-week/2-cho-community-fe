@@ -7,6 +7,7 @@ import UserProfileView from '../views/UserProfileView.js';
 import PostListView from '../views/PostListView.js';
 import { showToast } from '../views/helpers.js';
 import { resolveNavPath } from '../config.js';
+import ModalView from '../views/ModalView.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 import Logger from '../utils/Logger.js';
 
@@ -24,6 +25,7 @@ class UserProfileController {
         this.isLoading = false;
         this.hasMore = true;
         this._scrollHandler = null;
+        this.profileData = null;
     }
 
     /**
@@ -51,6 +53,7 @@ class UserProfileController {
 
         await this._loadProfile();
         this._setupBlockButton();
+        this._setupSuspendButton();
         this._setupInfiniteScroll();
         await this._loadPosts();
     }
@@ -70,6 +73,7 @@ class UserProfileController {
 
             const user = result.data?.data;
             if (user) {
+                this.profileData = user;
                 UserProfileView.renderProfile(user);
             }
         } catch (error) {
@@ -121,6 +125,126 @@ class UserProfileController {
             logger.error('차단 처리 실패', error);
             showToast(UI_MESSAGES.BLOCK_FAIL);
         }
+    }
+
+    /**
+     * 정지 버튼 설정 (관리자만 표시)
+     * @private
+     */
+    _setupSuspendButton() {
+        const suspendBtn = document.getElementById('suspend-user-btn');
+        if (!suspendBtn || !this.currentUser) return;
+
+        // 관리자만 정지 버튼 표시
+        if (this.currentUser.role !== 'admin') return;
+
+        const isSuspended = !!this.profileData?.suspended_until;
+        suspendBtn.textContent = isSuspended ? '정지 해제' : '정지';
+        suspendBtn.classList.remove('hidden');
+        suspendBtn.addEventListener('click', () => this._handleSuspend());
+    }
+
+    /**
+     * 정지/해제 토글 처리
+     * @private
+     */
+    async _handleSuspend() {
+        const suspendBtn = document.getElementById('suspend-user-btn');
+        if (!suspendBtn) return;
+
+        const isSuspended = !!this.profileData?.suspended_until;
+
+        if (isSuspended) {
+            await this._executeUnsuspend();
+        } else {
+            this._openSuspendModal();
+        }
+    }
+
+    /**
+     * 정지 모달 열기
+     * @private
+     */
+    _openSuspendModal() {
+        // 입력값 초기화
+        const daysInput = document.getElementById('suspend-days');
+        const reasonInput = document.getElementById('suspend-reason');
+        if (daysInput) daysInput.value = '7';
+        if (reasonInput) reasonInput.value = '';
+
+        // ModalView로 리스너 관리 (이전 리스너 자동 제거)
+        ModalView.setupDeleteModal({
+            modalId: 'suspend-modal',
+            cancelBtnId: 'suspend-cancel-btn',
+            confirmBtnId: 'suspend-confirm-btn',
+            onConfirm: async () => {
+                await this._executeSuspend();
+                ModalView.closeModal('suspend-modal');
+            },
+        });
+
+        // suspend-modal은 자체 title ID 사용 (ModalView.openConfirmModal이 #modal-title을 하드코딩하므로 직접 열기)
+        const modal = document.getElementById('suspend-modal');
+        if (modal) {
+            document.body.style.overflow = 'hidden';
+            modal.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * 정지 실행
+     * @private
+     */
+    async _executeSuspend() {
+        const daysInput = document.getElementById('suspend-days');
+        const reasonInput = document.getElementById('suspend-reason');
+        const days = parseInt(daysInput?.value) || 7;
+        const reason = reasonInput?.value?.trim() || '';
+
+        try {
+            const result = await UserModel.suspendUser(this.userId, days, reason);
+            if (result.ok) {
+                showToast(UI_MESSAGES.SUSPEND_SUCCESS);
+                await this._loadProfile();
+                this._updateSuspendButton();
+            } else {
+                showToast(UI_MESSAGES.SUSPEND_FAIL);
+            }
+        } catch (error) {
+            logger.error('정지 처리 실패', error);
+            showToast(UI_MESSAGES.SUSPEND_FAIL);
+        }
+    }
+
+    /**
+     * 정지 해제 실행
+     * @private
+     */
+    async _executeUnsuspend() {
+        try {
+            const result = await UserModel.unsuspendUser(this.userId);
+            if (result.ok) {
+                showToast(UI_MESSAGES.UNSUSPEND_SUCCESS);
+                await this._loadProfile();
+                this._updateSuspendButton();
+            } else {
+                showToast(UI_MESSAGES.SUSPEND_FAIL);
+            }
+        } catch (error) {
+            logger.error('정지 해제 실패', error);
+            showToast(UI_MESSAGES.SUSPEND_FAIL);
+        }
+    }
+
+    /**
+     * 정지 버튼 상태 업데이트
+     * @private
+     */
+    _updateSuspendButton() {
+        const suspendBtn = document.getElementById('suspend-user-btn');
+        if (!suspendBtn) return;
+        const isSuspended = !!this.profileData?.suspended_until;
+        suspendBtn.textContent = isSuspended ? '정지 해제' : '정지';
     }
 
     /**

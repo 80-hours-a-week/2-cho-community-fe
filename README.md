@@ -4,7 +4,7 @@ AWS AI School 2기 과제: 커뮤니티 프론트엔드
 
 ## 요약 (Summary)
 
-커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글(대댓글 포함), 좋아요, 북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 검색/정렬(최신순·좋아요순·조회수순·댓글순·인기순), 이메일 인증, 알림, 내 활동 조회, 사용자 프로필 기능을 제공합니다.
+커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글(대댓글 포함), 좋아요, 북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 검색/정렬(최신순·좋아요순·조회수순·댓글순·인기순), 이메일 인증, 알림, 내 활동 조회, 사용자 프로필, 관리자 계정 정지/해제 기능을 제공합니다.
 
 **개발 환경**: 프론트엔드는 Vite 개발 서버(HMR)를 사용하며, Python 의존성이 없습니다. 프로덕션 빌드(`npm run build`)는 해시된 에셋을 생성하고, S3 + CloudFront로 배포됩니다.
 
@@ -34,6 +34,8 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 - 다중 이미지 업로드를 지원한다. (게시글당 최대 5장, 갤러리 뷰)
 - 사용자 차단/해제 기능을 제공한다. (차단된 사용자의 게시글/댓글 숨김)
 - 인기순(Hot) 정렬을 제공한다. (좋아요·댓글·조회수 가중 + 시간 감쇠)
+- 관리자 계정 정지/해제 기능을 제공한다. (사용자 프로필에서 기간+사유 입력, 신고 처리 시 연동)
+- 정지된 사용자의 로그인 차단 및 정지 사유 안내를 제공한다.
 
 ## 목표가 아닌 것 (Non-Goals)
 
@@ -97,6 +99,8 @@ erDiagram
         varchar profile_image
         enum role "user, admin"
         boolean email_verified "default FALSE"
+        datetime suspended_until "정지 해제 시각"
+        varchar suspended_reason "정지 사유"
         datetime deleted_at
         datetime created_at
     }
@@ -298,7 +302,14 @@ erDiagram
 | ------ | -------- | ---- | ---- |
 | POST | `/v1/reports` | 신고 생성 | O (이메일 인증) |
 | GET | `/v1/admin/reports` | 신고 목록 조회 (`?status=pending\|resolved\|dismissed`) | O (관리자) |
-| PATCH | `/v1/admin/reports/{report_id}` | 신고 처리 (resolved/dismissed) | O (관리자) |
+| PATCH | `/v1/admin/reports/{report_id}` | 신고 처리 (resolved/dismissed, `suspend_days` 선택적 정지 연동) | O (관리자) |
+
+#### 계정 정지 API (`/v1/admin/users`)
+
+| Method | Endpoint | 설명 | 인증 |
+| ------ | -------- | ---- | ---- |
+| POST | `/v1/admin/users/{user_id}/suspend` | 사용자 정지 (`duration_days`, `reason`) | O (관리자) |
+| DELETE | `/v1/admin/users/{user_id}/suspend` | 사용자 정지 해제 | O (관리자) |
 
 #### 응답 형식
 
@@ -318,7 +329,7 @@ erDiagram
 | ----------- | ---- |
 | 400 | 잘못된 요청 (유효성 검사 실패) |
 | 401 | 인증 필요 (토큰 만료/미로그인) |
-| 403 | 권한 없음 (타인의 게시글 수정 시도 등) |
+| 403 | 권한 없음 (타인의 게시글 수정 시도 등) 또는 계정 정지 (`account_suspended`) |
 | 404 | 리소스 없음 |
 | 409 | 충돌 (이메일/닉네임 중복) |
 | 500 | 서버 오류 |
@@ -415,7 +426,7 @@ sequenceDiagram
 
 - **정적 메서드**: 모든 클래스가 static 메서드만 사용
 - **IntersectionObserver**: 무한 스크롤 구현
-- **Custom Event**: `auth:session-expired` 이벤트로 401 처리 (silent refresh 실패 시 발생)
+- **Custom Event**: `auth:session-expired` 이벤트로 401 처리 (silent refresh 실패 시 발생), `auth:account-suspended` 이벤트로 403 계정 정지 처리 (관리자 API 제외, 로그인 페이지로 리다이렉트)
 - **XSS 방지**: `createElement()` / `textContent` 기반 DOM 생성 (innerHTML 금지)
 - **성능 최적화**:
   - **Lazy Loading**: `loading="lazy"` 속성으로 이미지 로딩 지연
@@ -464,6 +475,13 @@ sequenceDiagram
 ## Changelog
 
 ### 2026-03 (Mar)
+
+- **03-04: 프론트엔드 계정 정지 UI**
+  - 로그인 차단: 정지된 사용자 로그인 시 403 → 해제 예정일 + 사유 인라인 표시
+  - 글로벌 정지 감지: `ApiService` 403 `account_suspended` → `auth:account-suspended` 이벤트 → 로그인 페이지 리다이렉트 (관리자 API 제외)
+  - 관리자 프로필 정지: 타 사용자 프로필에서 기간(일) + 사유 입력 모달, 정지/해제 토글
+  - 신고 처리 연동: 관리자 신고 처리 시 체크박스로 작성자 동시 정지 (`suspend_days`)
+  - 정지 배지: 정지된 사용자 프로필에 "정지 중 (날짜까지)" 배지 표시
 
 - **03-04: Vite 빌드 시스템 도입**
   - `vite.config.js` 신규: 14개 HTML MPA 엔트리포인트 + 클린 URL 리라이트 플러그인

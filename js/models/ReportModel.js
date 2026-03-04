@@ -34,10 +34,13 @@ class ReportModel {
      * 신고 처리 (관리자)
      * @param {string|number} reportId - 신고 ID
      * @param {string} status - 처리 상태 ('resolved' | 'dismissed')
+     * @param {number|null} [suspendDays=null] - 작성자 정지 기간 (일)
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
-    static async resolveReport(reportId, status) {
-        return ApiService.patch(API_ENDPOINTS.ADMIN.RESOLVE_REPORT(reportId), { status });
+    static async resolveReport(reportId, status, suspendDays = null) {
+        const body = { status };
+        if (suspendDays != null) body.suspend_days = suspendDays;
+        return ApiService.patch(API_ENDPOINTS.ADMIN.RESOLVE_REPORT(reportId), body);
     }
 }
 
