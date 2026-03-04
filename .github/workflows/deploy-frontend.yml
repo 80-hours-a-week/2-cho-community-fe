@@ -50,24 +50,19 @@ jobs:
           role-session-name: frontend-deploy-${{ inputs.environment }}-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # 허용 목록 기반 동기화: 웹 에셋만 S3에 업로드
-      # 새로운 파일 유형 추가 시 --include 패턴 추가 필요
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install & Build
+        run: npm ci && npm run build
+
+      # dist/는 빌드 출력만 포함하므로 allowlist 필터 불필요
       - name: Sync to S3
         run: |
-          aws s3 sync . "s3://$S3_BUCKET" \
-            --exclude "*" \
-            --include "*.html" \
-            --include "*.css" \
-            --include "*.js" \
-            --include "*.png" \
-            --include "*.jpg" \
-            --include "*.jpeg" \
-            --include "*.svg" \
-            --include "*.ico" \
-            --include "*.webp" \
-            --include "*.woff2" \
-            --include "*.woff" \
-            --include "*.ttf" \
+          aws s3 sync dist/ "s3://$S3_BUCKET" \
             --delete \
             --region "$AWS_REGION"
 

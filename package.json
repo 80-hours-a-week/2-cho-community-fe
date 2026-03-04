@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "Frontend E2E Tests",
   "scripts": {
-    "dev": "serve -p 8080 -c serve.json",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.41.1",
-    "serve": "^14.2.0"
+    "vite": "^7.3.1"
   }
 }
