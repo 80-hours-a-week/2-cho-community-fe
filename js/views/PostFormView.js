@@ -2,6 +2,7 @@
 // 게시글 작성/수정 페이지 공통 View
 
 import { showToast, updateButtonState as updateBtnState } from './helpers.js';
+import MarkdownEditor from '../components/MarkdownEditor.js';
 
 /**
  * 게시글 폼(작성/수정) 공통 View 클래스
@@ -35,6 +36,11 @@ class PostFormView {
         this.fileInput = document.getElementById('file-input');
         this.fileNameEl = document.getElementById('file-name');
         this.previewContainer = document.getElementById('image-preview');
+
+        // 마크다운 에디터 래핑
+        if (this.contentInput) {
+            this.editor = new MarkdownEditor(this.contentInput);
+        }
 
         return !!this.form;
     }

@@ -7,6 +7,7 @@ import PostDetailView from '../views/PostDetailView.js'; // 토스트 메시지 
 import ModalView from '../views/ModalView.js';
 import Logger from '../utils/Logger.js';
 import { UI_MESSAGES } from '../constants.js';
+import MarkdownEditor from '../components/MarkdownEditor.js';
 
 const logger = Logger.createLogger('CommentController');
 
@@ -73,6 +74,11 @@ class CommentController {
     setupInputEvents() {
         const commentInput = document.getElementById('comment-input');
         const commentSubmitBtn = document.getElementById('comment-submit-btn');
+
+        // 댓글 입력에 컴팩트 마크다운 에디터 적용
+        if (commentInput && !this.commentEditor) {
+            this.commentEditor = new MarkdownEditor(commentInput, { compact: true });
+        }
 
         if (commentInput) {
             commentInput.addEventListener('input', () => {

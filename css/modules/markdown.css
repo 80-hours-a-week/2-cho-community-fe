@@ -1,0 +1,286 @@
+/* css/modules/markdown.css */
+/* 마크다운 렌더링 + 에디터 스타일 */
+
+/* ============================= */
+/* 1. Markdown Body (렌더링)     */
+/* ============================= */
+
+.markdown-body {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* 첫 번째/마지막 자식 마진 제거 */
+.markdown-body > *:first-child { margin-top: 0; }
+.markdown-body > *:last-child { margin-bottom: 0; }
+
+/* 제목 */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+}
+
+.markdown-body h1 { font-size: 1.6em; border-bottom: 1px solid var(--color-border-light); padding-bottom: 0.3em; }
+.markdown-body h2 { font-size: 1.4em; border-bottom: 1px solid var(--color-border-light); padding-bottom: 0.3em; }
+.markdown-body h3 { font-size: 1.2em; }
+.markdown-body h4 { font-size: 1.1em; }
+.markdown-body h5 { font-size: 1em; }
+.markdown-body h6 { font-size: 0.9em; color: var(--color-text-secondary); }
+
+/* 단락 */
+.markdown-body p {
+    margin-top: 0;
+    margin-bottom: 0.75em;
+}
+
+/* 강조 */
+.markdown-body strong { font-weight: var(--font-weight-bold); }
+.markdown-body em { font-style: italic; }
+.markdown-body del { text-decoration: line-through; color: var(--color-text-tertiary); }
+
+/* 링크 */
+.markdown-body a {
+    color: var(--color-info);
+    text-decoration: none;
+}
+.markdown-body a:hover {
+    text-decoration: underline;
+    color: var(--color-info-hover);
+}
+
+/* 인라인 코드 */
+.markdown-body code {
+    padding: 0.2em 0.4em;
+    font-size: 0.85em;
+    background-color: var(--color-code-inline-bg);
+    border-radius: var(--radius-sm);
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* 코드 블록 — pre 내부 code의 인라인 스타일 리셋 */
+.markdown-body pre {
+    margin-top: 0;
+    margin-bottom: 0.75em;
+    padding: var(--spacing-lg);
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    background-color: var(--color-code-bg);
+    line-height: 1.45;
+}
+.markdown-body pre code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    font-size: 0.85em;
+    color: var(--color-code-text);
+}
+
+/* 인용 */
+.markdown-body blockquote {
+    margin: 0 0 0.75em;
+    padding: 0.5em 1em;
+    border-left: 4px solid var(--color-blockquote-border);
+    color: var(--color-blockquote-text);
+}
+.markdown-body blockquote > *:last-child { margin-bottom: 0; }
+
+/* 리스트 — base.css의 list-style: none 복원 */
+.markdown-body ul,
+.markdown-body ol {
+    padding-left: 2em;
+    margin-top: 0;
+    margin-bottom: 0.75em;
+}
+.markdown-body ul { list-style: disc; }
+.markdown-body ol { list-style: decimal; }
+.markdown-body li + li { margin-top: 0.25em; }
+.markdown-body li > p { margin-bottom: 0.25em; }
+
+/* 구분선 */
+.markdown-body hr {
+    height: 1px;
+    margin: 1.5em 0;
+    padding: 0;
+    background-color: var(--color-border);
+    border: 0;
+}
+
+/* 이미지 */
+.markdown-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
+/* 테이블 */
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.75em;
+    font-size: 0.9em;
+}
+.markdown-body th,
+.markdown-body td {
+    padding: 0.5em 0.75em;
+    border: 1px solid var(--color-table-border);
+    text-align: left;
+}
+.markdown-body th {
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-bg-tertiary);
+}
+.markdown-body tbody tr:nth-child(even) {
+    background-color: var(--color-table-row-alt);
+}
+
+/* GFM task list */
+.markdown-body input[type="checkbox"] {
+    margin-right: 0.4em;
+    vertical-align: middle;
+}
+
+/* ============================= */
+/* 2. Compact 모드 (댓글용)       */
+/* ============================= */
+
+.markdown-body--compact {
+    font-size: var(--font-size-base);
+}
+.markdown-body--compact h1,
+.markdown-body--compact h2,
+.markdown-body--compact h3,
+.markdown-body--compact h4,
+.markdown-body--compact h5,
+.markdown-body--compact h6 {
+    font-size: 1em;
+    margin-top: 0.75em;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.markdown-body--compact pre {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+.markdown-body--compact blockquote {
+    padding: 0.25em 0.75em;
+}
+
+/* ============================= */
+/* 3. Syntax Highlighting        */
+/* ============================= */
+
+.hljs { color: var(--color-code-text); }
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in { color: var(--color-code-keyword); }
+.hljs-string,
+.hljs-attr { color: var(--color-code-string); }
+.hljs-comment,
+.hljs-doctag { color: var(--color-code-comment); font-style: italic; }
+.hljs-title,
+.hljs-title.function_ { color: var(--color-code-function); }
+.hljs-number,
+.hljs-literal { color: var(--color-code-number); }
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag { color: var(--color-code-variable); }
+.hljs-type,
+.hljs-name { color: var(--color-code-type); }
+.hljs-symbol,
+.hljs-bullet { color: var(--color-code-operator); }
+.hljs-meta { color: var(--color-code-comment); }
+.hljs-addition { color: var(--color-code-type); background-color: rgba(46, 160, 67, 0.15); }
+.hljs-deletion { color: var(--color-code-keyword); background-color: rgba(248, 81, 73, 0.15); }
+
+/* ============================= */
+/* 4. Editor                     */
+/* ============================= */
+
+.md-editor-wrapper {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-bg-primary);
+}
+
+/* wrapper 안의 textarea 보더 리셋 */
+.md-editor-wrapper textarea {
+    border: none;
+    border-radius: 0;
+    outline: none;
+    resize: vertical;
+}
+.md-editor-wrapper textarea:focus {
+    box-shadow: none;
+}
+
+/* 툴바 */
+.md-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-bg-tertiary);
+    border-bottom: 1px solid var(--color-border-light);
+    flex-wrap: wrap;
+}
+
+.md-toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+.md-toolbar-btn:hover {
+    background-color: var(--color-overlay-light);
+    color: var(--color-text-primary);
+}
+.md-toolbar-btn:active {
+    background-color: var(--color-border-light);
+}
+
+.md-toolbar-sep {
+    width: 1px;
+    height: 16px;
+    background-color: var(--color-border);
+    margin: 0 var(--spacing-2xs);
+}
+
+/* 미리보기 */
+.md-preview {
+    padding: var(--spacing-lg);
+    min-height: 120px;
+    overflow-y: auto;
+}
+
+/* 컴팩트 에디터 */
+.md-editor-compact .md-toolbar {
+    padding: var(--spacing-2xs) var(--spacing-xs);
+}
+.md-editor-compact .md-toolbar-btn {
+    width: 24px;
+    height: 24px;
+}
+.md-editor-compact .md-preview {
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 60px;
+}

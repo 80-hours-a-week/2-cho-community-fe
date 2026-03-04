@@ -34,7 +34,7 @@
 
 | 계층 | 기술 | 선택 근거 | 운영 고려사항 |
 | ------ | ------ | ----------- | ------------- |
-| **프론트엔드** | Vanilla JavaScript (MPA) + Vite | 프레임워크 없이 JS 기본기 학습, Vite로 번들링 | S3 + CloudFront로 정적 배포, 해시된 에셋 장기 캐싱 |
+| **프론트엔드** | Vanilla JavaScript (MPA) + Vite | 프레임워크 없이 JS 기본기 학습, Vite로 번들링 | S3 + CloudFront로 정적 배포, 해시된 에셋 장기 캐싱. 프로덕션 의존성: marked(마크다운), DOMPurify(XSS), highlight.js(구문 강조) |
 | **백엔드** | FastAPI (Python 3.13) | 비동기 I/O, 자동 API 문서화 | Lambda 컨테이너 실행, 콜드 스타트 영향 |
 | **데이터베이스** | MySQL 8.0 (aiomysql) | FULLTEXT 검색(ngram), 트랜잭션 격리 | 커넥션 풀 관리, Lambda 스케일링 시 폭발 위험 |
 | **인증** | JWT (Access 30분 + Refresh 7일) | Stateless 인증, XSS 방어 | 토큰 저장소 DB 의존, 만료 토큰 주기적 정리 |
@@ -55,6 +55,7 @@
 | **인증 토큰 관리** (JWT 발급·갱신·폐기) | 토큰 저장소 정합성, 브루트포스 방어 | DB 행 잠금, Rate Limiting (분산 환경 한계 존재) |
 | **동시 쓰기** (좋아요·북마크·댓글 동시 요청) | 경쟁 상태 방지, 트랜잭션 격리 | UNIQUE 제약, READ COMMITTED 격리 수준 |
 | **계정 정지** (관리자 기간 정지 + 신고 연동) | 정지 상태 3중 검증 (로그인·토큰·갱신) | `suspended_until` 시간 비교, 자동 해제 (배치 불필요) |
+| **마크다운 렌더링** (게시글·댓글 GFM + 코드 강조) | HTML 삽입에 따른 XSS 벡터 차단 | DOMPurify 라이브러리 sanitize, 단일 진입점(`renderMarkdown`) |
 
 ---
 
@@ -365,6 +366,7 @@ sequenceDiagram
 - bcrypt 비밀번호 해싱은 별도 스레드에서 실행하여 다른 요청 처리를 지연시키지 않습니다.
 - 존재하지 않는 이메일로 로그인 시에도 동일한 비밀번호 검증 절차를 수행하여, 응답 시간 차이로 이메일 존재 여부를 추측하는 공격(타이밍 공격)을 방지합니다.
 - 계정 정지는 로그인(403), 토큰 검증(403), 토큰 갱신(403) 3중으로 차단하여 정지된 사용자가 어떤 경로로도 서비스를 이용할 수 없도록 합니다. 프론트엔드는 `auth:account-suspended` 커스텀 이벤트를 통해 세션 중 정지를 감지하고 즉시 로그인 페이지로 이동합니다.
+- 마크다운 렌더링은 프로젝트에서 유일하게 innerHTML을 사용하는 경로이며, DOMPurify 라이브러리의 엄격한 화이트리스트(`ALLOWED_TAGS`, `FORBID_TAGS`, `FORBID_ATTR`)로 sanitize 후 삽입합니다. `renderMarkdown()`과 `renderMarkdownTo()` 두 함수가 유일한 진입점입니다.
 
 ### 2.4 CI/CD 파이프라인
 

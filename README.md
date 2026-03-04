@@ -4,7 +4,7 @@ AWS AI School 2기 과제: 커뮤니티 프론트엔드
 
 ## 요약 (Summary)
 
-커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글(대댓글 포함), 좋아요, 북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 검색/정렬(최신순·좋아요순·조회수순·댓글순·인기순), 이메일 인증, 알림, 내 활동 조회, 사용자 프로필, 관리자 계정 정지/해제 기능을 제공합니다.
+커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글(대댓글 포함), 좋아요, 북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 검색/정렬(최신순·좋아요순·조회수순·댓글순·인기순), 이메일 인증, 알림, 내 활동 조회, 사용자 프로필, 관리자 계정 정지/해제, 마크다운 에디터(GFM + 코드 구문 강조) 기능을 제공합니다.
 
 **개발 환경**: 프론트엔드는 Vite 개발 서버(HMR)를 사용하며, Python 의존성이 없습니다. 프로덕션 빌드(`npm run build`)는 해시된 에셋을 생성하고, S3 + CloudFront로 배포됩니다.
 
@@ -36,6 +36,7 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 - 인기순(Hot) 정렬을 제공한다. (좋아요·댓글·조회수 가중 + 시간 감쇠)
 - 관리자 계정 정지/해제 기능을 제공한다. (사용자 프로필에서 기간+사유 입력, 신고 처리 시 연동)
 - 정지된 사용자의 로그인 차단 및 정지 사유 안내를 제공한다.
+- 마크다운 에디터를 제공한다. (GFM 문법, 코드 구문 강조, 툴바 + 미리보기)
 
 ## 목표가 아닌 것 (Non-Goals)
 
@@ -402,8 +403,9 @@ sequenceDiagram
 │   ├── controllers/         # 비즈니스 로직
 │   ├── models/              # API 통신 계층
 │   ├── views/               # DOM 렌더링
+│   ├── components/          # 재사용 UI 컴포넌트 (MarkdownEditor)
 │   ├── services/            # ApiService (HTTP 클라이언트)
-│   ├── utils/               # Logger, Validators, Formatters
+│   ├── utils/               # Logger, Validators, Formatters, Markdown
 │   ├── config.js            # API_BASE_URL
 │   └── constants.js         # 엔드포인트, 메시지, 라우트
 │
@@ -427,7 +429,7 @@ sequenceDiagram
 - **정적 메서드**: 모든 클래스가 static 메서드만 사용
 - **IntersectionObserver**: 무한 스크롤 구현
 - **Custom Event**: `auth:session-expired` 이벤트로 401 처리 (silent refresh 실패 시 발생), `auth:account-suspended` 이벤트로 403 계정 정지 처리 (관리자 API 제외, 로그인 페이지로 리다이렉트)
-- **XSS 방지**: `createElement()` / `textContent` 기반 DOM 생성 (innerHTML 금지)
+- **XSS 방지**: `createElement()` / `textContent` 기반 DOM 생성. 마크다운 렌더링은 유일한 예외로 DOMPurify 라이브러리로 sanitize 후 삽입 (`renderMarkdown()`, `renderMarkdownTo()` 단일 진입점)
 - **성능 최적화**:
   - **Lazy Loading**: `loading="lazy"` 속성으로 이미지 로딩 지연
   - **Debounce**: 입력 이벤트(회원가입 등) 제어로 불필요한 연산 방지
@@ -437,6 +439,8 @@ sequenceDiagram
 - **Web Share API**: 모바일 `navigator.share()` + 데스크톱 `navigator.clipboard.writeText()` 폴백
 - **이미지 갤러리**: 다중 이미지(`image_urls[]`) 갤러리 렌더링, 단일 이미지(`image_url`) 하위 호환
 - **비동기 응답 무효화**: 검색/정렬 변경 시 `loadGeneration` 카운터로 in-flight 응답 폐기
+- **마크다운 렌더링**: `marked`(GFM 파싱) + `DOMPurify`(XSS 방지) + `highlight.js`(코드 구문 강조). 게시글 본문은 `renderMarkdownTo()`, 댓글은 `renderMarkdown()` + `<template>` 요소 패턴. `breaks: true` 설정으로 기존 플레인텍스트 호환
+- **마크다운 에디터**: `MarkdownEditor` 컴포넌트가 textarea 래핑. 풀 모드(게시글: 14버튼 툴바) / 컴팩트 모드(댓글: 5버튼). 미리보기 토글, Ctrl+B/I 단축키 지원
 
 ### 6. 보안 고려사항
 
@@ -446,7 +450,7 @@ sequenceDiagram
 | JWT 인증 | Access Token(30분, in-memory) + Refresh Token(7일, HttpOnly Cookie, SHA-256 해시 DB 저장) |
 | CORS | 허용 출처 명시적 설정 (`localhost:8080`) |
 | SQL Injection | Parameterized queries (`aiomysql`) |
-| XSS | 프론트엔드에서 `createElement()` / `textContent` 사용 (innerHTML 금지) |
+| XSS | `createElement()` / `textContent` 기반 DOM 생성. 마크다운 렌더링만 DOMPurify sanitize 후 innerHTML 사용 |
 | Timing Attack | 로그인 시 존재하지 않는 사용자도 `bcrypt` 검증 수행 |
 
 ### 7. 비밀번호 정책
@@ -475,6 +479,12 @@ sequenceDiagram
 ## Changelog
 
 ### 2026-03 (Mar)
+
+- **03-04: 마크다운 에디터**
+  - 렌더링: `marked`(GFM) + `DOMPurify`(XSS 방지) + `highlight.js`(구문 강조 9언어)
+  - 에디터: `MarkdownEditor` 컴포넌트 — 풀 모드(게시글, 14버튼 툴바) / 컴팩트 모드(댓글, 5버튼)
+  - 미리보기 토글, Ctrl+B/I 단축키, `breaks: true` 기존 플레인텍스트 호환
+  - CSS: 코드 하이라이팅 15 토큰 + 다크 모드 대응, `markdown.css` 신규
 
 - **03-04: 프론트엔드 계정 정지 UI**
   - 로그인 차단: 정지된 사용자 로그인 시 403 → 해제 예정일 + 사유 인라인 표시

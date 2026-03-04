@@ -6,6 +6,7 @@ import { getImageUrl } from './helpers.js';
 import { createElement } from '../utils/dom.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS } from '../constants.js';
+import { renderMarkdown } from '../utils/markdown.js';
 
 /**
  * 댓글 목록 View 클래스
@@ -124,7 +125,7 @@ class CommentListView {
                         createElement('div', { className: 'comment-actions' }, actionButtons)
                     ] : []),
                 ]),
-                createElement('p', { className: 'comment-text' }, [content]),
+                CommentListView._createCommentText(content),
                 ...(likeBtn ? [likeBtn] : []),
             ]),
         ];
@@ -132,6 +133,23 @@ class CommentListView {
         return createElement('li', {
             className: `comment-item ${isReply ? 'comment-reply' : ''}`
         }, children);
+    }
+
+    /**
+     * 댓글 텍스트 요소 생성 (마크다운 렌더링 — DOMPurify sanitized)
+     * @param {string} content - 댓글 내용
+     * @returns {HTMLElement}
+     * @private
+     */
+    static _createCommentText(content) {
+        const el = document.createElement('div');
+        el.className = 'comment-text markdown-body markdown-body--compact';
+        // renderMarkdown()은 DOMPurify sanitization을 거친 안전한 HTML 반환
+        const sanitized = renderMarkdown(content);
+        const tpl = document.createElement('template');
+        tpl.innerHTML = sanitized; // DOMPurify-sanitized HTML — XSS safe
+        el.appendChild(tpl.content);
+        return el;
     }
 
     /**

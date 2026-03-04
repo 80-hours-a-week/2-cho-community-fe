@@ -5,6 +5,7 @@ import { formatDate, formatCount, escapeCssUrl } from '../utils/formatters.js';
 import { getImageUrl, showToast } from './helpers.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
+import { renderMarkdownTo } from '../utils/markdown.js';
 
 /**
  * 게시글 상세 View 클래스
@@ -37,9 +38,9 @@ class PostDetailView {
         const titleEl = document.getElementById('post-title');
         if (titleEl) titleEl.innerText = post.title;
 
-        // 본문
+        // 본문 (마크다운 렌더링 — DOMPurify sanitized)
         const contentEl = document.getElementById('post-content');
-        if (contentEl) contentEl.innerText = post.content;
+        if (contentEl) renderMarkdownTo(contentEl, post.content);
 
         // 작성자
         const authorNickname = document.getElementById('post-author-nickname');
