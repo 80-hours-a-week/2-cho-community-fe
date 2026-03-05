@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
         PROFILE_IMAGE: '/v1/users/profile/image',
         FIND_EMAIL: '/v1/users/find-email',
         RESET_PASSWORD: '/v1/users/reset-password',
+        SEARCH: '/v1/users/search',
     },
     POSTS: {
         ROOT: '/v1/posts',

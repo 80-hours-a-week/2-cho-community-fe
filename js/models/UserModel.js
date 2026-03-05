@@ -83,6 +83,20 @@ class UserModel {
     }
 
     /**
+     * 닉네임 검색 (멘션 자동완성용)
+     * @param {string} query - 닉네임 접두어
+     * @param {number} [limit=10] - 최대 결과 수
+     * @returns {Promise<Array>} - 검색 결과 배열
+     */
+    static async searchUsers(query, limit = 10) {
+        const params = new URLSearchParams({ q: query, limit: String(limit) });
+        const response = await ApiService.get(
+            `${API_ENDPOINTS.USERS.SEARCH}?${params.toString()}`
+        );
+        return response.data || [];
+    }
+
+    /**
      * 사용자 공개 프로필 조회
      * @param {number} userId - 사용자 ID
      * @returns {Promise<{ok: boolean, status: number, data: any}>}

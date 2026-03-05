@@ -71,7 +71,7 @@ class CommentController {
     /**
      * 댓글 입력 관련 이벤트 설정
      */
-    setupInputEvents() {
+    async setupInputEvents() {
         const commentInput = document.getElementById('comment-input');
         const commentSubmitBtn = document.getElementById('comment-submit-btn');
 
@@ -102,6 +102,15 @@ class CommentController {
         const replyCancelBtn = document.getElementById('reply-cancel-btn');
         if (replyCancelBtn) {
             replyCancelBtn.addEventListener('click', () => this.cancelReply());
+        }
+
+        // 멘션 자동완성 드롭다운
+        if (commentInput && !this.mentionDropdown) {
+            const wrapper = commentInput.closest('.comment-input-wrapper');
+            if (wrapper) {
+                const { default: MentionDropdown } = await import('../components/MentionDropdown.js');
+                this.mentionDropdown = new MentionDropdown(commentInput, wrapper);
+            }
         }
     }
 
