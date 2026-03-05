@@ -22,7 +22,41 @@ class UserProfileView {
             nicknameEl.textContent = user.nickname;
         }
 
+        UserProfileView.renderStats(user);
         UserProfileView.renderSuspensionBadge(user);
+    }
+
+    /**
+     * 활동 통계 카드 렌더링
+     * @param {object} user - 사용자 데이터 (posts_count, comments_count, likes_received_count 포함)
+     */
+    static renderStats(user) {
+        const container = document.getElementById('profile-stats');
+        if (!container) return;
+
+        const stats = [
+            { label: '게시글', value: user.posts_count ?? 0 },
+            { label: '댓글', value: user.comments_count ?? 0 },
+            { label: '좋아요', value: user.likes_received_count ?? 0 },
+        ];
+
+        container.textContent = '';
+        stats.forEach(({ label, value }) => {
+            const item = document.createElement('div');
+            item.className = 'profile-stat-item';
+
+            const valueEl = document.createElement('span');
+            valueEl.className = 'profile-stat-value';
+            valueEl.textContent = String(value);
+
+            const labelEl = document.createElement('span');
+            labelEl.className = 'profile-stat-label';
+            labelEl.textContent = label;
+
+            item.appendChild(valueEl);
+            item.appendChild(labelEl);
+            container.appendChild(item);
+        });
     }
 
     /**

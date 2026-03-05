@@ -38,6 +38,34 @@
 }
 
 /* ============================= */
+/* 프로필 활동 통계               */
+/* ============================= */
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-4xl);
+    padding: var(--spacing-sm) 0 var(--spacing-lg);
+}
+
+.profile-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.profile-stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.profile-stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* ============================= */
 /* 작성한 글 섹션 (Posts Section) */
 /* ============================= */
 .user-profile-posts {
