@@ -146,6 +146,11 @@
     color: var(--color-text-primary);
 }
 
+.mention-highlight {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
 /* ============================= */
 /* Reply (대댓글) Styles         */
 /* ============================= */

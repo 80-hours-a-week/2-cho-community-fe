@@ -22,7 +22,12 @@ class NotificationView {
         const content = createElement('div', { className: 'notification-content' });
 
         const actorName = notification.actor?.nickname || '탈퇴한 사용자';
-        const typeText = notification.type === 'comment' ? '댓글을 남겼습니다' : '좋아요를 눌렀습니다';
+        const typeTextMap = {
+            comment: '댓글을 남겼습니다',
+            like: '좋아요를 눌렀습니다',
+            mention: '회원님을 언급했습니다',
+        };
+        const typeText = typeTextMap[notification.type] || '알림이 있습니다';
 
         const message = createElement('p', { className: 'notification-message' });
         const actorSpan = createElement('strong', { textContent: actorName });

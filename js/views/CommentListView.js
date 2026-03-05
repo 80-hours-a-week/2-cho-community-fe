@@ -7,6 +7,7 @@ import { createElement } from '../utils/dom.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS } from '../constants.js';
 import { renderMarkdown } from '../utils/markdown.js';
+import { highlightMentions } from '../utils/mention.js';
 
 /**
  * 댓글 목록 View 클래스
@@ -149,6 +150,7 @@ class CommentListView {
         const tpl = document.createElement('template');
         tpl.innerHTML = sanitized; // DOMPurify-sanitized HTML — XSS safe
         el.appendChild(tpl.content);
+        highlightMentions(el);
         return el;
     }
 
