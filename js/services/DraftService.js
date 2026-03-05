@@ -1,0 +1,91 @@
+// js/services/DraftService.js
+// localStorage 기반 게시글 임시 저장 서비스
+
+const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7일
+
+class DraftService {
+    /**
+     * 임시 저장 데이터를 localStorage에 저장.
+     * savedAt 타임스탬프 자동 추가.
+     */
+    static save(key, { title, content, categoryId }) {
+        try {
+            const data = {
+                title,
+                content,
+                categoryId,
+                savedAt: new Date().toISOString(),
+            };
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch {
+            // localStorage 용량 초과 등 — 조용히 실패
+        }
+    }
+
+    /**
+     * 저장된 임시 데이터 로드.
+     * TTL(7일) 초과 시 삭제 후 null 반환.
+     * 파싱 실패 시 null 반환.
+     */
+    static load(key) {
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return null;
+
+            const data = JSON.parse(raw);
+            if (!data || !data.savedAt) return null;
+
+            // TTL 검사 — 만료된 항목 제거
+            const elapsed = Date.now() - new Date(data.savedAt).getTime();
+            if (elapsed > DRAFT_TTL_MS) {
+                DraftService.clear(key);
+                return null;
+            }
+
+            return {
+                title: data.title ?? '',
+                content: data.content ?? '',
+                categoryId: data.categoryId ?? null,
+                savedAt: data.savedAt,
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /** 임시 저장 데이터 삭제. */
+    static clear(key) {
+        try {
+            localStorage.removeItem(key);
+        } catch {
+            // 조용히 실패
+        }
+    }
+
+    /** 유효한 임시 저장 데이터 존재 여부. */
+    static exists(key) {
+        return DraftService.load(key) !== null;
+    }
+
+    /**
+     * ISO 문자열을 "3월 5일 12:34" 형식으로 변환.
+     * 유효하지 않은 입력 시 빈 문자열 반환.
+     */
+    static formatSavedAt(isoString) {
+        try {
+            const date = new Date(isoString);
+            if (isNaN(date.getTime())) return '';
+
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${month}월 ${day}일 ${hours}:${minutes}`;
+        } catch {
+            return '';
+        }
+    }
+}
+
+export default DraftService;
