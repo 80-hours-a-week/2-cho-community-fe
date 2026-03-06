@@ -25,9 +25,11 @@ class PostFormView {
 
     /**
      * DOM 요소 초기화
+     * @param {object} [options={}] - 초기화 옵션
+     * @param {Function|null} [options.onImageUpload=null] - 이미지 업로드 콜백 (file → Promise<url>)
      * @returns {boolean} 초기화 성공 여부
      */
-    initialize() {
+    initialize(options = {}) {
         this.form = document.getElementById(this.formId);
         this.titleInput = document.getElementById('post-title');
         this.contentInput = document.getElementById('post-content');
@@ -39,7 +41,9 @@ class PostFormView {
 
         // 마크다운 에디터 래핑
         if (this.contentInput) {
-            this.editor = new MarkdownEditor(this.contentInput);
+            this.editor = new MarkdownEditor(this.contentInput, {
+                onImageUpload: options?.onImageUpload || null,
+            });
         }
 
         return !!this.form;

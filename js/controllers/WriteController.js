@@ -30,7 +30,12 @@ class WriteController {
         this.currentUser = currentUser;
 
         // View 초기화
-        if (!this.view.initialize()) return;
+        if (!this.view.initialize({
+            onImageUpload: async (file) => {
+                const response = await PostModel.uploadImage(file);
+                return response.data.image_url;
+            },
+        })) return;
 
         await this._loadCategories();
         this._setupEventListeners();

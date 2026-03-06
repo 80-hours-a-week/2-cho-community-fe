@@ -39,7 +39,12 @@ class EditController {
         }
 
         // View 초기화
-        if (!this.view.initialize()) return;
+        if (!this.view.initialize({
+            onImageUpload: async (file) => {
+                const response = await PostModel.uploadImage(file);
+                return response.data.image_url;
+            },
+        })) return;
 
         await this._loadCategories();
         await this._loadPostData();
