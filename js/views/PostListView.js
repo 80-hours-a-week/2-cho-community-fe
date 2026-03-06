@@ -50,6 +50,20 @@ class PostListView {
             ...(badges.length > 0 ? [
                 createElement('div', { className: 'post-badges' }, badges)
             ] : []),
+            // Tags
+            ...(post.tags && post.tags.length > 0 ? [
+                createElement('div', { className: 'post-tags' },
+                    post.tags.map(tag =>
+                        createElement('span', {
+                            className: 'tag-badge',
+                            onClick: (e) => {
+                                e.stopPropagation();
+                                location.href = resolveNavPath(`${NAV_PATHS.MAIN}?tag=${encodeURIComponent(tag.name)}`);
+                            },
+                        }, [`#${tag.name}`])
+                    )
+                )
+            ] : []),
             // Header: Title & Date
             createElement('div', { className: 'post-card-header' }, [
                 createElement('h3', { className: 'post-title' }, [titleText]),

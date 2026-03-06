@@ -26,6 +26,7 @@ class MainController {
         this.currentSearch = null;
         this.currentSort = 'latest';
         this.currentCategory = null;
+        this.currentTag = null;
         // 검색/정렬 변경 시 이전 요청의 응답을 무시하기 위한 세대 카운터
         this.loadGeneration = 0;
     }
@@ -34,6 +35,13 @@ class MainController {
      * 컨트롤러 초기화
      */
     async init() {
+        // URL 파라미터에서 태그 필터 읽기
+        const urlParams = new URLSearchParams(window.location.search);
+        const tagParam = urlParams.get('tag');
+        if (tagParam) {
+            this.currentTag = tagParam;
+        }
+
         // 헤더의 인증 관련 로직은 HeaderController에서 처리
         await this._loadCategories();
         await this._loadPosts();
@@ -194,7 +202,7 @@ class MainController {
         try {
             const result = await PostModel.getPosts(
                 this.currentOffset, this.LIMIT, this.currentSearch, this.currentSort,
-                null, this.currentCategory
+                null, this.currentCategory, this.currentTag
             );
 
             // 검색/정렬이 변경되어 세대가 바뀌었으면 이전 응답 무시

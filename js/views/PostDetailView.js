@@ -6,6 +6,7 @@ import { getImageUrl, showToast } from './helpers.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { renderMarkdownTo } from '../utils/markdown.js';
+import { createElement } from '../utils/dom.js';
 
 /**
  * 게시글 상세 View 클래스
@@ -31,6 +32,23 @@ class PostDetailView {
                 catBadge.className = 'category-badge';
                 catBadge.textContent = post.category_name || CATEGORY_LABELS[post.category_id] || '';
                 badgeArea.appendChild(catBadge);
+            }
+        }
+
+        // 태그 표시
+        const tagsContainer = document.getElementById('post-tags');
+        if (tagsContainer) {
+            tagsContainer.textContent = '';
+            if (post.tags && post.tags.length > 0) {
+                post.tags.forEach(tag => {
+                    const badge = createElement('span', {
+                        className: 'tag-badge',
+                        onClick: () => {
+                            location.href = resolveNavPath(`${NAV_PATHS.MAIN}?tag=${encodeURIComponent(tag.name)}`);
+                        },
+                    }, [`#${tag.name}`]);
+                    tagsContainer.appendChild(badge);
+                });
             }
         }
 
