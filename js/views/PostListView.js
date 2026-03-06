@@ -45,7 +45,7 @@ class PostListView {
         }
 
         // DOM 생성 (createElement 사용)
-        const card = createElement('li', { className: `post-card${post.is_pinned ? ' pinned' : ''}` }, [
+        const card = createElement('li', { className: `post-card${post.is_pinned ? ' pinned' : ''}${post.is_read ? ' read' : ''}` }, [
             // Badges
             ...(badges.length > 0 ? [
                 createElement('div', { className: 'post-badges' }, badges)

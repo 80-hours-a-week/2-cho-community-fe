@@ -134,6 +134,20 @@
 /* ============================= */
 /* 로딩 감지기 (Loading Sentinel) */
 /* ============================= */
+/* ============================= */
+/* 읽은 게시글 (Read Post) */
+/* ============================= */
+.post-card.read .post-title {
+    color: var(--color-text-tertiary);
+}
+
+.post-card.read {
+    opacity: 0.85;
+}
+
+/* ============================= */
+/* 로딩 감지기 (Loading Sentinel) */
+/* ============================= */
 #loading-sentinel {
     height: 20px;
     margin: 20px 0;
