@@ -65,5 +65,7 @@ temp/
 .agent/
 .claude/
 .gemini/
+.serena/
 CLAUDE.md
 GEMINI.md
+docs/*
