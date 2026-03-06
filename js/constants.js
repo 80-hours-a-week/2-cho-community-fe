@@ -79,6 +79,9 @@ export const API_ENDPOINTS = {
         MY_BOOKMARKS: '/v1/users/me/bookmarks',
         MY_BLOCKS: '/v1/users/me/blocks',
     },
+    TAGS: {
+        ROOT: '/v1/tags',
+    },
 };
 
 export const UI_MESSAGES = {

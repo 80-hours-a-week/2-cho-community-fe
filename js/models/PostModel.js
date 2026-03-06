@@ -125,6 +125,15 @@ class PostModel {
     }
 
     /**
+     * 태그 자동완성 검색
+     * @param {string} search - 검색어
+     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     */
+    static async searchTags(search) {
+        return ApiService.get(`${API_ENDPOINTS.TAGS.ROOT}?search=${encodeURIComponent(search)}`);
+    }
+
+    /**
      * 이미지 업로드
      * @param {File} file - 이미지 파일
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
