@@ -3,6 +3,8 @@
 
 import { showToast, updateButtonState as updateBtnState } from './helpers.js';
 import MarkdownEditor from '../components/MarkdownEditor.js';
+import { createElement } from '../utils/dom.js';
+import PostModel from '../models/PostModel.js';
 
 /**
  * 게시글 폼(작성/수정) 공통 View 클래스
@@ -21,6 +23,12 @@ class PostFormView {
         this.fileInput = null;
         this.fileNameEl = null;
         this.previewContainer = null;
+        // 태그 관련 상태
+        this.tagInput = null;
+        this.tagChips = null;
+        this.tagSuggestions = null;
+        this.tags = [];
+        this._tagDebounceTimer = null;
     }
 
     /**
@@ -42,7 +50,178 @@ class PostFormView {
             this.editor = new MarkdownEditor(this.contentInput);
         }
 
+        // 태그 요소 참조
+        this.tagInput = document.getElementById('tag-input');
+        this.tagChips = document.getElementById('tag-chips');
+        this.tagSuggestions = document.getElementById('tag-suggestions');
+
         return !!this.form;
+    }
+
+    /**
+     * 태그 입력 UI 초기화 (이벤트 바인딩)
+     */
+    initializeTags() {
+        if (!this.tagInput || !this.tagChips || !this.tagSuggestions) return;
+
+        // Enter 키로 태그 추가
+        this.tagInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const value = this.tagInput.value.trim();
+                if (value) {
+                    this.addTag(value);
+                    this.tagInput.value = '';
+                    this._hideSuggestions();
+                }
+            } else if (e.key === 'Escape') {
+                this._hideSuggestions();
+            }
+        });
+
+        // 300ms 디바운스 자동완성 검색
+        this.tagInput.addEventListener('input', () => {
+            clearTimeout(this._tagDebounceTimer);
+            const value = this.tagInput.value.trim();
+            if (!value) {
+                this._hideSuggestions();
+                return;
+            }
+            this._tagDebounceTimer = setTimeout(async () => {
+                try {
+                    const result = await PostModel.searchTags(value);
+                    if (result.ok) {
+                        const tags = result.data?.data?.tags || [];
+                        this._showSuggestions(tags);
+                    }
+                } catch (_) {
+                    // 자동완성 실패는 무시
+                }
+            }, 300);
+        });
+
+        // 컨테이너 클릭 시 입력창 포커스
+        const container = document.getElementById('tag-container');
+        if (container) {
+            container.addEventListener('click', (e) => {
+                if (e.target !== this.tagInput) {
+                    this.tagInput.focus();
+                }
+            });
+        }
+
+        // 외부 클릭 시 자동완성 숨기기
+        document.addEventListener('click', (e) => {
+            if (container && !container.contains(e.target)) {
+                this._hideSuggestions();
+            }
+        });
+    }
+
+    /**
+     * 태그 추가
+     * @param {string} name - 태그 이름
+     */
+    addTag(name) {
+        // 최대 5개 제한
+        if (this.tags.length >= 5) return;
+        // 중복 제거
+        const normalized = name.trim().toLowerCase();
+        if (!normalized) return;
+        if (this.tags.some(t => t.toLowerCase() === normalized)) return;
+
+        this.tags.push(name.trim());
+        this._renderChips();
+    }
+
+    /**
+     * 태그 제거
+     * @param {string} name - 태그 이름
+     */
+    removeTag(name) {
+        this.tags = this.tags.filter(t => t !== name);
+        this._renderChips();
+    }
+
+    /**
+     * 현재 태그 목록 반환
+     * @returns {string[]}
+     */
+    getTags() {
+        return [...this.tags];
+    }
+
+    /**
+     * 태그 목록 설정 (수정 폼에서 기존 태그 로드)
+     * @param {Array<{name: string}|string>} tagList - 태그 배열
+     */
+    setTags(tagList) {
+        this.tags = tagList.map(t => (typeof t === 'string' ? t : t.name));
+        this._renderChips();
+    }
+
+    /**
+     * 태그 칩 렌더링
+     * @private
+     */
+    _renderChips() {
+        if (!this.tagChips) return;
+        this.tagChips.textContent = '';
+        this.tags.forEach(tagName => {
+            const chip = createElement('span', { className: 'tag-chip' }, [
+                `#${tagName}`,
+                createElement('button', {
+                    type: 'button',
+                    className: 'tag-chip-remove',
+                    onClick: () => this.removeTag(tagName),
+                }, ['×']),
+            ]);
+            this.tagChips.appendChild(chip);
+        });
+    }
+
+    /**
+     * 자동완성 드롭다운 표시
+     * @param {Array<{name: string, post_count: number}>} suggestions - 태그 목록
+     * @private
+     */
+    _showSuggestions(suggestions) {
+        if (!this.tagSuggestions) return;
+        this.tagSuggestions.textContent = '';
+
+        if (suggestions.length === 0) {
+            this._hideSuggestions();
+            return;
+        }
+
+        suggestions.forEach(tag => {
+            const item = createElement('div', {
+                className: 'tag-suggestion-item',
+                onClick: () => {
+                    this.addTag(tag.name);
+                    this.tagInput.value = '';
+                    this._hideSuggestions();
+                    this.tagInput.focus();
+                },
+            }, [
+                createElement('span', {}, [`#${tag.name}`]),
+                createElement('span', { className: 'tag-suggestion-count' }, [`${tag.post_count || 0}`]),
+            ]);
+            this.tagSuggestions.appendChild(item);
+        });
+
+        this.tagSuggestions.style.display = '';
+    }
+
+    /**
+     * 자동완성 드롭다운 숨기기
+     * @private
+     */
+    _hideSuggestions() {
+        if (this.tagSuggestions) {
+            this.tagSuggestions.style.display = 'none';
+            this.tagSuggestions.textContent = '';
+        }
     }
 
     /**

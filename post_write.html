@@ -44,6 +44,15 @@
             </div>
 
             <div class="input-group">
+                <label for="tag-input">태그</label>
+                <div id="tag-container" class="tag-input-container">
+                    <div id="tag-chips" class="tag-chips"></div>
+                    <input type="text" id="tag-input" placeholder="태그 입력 후 Enter (최대 5개)" maxlength="30">
+                    <div id="tag-suggestions" class="tag-suggestions" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="input-group">
                 <label for="post-title">제목*</label>
                 <div class="form-divider"></div>
                 <input type="text" id="post-title" placeholder="제목을 입력해주세요. (최대 26글자)" maxlength="26" required>

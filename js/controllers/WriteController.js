@@ -33,6 +33,7 @@ class WriteController {
         if (!this.view.initialize()) return;
 
         await this._loadCategories();
+        this.view.initializeTags();
         this._setupEventListeners();
     }
 
@@ -182,6 +183,7 @@ class WriteController {
                 title: title,
                 content: content,
                 category_id: categoryId,
+                tags: this.view.getTags(),
             };
 
             // 이미지가 있으면 image_urls 배열로 전송
