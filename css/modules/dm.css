@@ -1,0 +1,316 @@
+/* css/modules/dm.css */
+/* DM(쪽지) 페이지 스타일 */
+
+/* ============================= */
+/* DM 목록 페이지               */
+/* ============================= */
+
+.dm-container {
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.dm-container .page-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-xl);
+    color: var(--color-text-primary);
+}
+
+.dm-list {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 대화 카드 */
+.dm-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-light);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    text-decoration: none;
+    color: inherit;
+}
+
+.dm-card:hover {
+    background: var(--color-bg-input);
+}
+
+.dm-card.unread {
+    background: var(--color-notification-unread);
+}
+
+.dm-card.unread:hover {
+    background: var(--color-notification-unread-hover);
+}
+
+.dm-card__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--color-bg-tertiary);
+}
+
+.dm-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.dm-card__name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-2xs);
+}
+
+.dm-card__preview {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: var(--line-height-normal);
+}
+
+.dm-card__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+}
+
+.dm-card__time {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-placeholder);
+    white-space: nowrap;
+}
+
+/* 읽지 않은 메시지 뱃지 */
+.dm-unread-badge {
+    background: var(--color-notification-badge);
+    color: var(--color-text-white);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--spacing-xs);
+}
+
+/* 빈 상태 */
+.dm-empty {
+    text-align: center;
+    padding: 60px var(--spacing-xl);
+    color: var(--color-text-placeholder);
+    font-size: var(--font-size-md);
+}
+
+/* 더보기 버튼 */
+.load-more-container {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-xl) 0;
+}
+
+.btn-load-more {
+    padding: var(--spacing-sm) var(--spacing-2xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-load-more:hover {
+    background: var(--color-bg-tertiary);
+}
+
+/* ============================= */
+/* DM 대화 상세 페이지           */
+/* ============================= */
+
+.dm-detail-container {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+}
+
+/* 대화 헤더 */
+.dm-detail-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-bg-primary);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+}
+
+.dm-other-user-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+.dm-other-user-info .dm-card__avatar {
+    width: 32px;
+    height: 32px;
+}
+
+.dm-other-user-info .dm-card__name {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: 0;
+}
+
+/* 메시지 영역 */
+.dm-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+/* 메시지 버블 공통 */
+.dm-msg {
+    max-width: 70%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    word-break: break-word;
+}
+
+/* 내 메시지 (오른쪽) */
+.dm-msg--mine {
+    align-self: flex-end;
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border-bottom-right-radius: var(--radius-sm);
+}
+
+/* 상대방 메시지 (왼쪽) */
+.dm-msg--other {
+    align-self: flex-start;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+    border-bottom-left-radius: var(--radius-sm);
+}
+
+.dm-msg__content {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+}
+
+/* 마크다운 렌더링된 내용 내부 여백 초기화 */
+.dm-msg__content p {
+    margin: 0;
+}
+
+.dm-msg__content p + p {
+    margin-top: var(--spacing-xs);
+}
+
+.dm-msg__time {
+    font-size: var(--font-size-xs);
+    margin-top: var(--spacing-2xs);
+    opacity: 0.7;
+}
+
+.dm-msg--mine .dm-msg__time {
+    text-align: right;
+    color: var(--color-text-white);
+}
+
+.dm-msg--other .dm-msg__time {
+    text-align: left;
+    color: var(--color-text-placeholder);
+}
+
+/* 날짜 구분선 */
+.dm-date-divider {
+    text-align: center;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-placeholder);
+    padding: var(--spacing-md) 0;
+    position: relative;
+}
+
+.dm-date-divider::before,
+.dm-date-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: var(--color-border-light);
+}
+
+.dm-date-divider::before {
+    left: 0;
+}
+
+.dm-date-divider::after {
+    right: 0;
+}
+
+/* 입력 영역 */
+.dm-input-area {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-bg-primary);
+    position: sticky;
+    bottom: 0;
+}
+
+.dm-editor-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.dm-send-btn {
+    flex-shrink: 0;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    border-radius: var(--radius-md);
+}
+
+/* 아이콘 버튼 (삭제 등) */
+.dm-detail-header .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border: none;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.dm-detail-header .btn-icon:hover {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+}

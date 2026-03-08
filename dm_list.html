@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <script>(function(){var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)})()</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아무 말 대잔치 - 메시지</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/modules/dm.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+KR:wght@100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="header-title-wrapper">
+            <button id="back-btn" class="back-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <h2>아무 말 대잔치</h2>
+            <div id="auth-section" class="header-auth"></div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dm-container">
+            <h2 class="page-title">메시지</h2>
+            <div id="dm-list" class="dm-list"></div>
+            <div id="dm-empty" class="dm-empty" style="display:none;">
+                <p>아직 대화가 없습니다.</p>
+            </div>
+            <div id="dm-load-more" class="load-more-container" style="display:none;">
+                <button id="load-more-btn" class="btn-load-more">더보기</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script type="module" src="/js/app/dm_list.js"></script>
+</body>
+
+</html>
