@@ -18,6 +18,7 @@ const logger = Logger.createLogger('HeaderController');
 /** 폴링 주기 (ms) */
 const POLL_INTERVAL_ACTIVE = 10_000;   // 포커스 상태: 10초
 const POLL_INTERVAL_INACTIVE = 60_000; // 비포커스 상태: 60초
+const WS_RESYNC_INTERVAL = 60_000;     // WebSocket 모드에서 count 재동기화: 60초
 
 /**
  * 헤더 컨트롤러
@@ -174,6 +175,7 @@ class HeaderController {
      */
     async _handleLogout() {
         this._stopNotificationPolling();
+        this._stopResync();
         if (this._wsService) {
             this._wsService.disconnect();
             this._wsService = null;
@@ -209,23 +211,48 @@ class HeaderController {
         // 폴백: WebSocket 재연결 포기 시 폴링 전환
         this._wsService.onFallback(() => {
             logger.info('WebSocket 폴백 → 폴링 모드');
+            this._stopResync();
             this._startNotificationPolling();
         });
 
-        // 재연결 성공 시 폴링 중단
+        // 재연결 성공 시 폴링 중단 + 재동기화 시작
         this._wsService.onReconnect(() => {
             logger.info('WebSocket 재연결 → 폴링 중단');
             this._stopNotificationPolling();
+            this._startResync();
         });
 
         // WebSocket 연결 시도
-        this._wsService.connect(() => getAccessToken()).catch(() => {
+        this._wsService.connect(() => getAccessToken()).then(() => {
+            // WebSocket 연결 성공 → 주기적 count 재동기화 (드리프트 방지)
+            this._startResync();
+        }).catch(() => {
             logger.info('WebSocket 연결 실패 → 폴링 모드');
             this._startNotificationPolling();
         });
 
         // 초기 unread count는 한 번 폴링으로 가져옴
         this._pollNotifications();
+    }
+
+    /**
+     * WebSocket 모드에서 주기적 unread count 재동기화 (드리프트 방지)
+     * @private
+     */
+    _startResync() {
+        this._stopResync();
+        this._resyncInterval = setInterval(() => this._pollNotifications(), WS_RESYNC_INTERVAL);
+    }
+
+    /**
+     * 재동기화 중지
+     * @private
+     */
+    _stopResync() {
+        if (this._resyncInterval) {
+            clearInterval(this._resyncInterval);
+            this._resyncInterval = null;
+        }
     }
 
     /**

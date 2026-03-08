@@ -480,13 +480,6 @@ sequenceDiagram
 
 ### 2026-03 (Mar)
 
-- **03-08: 실시간 알림 (WebSocket)**
-  - `js/services/WebSocketService.js`: 연결 생명주기 싱글턴 (인증, 지수 백오프 재연결, heartbeat)
-  - `HeaderController.js`: WebSocket 우선 연결, 실패 시 기존 ETag 폴링 자동 폴백
-  - `config.js`: `WS_BASE_URL` 추가 (로컬 `ws://`, 프로덕션 `wss://`)
-  - 실시간 알림 수신 → 즉시 뱃지 업데이트 + 토스트 표시
-
-
 - **03-06: 투표 생성/참여 UI**
   - 게시글 작성 시 "투표 추가" 토글 — 질문, 동적 옵션(2~10개), 만료일 입력
   - 게시글 상세: 미투표 시 라디오 버튼 + 투표 버튼, 투표 후 수평 바 차트 결과
@@ -550,6 +543,12 @@ sequenceDiagram
   - 내 활동 페이지: 탭 UI (내가 쓴 글/댓글/좋아요한 글), 탭별 무한 스크롤
   - 사용자 프로필: 공개 프로필 + 작성 글 목록, 닉네임 클릭으로 이동 (게시글 목록/상세/댓글)
   - 헤더 드롭다운에 "내 활동" 메뉴 추가, `PostModel.getPosts()`에 `authorId` 필터 추가
+
+- **03-08: 실시간 알림 (WebSocket)**
+  - `js/services/WebSocketService.js`: 연결 생명주기 싱글턴 (인증, 지수 백오프 재연결, heartbeat)
+  - `HeaderController.js`: WebSocket 우선 연결, 실패 시 기존 ETag 폴링 자동 폴백
+  - `config.js`: `WS_BASE_URL` 추가 (로컬 `ws://`, 프로덕션 `wss://`)
+  - 실시간 알림 수신 → 즉시 뱃지 업데이트 + 토스트 표시
 
 ### 2026-02 (Feb)
 
