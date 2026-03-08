@@ -72,7 +72,7 @@ class UserProfileController {
                 return;
             }
 
-            const user = result.data?.data;
+            const user = result.data?.data?.user;
             if (user) {
                 this.profileData = user;
                 UserProfileView.renderProfile(user);
