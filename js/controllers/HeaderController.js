@@ -430,15 +430,23 @@ class HeaderController {
      * @private
      */
     _handleRealtimeDm(data) {
+        // DM 목록/상세 페이지 자동 갱신
+        window.dispatchEvent(new CustomEvent('dm:new-message', { detail: data }));
+
+        // 현재 해당 대화를 보고 있으면 배지 증가 안 함
+        const params = new URLSearchParams(location.search);
+        const viewingConvId = params.get('id');
+        const isDmDetailPage = location.pathname.includes('/messages/detail');
+        if (isDmDetailPage && viewingConvId && Number(viewingConvId) === data.conversation_id) {
+            return;
+        }
+
         this._lastDmUnreadCount = (this._lastDmUnreadCount || 0) + 1;
         this._updateDmBadge(this._lastDmUnreadCount);
 
         if (data.sender_nickname) {
             showToast(`${data.sender_nickname}님이 메시지를 보냈습니다`);
         }
-
-        // DM 목록/상세 페이지 자동 갱신
-        window.dispatchEvent(new CustomEvent('dm:new', { detail: data }));
     }
 
     /**

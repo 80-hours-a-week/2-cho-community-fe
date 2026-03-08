@@ -244,7 +244,7 @@ export class DMDetailController {
             }
         };
 
-        document.addEventListener('dm:new-message', _dmEventHandler);
+        window.addEventListener('dm:new-message', _dmEventHandler);
     }
 
     /**
@@ -276,7 +276,7 @@ export class DMDetailController {
      */
     static destroy() {
         if (_dmEventHandler) {
-            document.removeEventListener('dm:new-message', _dmEventHandler);
+            window.removeEventListener('dm:new-message', _dmEventHandler);
             _dmEventHandler = null;
         }
         _conversationId = null;

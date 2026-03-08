@@ -31,14 +31,15 @@ class DMListView {
      * @returns {HTMLElement} - 대화 카드 요소
      */
     static createConversationCard(conv) {
+        const convId = conv.id || conv.conversation_id;
         const card = createElement('div', {
-            className: `dm-conversation-card${conv.unread_count > 0 ? ' unread' : ''}`,
-            dataset: { id: conv.conversation_id },
+            className: `dm-card${conv.unread_count > 0 ? ' unread' : ''}`,
+            dataset: { id: convId },
         });
 
         // 프로필 이미지
         const profileImg = createElement('div', {
-            className: 'dm-profile-img',
+            className: 'dm-card__avatar',
         });
         const imgUrl = conv.other_user?.profile_image_url;
         if (imgUrl) {
@@ -47,48 +48,51 @@ class DMListView {
         }
 
         // 대화 정보 영역
-        const info = createElement('div', { className: 'dm-conversation-info' });
+        const content = createElement('div', { className: 'dm-card__content' });
 
-        // 상단: 닉네임 + 시간
-        const header = createElement('div', { className: 'dm-conversation-header' });
+        // 닉네임
         const nickname = createElement('span', {
-            className: 'dm-nickname',
+            className: 'dm-card__name',
             textContent: conv.other_user?.nickname || '탈퇴한 사용자',
         });
+        content.appendChild(nickname);
+
+        // 마지막 메시지 미리보기
+        const lastMsgText = typeof conv.last_message === 'object'
+            ? conv.last_message?.content || '새 대화'
+            : conv.last_message || '새 대화';
+        const preview = createElement('span', {
+            className: 'dm-card__preview',
+            textContent: lastMsgText,
+        });
+        content.appendChild(preview);
+
+        // 메타 영역: 시간 + 읽지 않은 수
+        const meta = createElement('div', { className: 'dm-card__meta' });
+
         const time = createElement('span', {
-            className: 'dm-time',
+            className: 'dm-card__time',
             textContent: conv.last_message_at
                 ? DMListView.formatTime(conv.last_message_at)
                 : '',
         });
-        header.appendChild(nickname);
-        header.appendChild(time);
-
-        // 하단: 마지막 메시지 미리보기 + 읽지 않은 수
-        const preview = createElement('div', { className: 'dm-conversation-preview' });
-        const lastMessage = createElement('span', {
-            className: 'dm-last-message',
-            textContent: conv.last_message || '새 대화',
-        });
-        preview.appendChild(lastMessage);
+        meta.appendChild(time);
 
         if (conv.unread_count > 0) {
             const badge = createElement('span', {
                 className: 'dm-unread-badge',
                 textContent: conv.unread_count > 99 ? '99+' : String(conv.unread_count),
             });
-            preview.appendChild(badge);
+            meta.appendChild(badge);
         }
 
-        info.appendChild(header);
-        info.appendChild(preview);
-
         card.appendChild(profileImg);
-        card.appendChild(info);
+        card.appendChild(content);
+        card.appendChild(meta);
 
         // 클릭 시 대화 상세로 이동
         card.addEventListener('click', () => {
-            location.href = resolveNavPath(NAV_PATHS.DM_DETAIL(conv.conversation_id));
+            location.href = resolveNavPath(NAV_PATHS.DM_DETAIL(convId));
         });
 
         return card;

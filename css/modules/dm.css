@@ -213,6 +213,28 @@
     background: var(--color-bg-tertiary);
     color: var(--color-text-primary);
     border-bottom-left-radius: var(--radius-sm);
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+/* 빈 메시지 상태 */
+.dm-messages-empty {
+    text-align: center;
+    padding: 60px var(--spacing-xl);
+    color: var(--color-text-placeholder);
+    font-size: var(--font-size-md);
+}
+
+.dm-msg .dm-card__avatar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    align-self: flex-end;
+}
+
+.dm-msg__body {
+    display: flex;
+    flex-direction: column;
 }
 
 .dm-msg__content {

@@ -110,9 +110,12 @@ class UserProfileController {
             if (result.ok) {
                 const convId = result.data?.data?.conversation?.id;
                 if (convId) {
-                    // 상대방 닉네임을 sessionStorage에 저장 (상세 페이지에서 사용)
-                    if (this.profileData?.nickname) {
-                        sessionStorage.setItem('dm_other_nickname', this.profileData.nickname);
+                    // 상대방 정보를 sessionStorage에 저장 (상세 페이지에서 사용)
+                    if (this.profileData) {
+                        sessionStorage.setItem(`dm_other_user_${convId}`, JSON.stringify({
+                            nickname: this.profileData.nickname,
+                            profile_image_url: this.profileData.profile_image_url,
+                        }));
                     }
                     location.href = resolveNavPath(NAV_PATHS.DM_DETAIL(convId));
                 }

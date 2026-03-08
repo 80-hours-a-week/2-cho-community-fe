@@ -21,7 +21,7 @@ class DMDetailView {
 
         // 프로필 이미지 (32px 원형)
         const profileImg = createElement('div', {
-            className: 'dm-detail-profile-img',
+            className: 'dm-card__avatar',
         });
         const imgUrl = user?.profile_image_url;
         if (imgUrl) {
@@ -31,7 +31,7 @@ class DMDetailView {
 
         // 닉네임
         const nickname = createElement('span', {
-            className: 'dm-detail-nickname',
+            className: 'dm-card__name',
             textContent: user?.nickname || '탈퇴한 사용자',
         });
 
@@ -80,7 +80,7 @@ class DMDetailView {
         // 상대방 메시지는 프로필 이미지 표시
         if (!isMine) {
             const profileImg = createElement('div', {
-                className: 'dm-msg-profile-img',
+                className: 'dm-card__avatar',
             });
             const imgUrl = msg.sender_profile_image;
             if (imgUrl) {
@@ -91,18 +91,18 @@ class DMDetailView {
         }
 
         // 메시지 본체 (내용 + 시간)
-        const body = createElement('div', { className: 'dm-msg-body' });
+        const body = createElement('div', { className: 'dm-msg__body' });
 
         // 내용: 마크다운 렌더링 (DOMPurify sanitized)
         const content = createElement('div', {
-            className: 'dm-msg-content markdown-body markdown-body--compact',
+            className: 'dm-msg__content markdown-body markdown-body--compact',
         });
         renderMarkdownTo(content, msg.content || '');
         body.appendChild(content);
 
         // 시간 스탬프
         const time = createElement('span', {
-            className: 'dm-msg-time',
+            className: 'dm-msg__time',
             textContent: DMDetailView.formatTime(msg.created_at),
         });
         body.appendChild(time);
