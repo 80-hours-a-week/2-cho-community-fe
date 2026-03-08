@@ -91,6 +91,13 @@ export const API_ENDPOINTS = {
     TAGS: {
         ROOT: '/v1/tags',
     },
+    DMS: {
+        ROOT: '/v1/dms',
+        UNREAD_COUNT: '/v1/dms/unread-count',
+        DETAIL: (id) => `/v1/dms/${id}`,
+        MESSAGES: (id) => `/v1/dms/${id}/messages`,
+        READ: (id) => `/v1/dms/${id}/read`,
+    },
 };
 
 export const UI_MESSAGES = {
@@ -147,6 +154,12 @@ export const UI_MESSAGES = {
     POLL_VOTE_SUCCESS: '투표가 완료되었습니다.',
     POLL_VOTE_FAIL: '투표 처리에 실패했습니다.',
     POLL_SELECT_REQUIRED: '투표할 항목을 선택해주세요.',
+    DM_SEND_FAIL: '메시지 전송에 실패했습니다.',
+    DM_LOAD_FAIL: '대화를 불러오지 못했습니다.',
+    DM_BLOCKED: '차단된 사용자와 대화할 수 없습니다.',
+    DM_DELETED_USER: '탈퇴한 사용자에게 메시지를 보낼 수 없습니다.',
+    DM_EMPTY: '아직 대화가 없습니다.',
+    DM_DELETE_SUCCESS: '대화가 삭제되었습니다.',
 };
 
 export const NAV_PATHS = {
@@ -165,6 +178,8 @@ export const NAV_PATHS = {
     USER_PROFILE: (id) => `/user-profile?id=${id}`,
     ADMIN_REPORTS: '/admin/reports',
     ADMIN_DASHBOARD: '/admin/dashboard',
+    DM_LIST: '/messages',
+    DM_DETAIL: (id) => `/messages/detail?id=${id}`,
 };
 
 export const SORT_OPTIONS = {
@@ -201,6 +216,8 @@ export const HTML_PATHS = {
     '/user-profile': '/user-profile.html',
     '/admin/reports': '/admin_reports.html',
     '/admin/dashboard': '/admin_dashboard.html',
+    '/messages': '/dm_list.html',
+    '/messages/detail': '/dm_detail.html',
 };
 
 export const CATEGORY_LABELS = {

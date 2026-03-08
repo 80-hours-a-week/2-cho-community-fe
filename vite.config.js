@@ -20,6 +20,8 @@ function mpaRewritePlugin() {
     '/user-profile': '/user-profile.html',
     '/admin/reports': '/admin_reports.html',
     '/admin/dashboard': '/admin_dashboard.html',
+    '/messages': '/dm_list.html',
+    '/messages/detail': '/dm_detail.html',
   };
 
   function rewriteMiddleware(req, _res, next) {
@@ -60,6 +62,8 @@ export default defineConfig({
         'verify-email': resolve(__dirname, 'verify-email.html'),
         admin_reports: resolve(__dirname, 'admin_reports.html'),
         admin_dashboard: resolve(__dirname, 'admin_dashboard.html'),
+        dm_list: resolve(__dirname, 'dm_list.html'),
+        dm_detail: resolve(__dirname, 'dm_detail.html'),
       },
     },
   },
