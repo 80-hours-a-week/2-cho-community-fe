@@ -10,6 +10,8 @@ import Logger from '../utils/Logger.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 import { Icons } from '../utils/icons.js';
+import WebSocketService from '../services/WebSocketService.js';
+import { getAccessToken } from '../services/ApiService.js';
 
 const logger = Logger.createLogger('HeaderController');
 
@@ -28,6 +30,8 @@ class HeaderController {
         this._lastLatestId = null;
         this._lastETag = null;
         this._polling = false;
+        /** @type {WebSocketService|null} */
+        this._wsService = null;
         this._setupGlobalEvents();
     }
 
@@ -92,8 +96,8 @@ class HeaderController {
                 }
                 HeaderView.createDropdown(profileCircle, dropdownHandlers);
 
-                // 알림 폴링 시작
-                this._startNotificationPolling();
+                // 알림 시스템 초기화 (WebSocket 우선, 폴링 폴백)
+                this._initNotifications();
             } else {
                 // 로그인/회원가입 페이지가 아니면 로그인으로 리다이렉트
                 if (!this._isAuthPage()) {
@@ -170,6 +174,10 @@ class HeaderController {
      */
     async _handleLogout() {
         this._stopNotificationPolling();
+        if (this._wsService) {
+            this._wsService.disconnect();
+            this._wsService = null;
+        }
         try {
             const result = await AuthModel.logout();
             if (result.ok) {
@@ -184,6 +192,61 @@ class HeaderController {
             logger.error('로그아웃 실패', error);
             location.href = resolveNavPath('/login');
         }
+    }
+
+    /**
+     * 알림 시스템 초기화 (WebSocket 우선, 폴링 폴백)
+     * @private
+     */
+    _initNotifications() {
+        this._wsService = new WebSocketService();
+
+        // 알림 이벤트 수신
+        this._wsService.on('notification', (data) => {
+            this._handleRealtimeNotification(data);
+        });
+
+        // 폴백: WebSocket 재연결 포기 시 폴링 전환
+        this._wsService.onFallback(() => {
+            logger.info('WebSocket 폴백 → 폴링 모드');
+            this._startNotificationPolling();
+        });
+
+        // 재연결 성공 시 폴링 중단
+        this._wsService.onReconnect(() => {
+            logger.info('WebSocket 재연결 → 폴링 중단');
+            this._stopNotificationPolling();
+        });
+
+        // WebSocket 연결 시도
+        this._wsService.connect(() => getAccessToken()).catch(() => {
+            logger.info('WebSocket 연결 실패 → 폴링 모드');
+            this._startNotificationPolling();
+        });
+
+        // 초기 unread count는 한 번 폴링으로 가져옴
+        this._pollNotifications();
+    }
+
+    /**
+     * 실시간 알림 수신 처리
+     * @param {object} data - 알림 데이터
+     * @private
+     */
+    _handleRealtimeNotification(data) {
+        this._lastUnreadCount = (this._lastUnreadCount || 0) + 1;
+        this._updateNotificationBadge(this._lastUnreadCount);
+
+        // 토스트 표시
+        if (data.notification_type) {
+            this._showNotificationToast({
+                type: data.notification_type,
+                actor_nickname: data.actor_nickname,
+            });
+        }
+
+        // 알림 목록 페이지 자동 갱신
+        window.dispatchEvent(new CustomEvent('notification:new', { detail: data }));
     }
 
     /**

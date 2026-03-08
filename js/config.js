@@ -12,6 +12,11 @@ export const API_BASE_URL = IS_LOCAL
     ? "http://127.0.0.1:8000"  // 로컬 개발: 백엔드 직접 연결
     : "https://api.my-community.shop";  // 프로덕션: same-origin (nginx가 /v1/*를 백엔드로 프록시)
 
+// WebSocket URL
+export const WS_BASE_URL = IS_LOCAL
+    ? "ws://127.0.0.1:8000/ws"          // 로컬 개발: uvicorn WebSocket
+    : "wss://ws.my-community.shop";
+
 /**
  * 네비게이션 경로를 실제 HTML 파일 경로로 변환합니다.
  * @param {string} path - 클린 URL 경로 (예: '/login')
