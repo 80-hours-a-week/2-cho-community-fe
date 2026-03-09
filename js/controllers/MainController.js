@@ -54,8 +54,8 @@ class MainController {
         if (getAccessToken()) {
             const followingBtn = document.getElementById('following-btn');
             const filterDivider = document.getElementById('filter-divider');
-            if (followingBtn) followingBtn.style.display = '';
-            if (filterDivider) filterDivider.style.display = '';
+            if (followingBtn) followingBtn.classList.remove('hidden');
+            if (filterDivider) filterDivider.classList.remove('hidden');
         }
 
         // 게시글 작성 버튼
