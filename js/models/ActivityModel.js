@@ -1,3 +1,4 @@
+// @ts-check
 // js/models/ActivityModel.js
 // 내 활동 관련 API 호출 관리
 
@@ -12,7 +13,7 @@ class ActivityModel {
      * 내가 쓴 게시글 목록 조회
      * @param {number} [offset=0] - 시작 위치
      * @param {number} [limit=10] - 조회 개수
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{posts: PostSummary[], pagination: Pagination}>>}
      */
     static async getMyPosts(offset = 0, limit = 10) {
         return ApiService.get(
@@ -24,7 +25,7 @@ class ActivityModel {
      * 내가 쓴 댓글 목록 조회
      * @param {number} [offset=0] - 시작 위치
      * @param {number} [limit=10] - 조회 개수
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{comments: MyComment[], pagination: Pagination}>>}
      */
     static async getMyComments(offset = 0, limit = 10) {
         return ApiService.get(
@@ -36,7 +37,7 @@ class ActivityModel {
      * 좋아요한 게시글 목록 조회
      * @param {number} [offset=0] - 시작 위치
      * @param {number} [limit=10] - 조회 개수
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{posts: PostSummary[], pagination: Pagination}>>}
      */
     static async getMyLikes(offset = 0, limit = 10) {
         return ApiService.get(
@@ -48,7 +49,7 @@ class ActivityModel {
      * 북마크한 게시글 목록 조회
      * @param {number} [offset=0] - 시작 위치
      * @param {number} [limit=10] - 조회 개수
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{posts: PostSummary[], pagination: Pagination}>>}
      */
     static async getMyBookmarks(offset = 0, limit = 10) {
         return ApiService.get(

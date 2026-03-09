@@ -1,3 +1,4 @@
+// @ts-check
 // js/config.js
 // API 설정 파일
 

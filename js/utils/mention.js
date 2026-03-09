@@ -1,3 +1,4 @@
+// @ts-check
 // js/utils/mention.js
 // @멘션 하이라이트 유틸리티 — DOM 기반 텍스트 노드 순회
 
@@ -15,7 +16,7 @@ export function highlightMentions(container) {
 
     let node;
     while ((node = walker.nextNode())) {
-        if (MENTION_RE.test(node.textContent)) {
+        if (node.textContent && MENTION_RE.test(node.textContent)) {
             textNodes.push(node);
         }
         MENTION_RE.lastIndex = 0;
@@ -23,7 +24,7 @@ export function highlightMentions(container) {
 
     for (const textNode of textNodes) {
         const fragment = document.createDocumentFragment();
-        const text = textNode.textContent;
+        const text = textNode.textContent || '';
         let lastIndex = 0;
 
         MENTION_RE.lastIndex = 0;
@@ -48,6 +49,6 @@ export function highlightMentions(container) {
             fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
         }
 
-        textNode.parentNode.replaceChild(fragment, textNode);
+        textNode.parentNode?.replaceChild(fragment, textNode);
     }
 }

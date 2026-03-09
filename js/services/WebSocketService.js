@@ -1,3 +1,4 @@
+// @ts-check
 // js/services/WebSocketService.js
 // WebSocket 연결 생명주기 관리 서비스
 
@@ -140,13 +141,14 @@ class WebSocketService {
             this._ws.onopen = () => {
                 this._state = 'authenticating';
                 const token = this._getToken?.();
-                if (!token) {
+                const ws = this._ws;
+                if (!token || !ws) {
                     logger.warn('Access Token 없음 — 연결 종료');
-                    this._ws.close();
+                    ws?.close();
                     reject(new Error('No access token'));
                     return;
                 }
-                this._ws.send(JSON.stringify({ type: 'auth', token }));
+                ws.send(JSON.stringify({ type: 'auth', token }));
             };
 
             this._ws.onmessage = (event) => {

@@ -1,3 +1,4 @@
+// @ts-check
 // js/models/CommentModel.js
 // 댓글 관련 API 호출 관리
 
@@ -13,9 +14,10 @@ class CommentModel {
      * @param {string|number} postId - 게시글 ID
      * @param {string} content - 댓글 내용
      * @param {string|number|null} parentId - 부모 댓글 ID (대댓글인 경우)
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<CreateCommentResponse>>}
      */
     static async createComment(postId, content, parentId = null) {
+        /** @type {{content: string, parent_id?: string|number|null}} */
         const body = { content };
         if (parentId !== null) {
             body.parent_id = parentId;
@@ -28,7 +30,7 @@ class CommentModel {
      * @param {string|number} postId - 게시글 ID
      * @param {string|number} commentId - 댓글 ID
      * @param {string} content - 수정할 댓글 내용
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<UpdateCommentResponse>>}
      */
     static async updateComment(postId, commentId, content) {
         return ApiService.put(API_ENDPOINTS.COMMENTS.DETAIL(postId, commentId), { content });
@@ -38,7 +40,7 @@ class CommentModel {
      * 댓글 삭제
      * @param {string|number} postId - 게시글 ID
      * @param {string|number} commentId - 댓글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async deleteComment(postId, commentId) {
         return ApiService.delete(API_ENDPOINTS.COMMENTS.DETAIL(postId, commentId));
@@ -48,6 +50,7 @@ class CommentModel {
      * 댓글 좋아요
      * @param {string|number} postId - 게시글 ID
      * @param {string|number} commentId - 댓글 ID
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async likeComment(postId, commentId) {
         return ApiService.post(API_ENDPOINTS.COMMENT_LIKES.ROOT(postId, commentId), {});
@@ -57,6 +60,7 @@ class CommentModel {
      * 댓글 좋아요 취소
      * @param {string|number} postId - 게시글 ID
      * @param {string|number} commentId - 댓글 ID
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async unlikeComment(postId, commentId) {
         return ApiService.delete(API_ENDPOINTS.COMMENT_LIKES.ROOT(postId, commentId));

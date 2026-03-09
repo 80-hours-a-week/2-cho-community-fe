@@ -1,3 +1,4 @@
+// @ts-check
 // js/services/DraftService.js
 // localStorage 기반 게시글 임시 저장 서비스
 
@@ -7,6 +8,9 @@ class DraftService {
     /**
      * 임시 저장 데이터를 localStorage에 저장.
      * savedAt 타임스탬프 자동 추가.
+     * @param {string} key - 저장 키 (예: 'draft:write', 'draft:edit:123')
+     * @param {{title: string, content: string, categoryId: number|null}} fields - 저장할 필드
+     * @returns {void}
      */
     static save(key, { title, content, categoryId }) {
         try {
@@ -26,6 +30,8 @@ class DraftService {
      * 저장된 임시 데이터 로드.
      * TTL(7일) 초과 시 삭제 후 null 반환.
      * 파싱 실패 시 null 반환.
+     * @param {string} key - 저장 키
+     * @returns {DraftData|null}
      */
     static load(key) {
         try {
@@ -53,7 +59,11 @@ class DraftService {
         }
     }
 
-    /** 임시 저장 데이터 삭제. */
+    /**
+     * 임시 저장 데이터 삭제.
+     * @param {string} key - 저장 키
+     * @returns {void}
+     */
     static clear(key) {
         try {
             localStorage.removeItem(key);
@@ -62,7 +72,11 @@ class DraftService {
         }
     }
 
-    /** 유효한 임시 저장 데이터 존재 여부. */
+    /**
+     * 유효한 임시 저장 데이터 존재 여부.
+     * @param {string} key - 저장 키
+     * @returns {boolean}
+     */
     static exists(key) {
         return DraftService.load(key) !== null;
     }
@@ -70,6 +84,8 @@ class DraftService {
     /**
      * ISO 문자열을 "3월 5일 12:34" 형식으로 변환.
      * 유효하지 않은 입력 시 빈 문자열 반환.
+     * @param {string} isoString - ISO 8601 날짜 문자열
+     * @returns {string}
      */
     static formatSavedAt(isoString) {
         try {

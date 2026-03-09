@@ -1,3 +1,4 @@
+// @ts-check
 // js/models/ReportModel.js
 // 신고 관련 API 호출 관리
 
@@ -10,8 +11,8 @@ import { API_ENDPOINTS } from '../constants.js';
 class ReportModel {
     /**
      * 신고 생성
-     * @param {object} data - 신고 데이터 (target_type, target_id, reason, description)
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @param {{target_type: 'post' | 'comment', target_id: number, reason: 'spam' | 'abuse' | 'inappropriate' | 'other', description?: string}} data - 신고 데이터
+     * @returns {Promise<ApiResponse<{report_id: number}>>}
      */
     static async createReport(data) {
         return ApiService.post(API_ENDPOINTS.REPORTS.ROOT, data);
@@ -19,10 +20,10 @@ class ReportModel {
 
     /**
      * 신고 목록 조회 (관리자)
-     * @param {string} [status='pending'] - 신고 상태 필터
+     * @param {'pending' | 'resolved' | 'dismissed'} [status='pending'] - 신고 상태 필터
      * @param {number} [offset=0] - 시작 위치
      * @param {number} [limit=20] - 조회 개수
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{reports: Report[], pagination: Pagination}>>}
      */
     static async getReports(status = 'pending', offset = 0, limit = 20) {
         return ApiService.get(
@@ -32,12 +33,13 @@ class ReportModel {
 
     /**
      * 신고 처리 (관리자)
-     * @param {string|number} reportId - 신고 ID
-     * @param {string} status - 처리 상태 ('resolved' | 'dismissed')
-     * @param {number|null} [suspendDays=null] - 작성자 정지 기간 (일)
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @param {number} reportId - 신고 ID
+     * @param {'resolved' | 'dismissed'} status - 처리 상태
+     * @param {number | null} [suspendDays=null] - 작성자 정지 기간 (일)
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async resolveReport(reportId, status, suspendDays = null) {
+        /** @type {{status: 'resolved' | 'dismissed', suspend_days?: number}} */
         const body = { status };
         if (suspendDays != null) body.suspend_days = suspendDays;
         return ApiService.patch(API_ENDPOINTS.ADMIN.RESOLVE_REPORT(reportId), body);

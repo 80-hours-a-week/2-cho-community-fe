@@ -1,3 +1,4 @@
+// @ts-check
 // js/services/ApiService.js
 // HTTP 클라이언트 서비스 - JWT Bearer Token 기반 API 호출
 
@@ -9,12 +10,15 @@ const logger = Logger.createLogger('ApiService');
 
 // ─── In-memory Access Token Store ───────────────────────────────────────────
 // 모듈 스코프 변수 — window/localStorage 사용하지 않아 XSS 노출 방지
+/** @type {string|null} */
 let _accessToken = null;
-let _refreshing = null; // Promise | null — 동시 401 대응 (thundering herd 방지)
+/** @type {Promise<boolean>|null} */
+let _refreshing = null; // 동시 401 대응 (thundering herd 방지)
 
 /**
  * Access Token을 설정합니다 (로그인 성공 후 호출).
  * @param {string|null} token
+ * @returns {void}
  */
 export function setAccessToken(token) {
     _accessToken = token;
@@ -34,10 +38,11 @@ export function getAccessToken() {
 class ApiService {
     /**
      * Authorization 헤더를 포함한 공통 헤더를 반환합니다.
-     * @param {object} extra - 추가 헤더
-     * @returns {object}
+     * @param {Record<string, string>} [extra={}] - 추가 헤더
+     * @returns {Record<string, string>}
      */
     static _buildHeaders(extra = {}) {
+        /** @type {Record<string, string>} */
         const headers = { 'Content-Type': 'application/json', ...extra };
         if (_accessToken) {
             headers['Authorization'] = `Bearer ${_accessToken}`;
@@ -90,8 +95,8 @@ class ApiService {
      * GET 요청 (자동 재시도 적용)
      * @param {string} endpoint - API 엔드포인트 (예: '/v1/users/me')
      * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @param {object} [extraHeaders] - 추가 헤더 (예: ETag용 If-None-Match)
-     * @returns {Promise<any>} - 응답 데이터
+     * @param {Record<string, string>} [extraHeaders] - 추가 헤더 (예: ETag용 If-None-Match)
+     * @returns {Promise<ApiResponse>}
      */
     static async get(endpoint, _isRetry = false, extraHeaders = undefined) {
         logger.debug(`GET 요청: ${endpoint}`);
@@ -108,6 +113,7 @@ class ApiService {
                 // 5xx 서버 에러나 429 Too Many Requests는 재시도 대상
                 if (response.status >= 500 || response.status === 429) {
                     const error = new Error(`Request failed with status ${response.status}`);
+                    // @ts-ignore -- status 프로퍼티 동적 추가 (ErrorBoundary에서 참조)
                     error.status = response.status;
                     throw error;
                 }
@@ -119,12 +125,12 @@ class ApiService {
             }, {
                 maxRetries: 2, // GET은 안전하므로 2번 재시도
                 delay: 500,
-                onRetry: (attempt, max, error) => {
+                onRetry: (/** @type {number} */ attempt, /** @type {number} */ max, /** @type {Error} */ error) => {
                     logger.warn(`GET ${endpoint} 재시도 ${attempt}/${max}: ${error.message}`);
                 }
             });
         } catch (error) {
-            return ApiService._handleNetworkError(error, 'GET', endpoint);
+            return ApiService._handleNetworkError(/** @type {Error} */ (error), 'GET', endpoint);
         }
     }
 
@@ -133,7 +139,7 @@ class ApiService {
      * @param {string} endpoint - API 엔드포인트
      * @param {object} data - 요청 본문 데이터
      * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @returns {Promise<any>} - 응답 데이터
+     * @returns {Promise<ApiResponse>}
      */
     static async post(endpoint, data, _isRetry = false) {
         logger.debug(`POST 요청: ${endpoint}`);
@@ -149,7 +155,7 @@ class ApiService {
                 _isRetry
             });
         } catch (error) {
-            return ApiService._handleNetworkError(error, 'POST', endpoint);
+            return ApiService._handleNetworkError(/** @type {Error} */ (error), 'POST', endpoint);
         }
     }
 
@@ -158,12 +164,13 @@ class ApiService {
      * @param {string} endpoint - API 엔드포인트
      * @param {FormData} formData - FormData 객체
      * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @returns {Promise<any>} - 응답 데이터
+     * @returns {Promise<ApiResponse>}
      */
     static async postFormData(endpoint, formData, _isRetry = false) {
         logger.debug(`POST FormData 요청: ${endpoint}`);
         try {
             // FormData는 Content-Type을 브라우저가 자동 설정 (multipart/form-data boundary 포함)
+            /** @type {Record<string, string>} */
             const headers = {};
             if (_accessToken) {
                 headers['Authorization'] = `Bearer ${_accessToken}`;
@@ -180,18 +187,18 @@ class ApiService {
                 _isRetry
             });
         } catch (error) {
-            return ApiService._handleNetworkError(error, 'POST', endpoint);
+            return ApiService._handleNetworkError(/** @type {Error} */ (error), 'POST', endpoint);
         }
     }
 
     /**
      * PATCH 요청
      * @param {string} endpoint - API 엔드포인트
-     * @param {object} data - 요청 본문 데이터
+     * @param {object} [data={}] - 요청 본문 데이터
      * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @returns {Promise<any>} - 응답 데이터
+     * @returns {Promise<ApiResponse>}
      */
-    static async patch(endpoint, data, _isRetry = false) {
+    static async patch(endpoint, data = {}, _isRetry = false) {
         logger.debug(`PATCH 요청: ${endpoint}`);
         try {
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -205,7 +212,7 @@ class ApiService {
                 _isRetry
             });
         } catch (error) {
-            return ApiService._handleNetworkError(error, 'PATCH', endpoint);
+            return ApiService._handleNetworkError(/** @type {Error} */ (error), 'PATCH', endpoint);
         }
     }
 
@@ -214,7 +221,7 @@ class ApiService {
      * @param {string} endpoint - API 엔드포인트
      * @param {object} data - 요청 본문 데이터
      * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @returns {Promise<any>} - 응답 데이터
+     * @returns {Promise<ApiResponse>}
      */
     static async put(endpoint, data, _isRetry = false) {
         logger.debug(`PUT 요청: ${endpoint}`);
@@ -230,20 +237,21 @@ class ApiService {
                 _isRetry
             });
         } catch (error) {
-            return ApiService._handleNetworkError(error, 'PUT', endpoint);
+            return ApiService._handleNetworkError(/** @type {Error} */ (error), 'PUT', endpoint);
         }
     }
 
     /**
      * DELETE 요청
      * @param {string} endpoint - API 엔드포인트
-     * @param {object} [data] - 선택적 요청 본문 데이터
+     * @param {object | null} [data=null] - 선택적 요청 본문 데이터
      * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @returns {Promise<any>} - 응답 데이터
+     * @returns {Promise<ApiResponse>}
      */
     static async delete(endpoint, data = null, _isRetry = false) {
         logger.debug(`DELETE 요청: ${endpoint}`);
         try {
+            /** @type {RequestInit} */
             const options = {
                 method: 'DELETE',
                 headers: ApiService._buildHeaders(),
@@ -258,7 +266,7 @@ class ApiService {
                 _isRetry
             });
         } catch (error) {
-            return ApiService._handleNetworkError(error, 'DELETE', endpoint);
+            return ApiService._handleNetworkError(/** @type {Error} */ (error), 'DELETE', endpoint);
         }
     }
 
@@ -269,10 +277,8 @@ class ApiService {
      * @param {Response} response - fetch 응답 객체
      * @param {string} method - HTTP 메서드
      * @param {string} endpoint - API 엔드포인트
-     * @param {object} [options] - 추가 옵션
-     * @param {Function} [options.retryFn] - 401 refresh 성공 시 재시도할 함수
-     * @param {boolean} [options._isRetry] - 재시도 요청 여부 (무한 루프 방지)
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @param {{retryFn?: () => Promise<ApiResponse>, _isRetry?: boolean}} [options={}] - 추가 옵션
+     * @returns {Promise<ApiResponse>}
      */
     static async _handleResponse(response, method = '', endpoint = '', options = {}) {
         let data = null;
@@ -323,6 +329,7 @@ class ApiService {
             }));
         }
 
+        /** @type {ApiResponse & {etag?: string}} */
         const result = {
             ok: response.ok,
             status: response.status,
@@ -343,18 +350,19 @@ class ApiService {
      * @param {Error} error - 에러 객체
      * @param {string} method - HTTP 메서드
      * @param {string} endpoint - API 엔드포인트
-     * @returns {{ok: boolean, status: number, data: {message: string, _isNetworkError: boolean}}}
+     * @returns {ApiResponse<{message: string, _isNetworkError: boolean}>}
      */
     static _handleNetworkError(error, method, endpoint) {
         logger.error(`${method} ${endpoint} 네트워크 에러`, error);
-        return {
+        // 네트워크 에러는 백엔드 응답이 아니므로 ApiSuccessResponse 구조를 따르지 않음
+        return /** @type {any} */ ({
             ok: false,
             status: 0,
             data: {
                 message: '네트워크 연결을 확인해주세요.',
                 _isNetworkError: true
             }
-        };
+        });
     }
 }
 

@@ -1,10 +1,16 @@
+// @ts-check
 // js/utils/icons.js
 // 플랫 SVG 아이콘 팩토리 (Feather/Lucide 스타일)
 // innerHTML 미사용 — createElementNS로 XSS-safe 생성
 
 const NS = 'http://www.w3.org/2000/svg';
 
-/** 기본 SVG 컨테이너 생성 */
+/**
+ * 기본 SVG 컨테이너 생성
+ * @param {number} size - 아이콘 크기 (px)
+ * @param {SVGElement[]} children - 자식 SVG 요소
+ * @returns {SVGSVGElement}
+ */
 function svg(size, children) {
     const el = document.createElementNS(NS, 'svg');
     el.setAttribute('width', String(size));
@@ -19,12 +25,22 @@ function svg(size, children) {
     return el;
 }
 
+/**
+ * @param {string} d - SVG path 데이터
+ * @returns {SVGPathElement}
+ */
 function path(d) {
     const el = document.createElementNS(NS, 'path');
     el.setAttribute('d', d);
     return el;
 }
 
+/**
+ * @param {number} cx
+ * @param {number} cy
+ * @param {number} r
+ * @returns {SVGCircleElement}
+ */
 function circle(cx, cy, r) {
     const el = document.createElementNS(NS, 'circle');
     el.setAttribute('cx', String(cx));
@@ -33,6 +49,13 @@ function circle(cx, cy, r) {
     return el;
 }
 
+/**
+ * @param {number} x1
+ * @param {number} y1
+ * @param {number} x2
+ * @param {number} y2
+ * @returns {SVGLineElement}
+ */
 function line(x1, y1, x2, y2) {
     const el = document.createElementNS(NS, 'line');
     el.setAttribute('x1', String(x1));
@@ -42,12 +65,24 @@ function line(x1, y1, x2, y2) {
     return el;
 }
 
+/**
+ * @param {string} points - SVG polyline 좌표 문자열
+ * @returns {SVGPolylineElement}
+ */
 function polyline(points) {
     const el = document.createElementNS(NS, 'polyline');
     el.setAttribute('points', points);
     return el;
 }
 
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {number} w
+ * @param {number} h
+ * @param {number} [rx] - 모서리 둥글기
+ * @returns {SVGRectElement}
+ */
 function rect(x, y, w, h, rx) {
     const el = document.createElementNS(NS, 'rect');
     el.setAttribute('x', String(x));

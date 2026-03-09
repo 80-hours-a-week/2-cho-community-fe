@@ -1,3 +1,4 @@
+// @ts-check
 // js/models/AuthModel.js
 // 인증 관련 상태 및 API 호출 관리 (JWT 기반)
 
@@ -17,7 +18,7 @@ class AuthModel {
      * 성공 시 access_token을 인메모리 저장소에 저장합니다.
      * @param {string} email - 이메일
      * @param {string} password - 비밀번호
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{access_token: string}>>}
      */
     static async login(email, password) {
         const result = await ApiService.post(API_ENDPOINTS.AUTH.LOGIN, { email, password });
@@ -31,7 +32,7 @@ class AuthModel {
     /**
      * 로그아웃
      * 인메모리 Access Token을 삭제합니다.
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async logout() {
         const result = await ApiService.delete(API_ENDPOINTS.AUTH.LOGOUT);
@@ -41,7 +42,7 @@ class AuthModel {
 
     /**
      * 현재 로그인된 사용자 정보 조회
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<CurrentUser>>}
      */
     static async getCurrentUser() {
         return ApiService.get(API_ENDPOINTS.USERS.ME);
@@ -50,7 +51,7 @@ class AuthModel {
     /**
      * 인증 상태 확인
      * 인메모리 토큰이 없으면 (예: 페이지 새로고침) silent refresh를 먼저 시도합니다.
-     * @returns {Promise<{isAuthenticated: boolean, user: object|null}>}
+     * @returns {Promise<{isAuthenticated: boolean, user: CurrentUser | null}>}
      */
     static async checkAuthStatus() {
         // 토큰이 없으면 silent refresh 시도 (페이지 새로고침 복원)
@@ -73,7 +74,7 @@ class AuthModel {
                         logger.info('Silent refresh 성공');
                         return {
                             isAuthenticated: true,
-                            user: refreshData?.data?.user ?? null,
+                            user: /** @type {CurrentUser} */ (refreshData?.data?.user ?? null),
                         };
                     }
                 }
@@ -89,7 +90,7 @@ class AuthModel {
             if (result.ok && result.data?.data?.user) {
                 return {
                     isAuthenticated: true,
-                    user: result.data.data.user
+                    user: /** @type {CurrentUser} */ (result.data.data.user)
                 };
             }
             return { isAuthenticated: false, user: null };

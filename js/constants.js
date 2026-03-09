@@ -1,3 +1,4 @@
+// @ts-check
 // js/constants.js
 // 상수 정의 파일
 
@@ -20,8 +21,11 @@ export const API_ENDPOINTS = {
     POSTS: {
         ROOT: '/v1/posts',
         IMAGE: '/v1/posts/image',
+        /** @param {string|number} postId */
         PIN: (postId) => `/v1/posts/${postId}/pin`,
+        /** @param {string|number} postId */
         VOTE_POLL: (postId) => `/v1/posts/${postId}/poll/vote`,
+        /** @param {string|number} postId */
         RELATED: (postId) => `/v1/posts/${postId}/related`,
     },
     CATEGORIES: {
@@ -34,24 +38,35 @@ export const API_ENDPOINTS = {
         DASHBOARD: '/v1/admin/dashboard',
         USERS: '/v1/admin/users',
         REPORTS: '/v1/admin/reports',
+        /** @param {string|number} id */
         RESOLVE_REPORT: (id) => `/v1/admin/reports/${id}`,
         // POST/DELETE 메서드로 구분 (같은 URL)
+        /** @param {string|number} userId */
         SUSPEND_USER: (userId) => `/v1/admin/users/${userId}/suspend`,
+        /** @param {string|number} userId */
         UNSUSPEND_USER: (userId) => `/v1/admin/users/${userId}/suspend`,
     },
     LIKES: {
+        /** @param {string|number} postId */
         ROOT: (postId) => `/v1/posts/${postId}/likes`,
     },
     BOOKMARKS: {
+        /** @param {string|number} postId */
         ROOT: (postId) => `/v1/posts/${postId}/bookmark`,
     },
     COMMENT_LIKES: {
+        /**
+         * @param {string|number} postId
+         * @param {string|number} commentId
+         */
         ROOT: (postId, commentId) => `/v1/posts/${postId}/comments/${commentId}/like`,
     },
     BLOCKS: {
+        /** @param {string|number} userId */
         BLOCK: (userId) => `/v1/users/${userId}/block`,
     },
     FOLLOW: {
+        /** @param {string|number} userId */
         FOLLOW: (userId) => `/v1/users/${userId}/follow`,
         MY_FOLLOWING: '/v1/users/me/following',
         MY_FOLLOWERS: '/v1/users/me/followers',
@@ -74,8 +89,10 @@ export const API_ENDPOINTS = {
     NOTIFICATIONS: {
         ROOT: '/v1/notifications',
         UNREAD_COUNT: '/v1/notifications/unread-count',
+        /** @param {string|number} id */
         READ: (id) => `/v1/notifications/${id}/read`,
         READ_ALL: '/v1/notifications/read-all',
+        /** @param {string|number} id */
         DELETE: (id) => `/v1/notifications/${id}`,
     },
     VERIFICATION: {
@@ -95,8 +112,11 @@ export const API_ENDPOINTS = {
     DMS: {
         ROOT: '/v1/dms',
         UNREAD_COUNT: '/v1/dms/unread-count',
+        /** @param {string|number} id */
         DETAIL: (id) => `/v1/dms/${id}`,
+        /** @param {string|number} id */
         MESSAGES: (id) => `/v1/dms/${id}/messages`,
+        /** @param {string|number} id */
         READ: (id) => `/v1/dms/${id}/read`,
     },
 };
@@ -168,7 +188,9 @@ export const NAV_PATHS = {
     LOGIN: '/login',
     SIGNUP: '/signup',
     WRITE: '/write',
+    /** @param {string|number} id */
     DETAIL: (id) => `/detail?id=${id}`,
+    /** @param {string|number} id */
     EDIT: (id) => `/edit?id=${id}`,
     PASSWORD: '/password',
     EDIT_PROFILE: '/edit-profile',
@@ -176,10 +198,12 @@ export const NAV_PATHS = {
     NOTIFICATIONS: '/notifications',
     MY_ACTIVITY: '/my-activity',
     VERIFY_EMAIL: '/verify-email',
+    /** @param {string|number} id */
     USER_PROFILE: (id) => `/user-profile?id=${id}`,
     ADMIN_REPORTS: '/admin/reports',
     ADMIN_DASHBOARD: '/admin/dashboard',
     DM_LIST: '/messages',
+    /** @param {string|number} id */
     DM_DETAIL: (id) => `/messages/detail?id=${id}`,
 };
 
@@ -200,6 +224,7 @@ export const SORT_LABELS = {
 };
 
 // 클린 URL → 실제 HTML 파일 매핑
+/** @type {Record<string, string>} */
 export const HTML_PATHS = {
     '/': '/user_login.html',
     '/main': '/post_list.html',
@@ -221,6 +246,7 @@ export const HTML_PATHS = {
     '/messages/detail': '/dm_detail.html',
 };
 
+/** @type {Record<number, string>} */
 export const CATEGORY_LABELS = {
     1: '자유게시판',
     2: '질문답변',

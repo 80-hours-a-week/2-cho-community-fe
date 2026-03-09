@@ -1,3 +1,4 @@
+// @ts-check
 // js/utils/validators.js
 // 유효성 검사 규칙 (순수 함수, DOM 조작 없음)
 
@@ -52,7 +53,7 @@ class Validators {
     /**
      * 이메일 유효성 검사
      * @param {string} value - 이메일 값
-     * @returns {{valid: boolean, message: string|null}}
+     * @returns {ValidationResult}
      */
     static validateEmail(value) {
         const trimmed = value.trim();
@@ -71,7 +72,7 @@ class Validators {
     /**
      * 비밀번호 유효성 검사
      * @param {string} value - 비밀번호 값
-     * @returns {{valid: boolean, message: string|null}}
+     * @returns {ValidationResult}
      */
     static validatePassword(value) {
         if (!value) {
@@ -89,7 +90,7 @@ class Validators {
      * 비밀번호 확인 유효성 검사
      * @param {string} password - 비밀번호 값
      * @param {string} confirmPassword - 비밀번호 확인 값
-     * @returns {{valid: boolean, message: string|null}}
+     * @returns {ValidationResult}
      */
     static validatePasswordConfirm(password, confirmPassword) {
         if (!confirmPassword) {
@@ -106,7 +107,7 @@ class Validators {
     /**
      * 닉네임 유효성 검사
      * @param {string} value - 닉네임 값
-     * @returns {{valid: boolean, message: string|null}}
+     * @returns {ValidationResult}
      */
     static validateNickname(value) {
         if (!value) {
@@ -134,7 +135,7 @@ class Validators {
     /**
      * 프로필 이미지 유효성 검사
      * @param {File|null} file - 파일 객체
-     * @returns {{valid: boolean, message: string|null}}
+     * @returns {ValidationResult}
      */
     static validateProfileImage(file) {
         if (!file) {

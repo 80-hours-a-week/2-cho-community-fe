@@ -1,3 +1,4 @@
+// @ts-check
 // js/utils/formatters.js
 // 데이터 포맷팅 유틸리티 함수 (DOM과 무관)
 

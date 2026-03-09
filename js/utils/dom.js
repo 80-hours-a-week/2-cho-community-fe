@@ -1,3 +1,4 @@
+// @ts-check
 // js/utils/dom.js
 // DOM 조작 헬퍼 함수 모듈
 
@@ -36,7 +37,7 @@ export function createElement(tag, attributes = {}, children = []) {
     children.forEach(child => {
         if (child instanceof Node) {
             element.appendChild(child);
-        } else if (child !== null && child !== undefined && child !== false) {
+        } else if (child != null && child !== '') {
             // 문자열이나 숫자는 텍스트 노드로 추가 (XSS 방지)
             element.appendChild(document.createTextNode(String(child)));
         }
