@@ -1,3 +1,4 @@
+// @ts-check
 // js/utils/ErrorBoundary.js
 // 에러 바운더리 유틸리티 - 네트워크 에러 재시도 로직
 
@@ -12,13 +13,13 @@ const logger = Logger.createLogger('ErrorBoundary');
 class ErrorBoundary {
     /**
      * 재시도 가능한 함수 실행
-     * @param {Function} fn - 실행할 비동기 함수
+     * @param {() => Promise<any>} fn - 실행할 비동기 함수
      * @param {Object} [options={}] - 재시도 옵션
      * @param {number} [options.maxRetries=3] - 최대 재시도 횟수
      * @param {number} [options.delay=1000] - 재시도 간격 ms
      * @param {number} [options.backoff=2] - 지수 백오프 배수
-     * @param {Function} [options.onRetry] - 재시도 시 콜백
-     * @returns {Promise} 함수 실행 결과
+     * @param {(attempt: number, max: number, error: Error) => void} [options.onRetry] - 재시도 시 콜백
+     * @returns {Promise<any>} 함수 실행 결과
      */
     static async withRetry(fn, options = {}) {
         const {
@@ -28,12 +29,13 @@ class ErrorBoundary {
             onRetry = null
         } = options;
 
+        /** @type {any} */
         let lastError;
 
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             try {
                 return await fn();
-            } catch (error) {
+            } catch (/** @type {any} */ error) {
                 lastError = error;
 
                 // 재시도 불가능한 에러 (4xx 클라이언트 에러)
@@ -64,7 +66,7 @@ class ErrorBoundary {
     /**
      * 지정된 시간만큼 대기
      * @param {number} ms - 대기 시간 (밀리초)
-     * @returns {Promise} 대기 완료 Promise
+     * @returns {Promise<void>} 대기 완료 Promise
      */
     static sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));

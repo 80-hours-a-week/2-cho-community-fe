@@ -1,9 +1,11 @@
+// @ts-check
 // js/utils/Logger.js
 // Factory 패턴 기반 로깅 유틸리티
 
 /**
  * 로그 레벨 상수
  */
+/** @type {Record<string, number>} */
 const LOG_LEVELS = {
     DEBUG: 0,
     INFO: 1,
@@ -33,7 +35,7 @@ class Logger {
 
     /**
      * 현재 로그 레벨 반환
-     * @returns {string} 현재 로그 레벨
+     * @returns {string|undefined} 현재 로그 레벨
      */
     static getLevel() {
         return Object.keys(LOG_LEVELS).find(key => LOG_LEVELS[key] === globalLogLevel);
@@ -128,6 +130,7 @@ class LoggerInstance {
 
 // 전역에서 Logger.setLevel() 사용 가능하도록 window에 노출 (개발용)
 if (typeof window !== 'undefined') {
+    // @ts-ignore -- 개발용 전역 노출
     window.Logger = Logger;
 }
 

@@ -1,3 +1,4 @@
+// @ts-check
 // js/utils/markdown.js
 // 마크다운 렌더링 유틸리티 — DOMPurify sanitization으로 XSS 방지
 // 이 파일이 프로젝트에서 innerHTML을 사용하는 유일한 진입점
@@ -93,7 +94,7 @@ DOMPurify.addHook('afterSanitizeAttributes', (node) => {
  */
 export function renderMarkdown(markdown) {
     if (!markdown) return '';
-    const rawHtml = marked.parse(markdown);
+    const rawHtml = /** @type {string} */ (marked.parse(markdown));
     return DOMPurify.sanitize(rawHtml, PURIFY_CONFIG);
 }
 
@@ -109,7 +110,11 @@ export function renderMarkdownTo(element, markdown) {
     element.innerHTML = sanitizedHtml; // eslint-disable-line no-unsanitized/property
 }
 
-/** HTML 이스케이프 (하이라이팅 미지원 언어용) */
+/**
+ * HTML 이스케이프 (하이라이팅 미지원 언어용)
+ * @param {string} text
+ * @returns {string}
+ */
 function escapeHtml(text) {
     return text
         .replace(/&/g, '&amp;')
