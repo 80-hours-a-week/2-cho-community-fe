@@ -41,11 +41,15 @@
                 <input type="text" id="search-input" placeholder="게시글 검색..." maxlength="100">
                 <button id="search-btn" class="search-btn">검색</button>
             </div>
-            <div class="sort-buttons" id="sort-buttons">
-                <button class="sort-btn active" data-sort="latest">최신순</button>
-                <button class="sort-btn" data-sort="likes">인기순</button>
-                <button class="sort-btn" data-sort="views">조회순</button>
-                <button class="sort-btn" data-sort="comments">댓글순</button>
+            <div class="feed-filters" id="feed-filters">
+                <button class="feed-filter-btn" id="following-btn" style="display:none">팔로잉</button>
+                <div class="filter-divider" id="filter-divider" style="display:none"></div>
+                <div class="sort-buttons" id="sort-buttons">
+                    <button class="sort-btn active" data-sort="latest">최신순</button>
+                    <button class="sort-btn" data-sort="likes">인기순</button>
+                    <button class="sort-btn" data-sort="views">조회순</button>
+                    <button class="sort-btn" data-sort="comments">댓글순</button>
+                </div>
             </div>
         </section>
 

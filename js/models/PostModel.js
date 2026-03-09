@@ -15,9 +15,12 @@ class PostModel {
      * @param {string|null} [search=null] - 검색어
      * @param {string} [sort='latest'] - 정렬 기준
      * @param {number|null} [authorId=null] - 작성자 ID 필터
+     * @param {number|null} [categoryId=null] - 카테고리 ID 필터
+     * @param {string|null} [tag=null] - 태그 필터
+     * @param {boolean} [following=false] - 팔로잉 피드 필터
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
      */
-    static async getPosts(offset = 0, limit = 10, search = null, sort = 'latest', authorId = null, categoryId = null, tag = null) {
+    static async getPosts(offset = 0, limit = 10, search = null, sort = 'latest', authorId = null, categoryId = null, tag = null, following = false) {
         let url = `${API_ENDPOINTS.POSTS.ROOT}/?offset=${offset}&limit=${limit}&sort=${sort}`;
         if (search) {
             url += `&search=${encodeURIComponent(search)}`;
@@ -30,6 +33,9 @@ class PostModel {
         }
         if (tag) {
             url += `&tag=${encodeURIComponent(tag)}`;
+        }
+        if (following) {
+            url += `&following=true`;
         }
         return ApiService.get(url);
     }
