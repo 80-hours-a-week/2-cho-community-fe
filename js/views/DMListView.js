@@ -74,9 +74,6 @@ class DMListView {
             className: `dm-card__preview${isDeleted ? ' dm-card__preview--deleted' : ''}`,
             textContent: lastMsgText,
         });
-        if (isDeleted) {
-            preview.style.fontStyle = 'italic';
-        }
         content.appendChild(preview);
 
         // 메타 영역: 시간 + 읽지 않은 수
@@ -143,10 +140,8 @@ class DMListView {
             if (previewEl) {
                 previewEl.textContent = data.preview;
                 if (data.is_deleted) {
-                    previewEl.style.fontStyle = 'italic';
                     previewEl.classList.add('dm-card__preview--deleted');
                 } else {
-                    previewEl.style.fontStyle = '';
                     previewEl.classList.remove('dm-card__preview--deleted');
                 }
             }

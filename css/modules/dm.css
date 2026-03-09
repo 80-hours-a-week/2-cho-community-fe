@@ -87,6 +87,10 @@
     line-height: var(--line-height-normal);
 }
 
+.dm-card__preview--deleted {
+    font-style: italic;
+}
+
 .dm-card__meta {
     display: flex;
     flex-direction: column;

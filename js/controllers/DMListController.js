@@ -68,7 +68,8 @@ export class DMListController {
 
         // 새 메시지 수신 시 대화 카드 업데이트
         _newMessageHandler = (e) => {
-            const { conversation_id, content, created_at, sender } = e.detail || {};
+            const detail = e.detail || {};
+            const { conversation_id, content, created_at } = detail;
             if (!conversation_id) return;
 
             const existing = _conversations.find(
@@ -95,9 +96,13 @@ export class DMListController {
                 DMListView.moveCardToTop(conversation_id, listEl);
             } else {
                 // 새 대화 — 카드 생성 후 prepend
+                // WebSocket 페이로드: sender_nickname, sender_profile_image 필드 사용
                 const newConv = {
                     id: conversation_id,
-                    other_user: sender || { nickname: '알 수 없음' },
+                    other_user: {
+                        nickname: detail.sender_nickname || '알 수 없음',
+                        profile_image_url: detail.sender_profile_image || null,
+                    },
                     last_message: content || '새 대화',
                     last_message_at: created_at || new Date().toISOString(),
                     unread_count: 1,
