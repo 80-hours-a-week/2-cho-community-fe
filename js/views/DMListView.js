@@ -57,14 +57,26 @@ class DMListView {
         });
         content.appendChild(nickname);
 
-        // 마지막 메시지 미리보기
-        const lastMsgText = typeof conv.last_message === 'object'
-            ? conv.last_message?.content || '새 대화'
-            : conv.last_message || '새 대화';
+        // 마지막 메시지 미리보기 (삭제된 메시지 처리 포함)
+        let lastMsgText = '새 대화';
+        let isDeleted = false;
+        if (typeof conv.last_message === 'object' && conv.last_message) {
+            if (conv.last_message.is_deleted) {
+                lastMsgText = '삭제된 메시지입니다';
+                isDeleted = true;
+            } else {
+                lastMsgText = conv.last_message.content || '새 대화';
+            }
+        } else if (conv.last_message) {
+            lastMsgText = conv.last_message;
+        }
         const preview = createElement('span', {
-            className: 'dm-card__preview',
+            className: `dm-card__preview${isDeleted ? ' dm-card__preview--deleted' : ''}`,
             textContent: lastMsgText,
         });
+        if (isDeleted) {
+            preview.style.fontStyle = 'italic';
+        }
         content.appendChild(preview);
 
         // 메타 영역: 시간 + 읽지 않은 수
@@ -114,6 +126,77 @@ class DMListView {
     static hideEmpty(container) {
         if (!container) return;
         container.classList.add('hidden');
+    }
+
+    /**
+     * 기존 대화 카드의 프리뷰/시간/읽지 않은 수를 업데이트
+     * @param {string|number} convId - 대화 ID
+     * @param {object} data - 업데이트 데이터 { preview, time, unread_count, is_deleted }
+     */
+    static updateConversationCard(convId, data) {
+        const card = document.querySelector(`[data-id="${convId}"]`);
+        if (!card) return;
+
+        // 프리뷰 텍스트 업데이트
+        if (data.preview !== undefined) {
+            const previewEl = card.querySelector('.dm-card__preview');
+            if (previewEl) {
+                previewEl.textContent = data.preview;
+                if (data.is_deleted) {
+                    previewEl.style.fontStyle = 'italic';
+                    previewEl.classList.add('dm-card__preview--deleted');
+                } else {
+                    previewEl.style.fontStyle = '';
+                    previewEl.classList.remove('dm-card__preview--deleted');
+                }
+            }
+        }
+
+        // 시간 업데이트
+        if (data.time !== undefined) {
+            const timeEl = card.querySelector('.dm-card__time');
+            if (timeEl) {
+                timeEl.textContent = DMListView.formatTime(data.time);
+            }
+        }
+
+        // 읽지 않은 수 업데이트
+        if (data.unread_count !== undefined) {
+            const metaEl = card.querySelector('.dm-card__meta');
+            let badge = card.querySelector('.dm-unread-badge');
+
+            if (data.unread_count > 0) {
+                card.classList.add('unread');
+                if (!badge && metaEl) {
+                    badge = createElement('span', {
+                        className: 'dm-unread-badge',
+                        textContent: data.unread_count > 99 ? '99+' : String(data.unread_count),
+                    });
+                    metaEl.appendChild(badge);
+                } else if (badge) {
+                    badge.textContent = data.unread_count > 99 ? '99+' : String(data.unread_count);
+                }
+            } else {
+                card.classList.remove('unread');
+                if (badge) {
+                    badge.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * 대화 카드를 컨테이너 최상단으로 이동
+     * @param {string|number} convId - 대화 ID
+     * @param {HTMLElement} container - 대화 목록 컨테이너
+     */
+    static moveCardToTop(convId, container) {
+        if (!container) return;
+        const card = container.querySelector(`[data-id="${convId}"]`);
+        if (!card) return;
+        // 이미 첫 번째면 이동 불필요
+        if (container.firstChild === card) return;
+        container.insertBefore(card, container.firstChild);
     }
 
     /**
