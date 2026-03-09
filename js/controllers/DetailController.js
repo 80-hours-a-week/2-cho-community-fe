@@ -147,6 +147,9 @@ class DetailController {
 
             this.commentController.render(comments);
 
+            // 연관 게시글 lazy load (핵심 기능 아님)
+            this._loadRelatedPosts(this.currentPostId);
+
         } catch (error) {
             logger.error('게시글 로드 실패', error);
             showToastAndRedirect(error.message, NAV_PATHS.MAIN, 1500);
@@ -181,6 +184,22 @@ class DetailController {
             this.commentController.render(comments);
         } catch (error) {
             logger.error('댓글 목록 새로고침 실패', error);
+        }
+    }
+
+    /**
+     * 연관 게시글 로드
+     * @param {string|number} postId - 게시글 ID
+     * @private
+     */
+    async _loadRelatedPosts(postId) {
+        try {
+            const result = await PostModel.getRelatedPosts(postId);
+            if (result.ok && result.data?.data?.posts) {
+                PostDetailView.renderRelatedPosts(result.data.data.posts);
+            }
+        } catch {
+            // 연관 게시글 실패는 무시 (핵심 기능 아님)
         }
     }
 

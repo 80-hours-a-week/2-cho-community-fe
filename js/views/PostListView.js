@@ -175,6 +175,19 @@ class PostListView {
     }
 
     /**
+     * 팔로잉 피드 빈 상태 메시지 표시
+     * @param {HTMLElement} container - 목록 컨테이너
+     */
+    static showFollowingEmptyState(container) {
+        container.textContent = '';
+        container.appendChild(
+            createElement('div', { className: 'empty-state' }, [
+                createElement('p', {}, ['팔로우한 사용자의 게시글이 여기에 표시됩니다.'])
+            ])
+        );
+    }
+
+    /**
      * 카테고리 탭 렌더링
      * @param {HTMLElement} container - 탭 컨테이너
      * @param {Array} categories - 카테고리 목록

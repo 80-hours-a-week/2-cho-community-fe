@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
         IMAGE: '/v1/posts/image',
         PIN: (postId) => `/v1/posts/${postId}/pin`,
         VOTE_POLL: (postId) => `/v1/posts/${postId}/poll/vote`,
+        RELATED: (postId) => `/v1/posts/${postId}/related`,
     },
     CATEGORIES: {
         ROOT: '/v1/categories',

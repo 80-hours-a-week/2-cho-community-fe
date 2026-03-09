@@ -411,6 +411,58 @@ class PostDetailView {
     }
 
     /**
+     * 연관 게시글 렌더링
+     * @param {Array} posts - 연관 게시글 배열
+     */
+    static renderRelatedPosts(posts) {
+        const section = document.getElementById('related-posts-section');
+        const listEl = document.getElementById('related-posts-list');
+
+        if (!section || !listEl) return;
+
+        if (!posts || posts.length === 0) {
+            section.classList.add('hidden');
+            return;
+        }
+
+        listEl.textContent = '';
+
+        posts.forEach(post => {
+            const titleSpan = createElement('span', {
+                className: 'related-post-title',
+            }, [post.title]);
+
+            const metaSpan = createElement('span', {
+                className: 'related-post-meta',
+            }, [`좋아요 ${post.likes_count || 0} · 댓글 ${post.comments_count || 0}`]);
+
+            const children = [titleSpan, metaSpan];
+
+            // 태그 칩 (최대 3개)
+            if (post.tags && post.tags.length > 0) {
+                const tagsSpan = createElement('span', { className: 'related-post-tags' });
+                post.tags.slice(0, 3).forEach(tag => {
+                    const tagName = typeof tag === 'string' ? tag : tag.name;
+                    const chip = createElement('span', {
+                        className: 'tag-badge-sm',
+                    }, [`#${tagName}`]);
+                    tagsSpan.appendChild(chip);
+                });
+                children.push(tagsSpan);
+            }
+
+            const card = createElement('a', {
+                className: 'related-post-card',
+                href: resolveNavPath(NAV_PATHS.DETAIL(post.post_id)),
+            }, children);
+
+            listEl.appendChild(card);
+        });
+
+        section.classList.remove('hidden');
+    }
+
+    /**
      * 토스트 메시지 표시
      * @param {string} message - 메세지
      */

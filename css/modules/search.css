@@ -36,6 +36,43 @@
     border-color: var(--color-primary-accent);
 }
 
+/* 피드 필터 (팔로잉 + 정렬) */
+.feed-filters {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.feed-filter-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.feed-filter-btn:hover {
+    background: var(--color-badge-category-bg);
+    border-color: var(--color-primary-accent);
+}
+
+.feed-filter-btn.active {
+    background: var(--color-primary-accent);
+    color: var(--color-text-white);
+    border-color: var(--color-primary-accent);
+}
+
+.filter-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--color-border);
+    flex-shrink: 0;
+}
+
 /* 검색 + 정렬 섹션 */
 .search-sort-section {
     padding: 0 16px 16px;

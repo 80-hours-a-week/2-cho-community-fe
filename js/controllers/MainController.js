@@ -7,6 +7,7 @@ import PostListView from '../views/PostListView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 import { resolveNavPath } from '../config.js';
+import { getAccessToken } from '../services/ApiService.js';
 
 const logger = Logger.createLogger('MainController');
 
@@ -27,6 +28,7 @@ class MainController {
         this.currentSort = 'latest';
         this.currentCategory = null;
         this.currentTag = null;
+        this.currentFollowing = false;
         // 검색/정렬 변경 시 이전 요청의 응답을 무시하기 위한 세대 카운터
         this.loadGeneration = 0;
     }
@@ -47,6 +49,14 @@ class MainController {
         await this._loadPosts();
         this._setupInfiniteScroll();
         this._setupSearchAndSort();
+
+        // 로그인 상태이면 팔로잉 버튼 표시
+        if (getAccessToken()) {
+            const followingBtn = document.getElementById('following-btn');
+            const filterDivider = document.getElementById('filter-divider');
+            if (followingBtn) followingBtn.style.display = '';
+            if (filterDivider) filterDivider.style.display = '';
+        }
 
         // 게시글 작성 버튼
         const writeBtn = document.getElementById('write-btn');
@@ -75,6 +85,15 @@ class MainController {
         if (searchInput) {
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') doSearch();
+            });
+        }
+
+        const followingBtn = document.getElementById('following-btn');
+        if (followingBtn) {
+            followingBtn.addEventListener('click', () => {
+                this.currentFollowing = !this.currentFollowing;
+                followingBtn.classList.toggle('active', this.currentFollowing);
+                this._resetAndReload();
             });
         }
 
@@ -202,7 +221,7 @@ class MainController {
         try {
             const result = await PostModel.getPosts(
                 this.currentOffset, this.LIMIT, this.currentSearch, this.currentSort,
-                null, this.currentCategory, this.currentTag
+                null, this.currentCategory, this.currentTag, this.currentFollowing
             );
 
             // 검색/정렬이 변경되어 세대가 바뀌었으면 이전 응답 무시
@@ -233,7 +252,9 @@ class MainController {
             }
 
             if (this.currentOffset === 0 && newPosts.length === 0) {
-                if (this.currentSearch) {
+                if (this.currentFollowing) {
+                    PostListView.showFollowingEmptyState(listElement);
+                } else if (this.currentSearch) {
                     PostListView.showSearchEmptyState(listElement, this.currentSearch);
                 } else {
                     PostListView.showEmptyState(listElement);
