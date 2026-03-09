@@ -113,6 +113,20 @@ class WebSocketService {
         return this._state;
     }
 
+    /**
+     * WebSocket으로 메시지를 전송합니다.
+     * @param {object} data - 전송할 JSON 데이터
+     * @returns {boolean} 전송 성공 여부
+     */
+    send(data) {
+        if (this._ws?.readyState !== WebSocket.OPEN) {
+            logger.warn('WebSocket 미연결 상태에서 전송 시도');
+            return false;
+        }
+        this._ws.send(JSON.stringify(data));
+        return true;
+    }
+
     // ─── Private ────────────────────────────────────────────────────────
 
     /**
@@ -180,8 +194,8 @@ class WebSocketService {
                     return; // heartbeat 응답 무시
                 }
 
-                // 범용 이벤트 디스패치
-                this._dispatch(msg.type, msg.data);
+                // 범용 이벤트 디스패치 — data가 없으면 메시지 전체를 전달 (typing/deleted/read 이벤트)
+                this._dispatch(msg.type, msg.data ?? msg);
             };
 
             this._ws.onclose = (event) => {

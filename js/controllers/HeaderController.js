@@ -215,6 +215,13 @@ class HeaderController {
             this._handleRealtimeDm(data);
         });
 
+        // DM 부가 이벤트 (타이핑, 삭제, 읽음) → CustomEvent 디스패치
+        for (const type of ['typing_start', 'typing_stop', 'message_deleted', 'message_read']) {
+            this._wsService.on(type, (data) => {
+                this._dispatchDmEvent(type, data);
+            });
+        }
+
         // 폴백: WebSocket 재연결 포기 시 폴링 전환
         this._wsService.onFallback(() => {
             logger.info('WebSocket 폴백 → 폴링 모드');
@@ -422,6 +429,25 @@ class HeaderController {
         const actor = latest.actor_nickname || '알 수 없는 사용자';
         const action = typeTextMap[latest.type] || '알림이 있습니다';
         showToast(`${actor}님이 ${action}`);
+    }
+
+    /**
+     * DM 관련 WebSocket 이벤트를 CustomEvent로 디스패치합니다.
+     * @param {string} type - 이벤트 타입
+     * @param {object} data - 이벤트 데이터
+     * @private
+     */
+    _dispatchDmEvent(type, data) {
+        const eventMap = {
+            'typing_start': 'dm:typing',
+            'typing_stop': 'dm:typing',
+            'message_deleted': 'dm:message-deleted',
+            'message_read': 'dm:message-read',
+        };
+        const eventName = eventMap[type];
+        if (eventName) {
+            window.dispatchEvent(new CustomEvent(eventName, { detail: { ...data, type } }));
+        }
     }
 
     /**
