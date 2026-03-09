@@ -118,6 +118,11 @@ export const API_ENDPOINTS = {
         MESSAGES: (id) => `/v1/dms/${id}/messages`,
         /** @param {string|number} id */
         READ: (id) => `/v1/dms/${id}/read`,
+        /**
+         * @param {string|number} convId
+         * @param {string|number} msgId
+         */
+        DELETE_MESSAGE: (convId, msgId) => `/v1/dms/${convId}/messages/${msgId}`,
     },
 };
 

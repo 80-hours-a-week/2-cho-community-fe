@@ -75,6 +75,18 @@ class DMModel {
     }
 
     /**
+     * 메시지 삭제
+     * @param {number} conversationId - 대화 ID
+     * @param {number} messageId - 메시지 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async deleteMessage(conversationId, messageId) {
+        return ApiService.delete(
+            API_ENDPOINTS.DMS.DELETE_MESSAGE(conversationId, messageId)
+        );
+    }
+
+    /**
      * 읽지 않은 메시지 수 조회
      * @returns {Promise<ApiResponse<UnreadCountResponse>>}
      */

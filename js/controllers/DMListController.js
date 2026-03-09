@@ -77,7 +77,7 @@ export class DMListController {
             }
 
             const conversations = result.data?.data?.conversations || [];
-            const totalCount = result.data?.data?.total_count || 0;
+            const totalCount = result.data?.data?.pagination?.total_count || 0;
 
             // 첫 로드 시 데이터가 없으면 빈 상태 표시
             if (conversations.length === 0 && _offset === 0) {
