@@ -4,7 +4,7 @@ AWS AI School 2기 과제: 커뮤니티 프론트엔드
 
 ## 요약 (Summary)
 
-커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글(대댓글 포함), 좋아요, 북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 검색/정렬(최신순·좋아요순·조회수순·댓글순·인기순), 이메일 인증, 실시간 알림(WebSocket + 폴링 폴백), 내 활동 조회, 사용자 프로필, 관리자 계정 정지/해제, 마크다운 에디터(GFM + 코드 구문 강조), 팔로우/팔로잉, 관리자 대시보드, 투표(Poll) 기능을 제공합니다.
+커뮤니티 포럼 "아무 말 대잔치"를 구축합니다. FastAPI를 기반으로 하는 비동기 백엔드와 Vanilla JavaScript 프론트엔드(순수 정적 파일)로 구성된 모노레포 구조이며, JWT 기반 인증(Access Token + Refresh Token)과 MySQL 데이터베이스를 사용합니다. 게시글 CRUD, 댓글(대댓글 포함), 좋아요, 북마크, 댓글 좋아요, 공유, 다중 이미지, 사용자 차단, 검색/정렬(최신순·좋아요순·조회수순·댓글순·인기순), 이메일 인증, 실시간 알림(WebSocket + 폴링 폴백), 내 활동 조회, 사용자 프로필, 관리자 계정 정지/해제, 마크다운 에디터(GFM + 코드 구문 강조), 팔로우/팔로잉, 관리자 대시보드, 투표(Poll), DM(쪽지), 태그 시스템, 읽은 게시글 표시, 임시 저장, 팔로잉 피드, 연관 게시글 추천 기능을 제공합니다.
 
 **개발 환경**: 프론트엔드는 Vite 개발 서버(HMR)를 사용하며, Python 의존성이 없습니다. 프로덕션 빌드(`npm run build`)는 해시된 에셋을 생성하고, S3 + CloudFront로 배포됩니다.
 
@@ -37,10 +37,21 @@ AWS AI School 2기의 개인 프로젝트로 커뮤니티 서비스를 개발해
 - 관리자 계정 정지/해제 기능을 제공한다. (사용자 프로필에서 기간+사유 입력, 신고 처리 시 연동)
 - 정지된 사용자의 로그인 차단 및 정지 사유 안내를 제공한다.
 - 마크다운 에디터를 제공한다. (GFM 문법, 코드 구문 강조, 툴바 + 미리보기)
+- @멘션 알림 기능을 제공한다. (댓글에서 @닉네임 하이라이트 및 알림)
+- 임시 저장(Auto-Draft) 기능을 제공한다. (localStorage 기반 자동 저장, 7일 만료)
+- 태그 시스템을 제공한다. (카테고리 + 태그 병행, 자유 입력, 게시글당 최대 5개)
+- 이미지 드래그 앤 드롭을 제공한다. (MarkdownEditor에서 DnD + 클립보드 붙여넣기)
+- 읽은 게시글 표시 기능을 제공한다. (이미 읽은 게시글 시각적 구분)
+- 실시간 알림을 제공한다. (WebSocket 우선, 폴링 폴백)
+- 팔로우/팔로잉 기능을 제공한다. (사용자 프로필에서 팔로우/언팔로우)
+- 관리자 대시보드를 제공한다. (요약 통계, 일별 추이, 사용자 관리)
+- 투표(Poll) 기능을 제공한다. (게시글 내 투표 생성/참여)
+- 팔로잉 피드를 제공한다. (팔로우한 사용자의 게시글 필터링)
+- 연관 게시글 추천을 제공한다. (태그/카테고리 기반)
+- DM(쪽지) 기능을 제공한다. (1:1 비공개 메시지, 실시간 수신)
 
 ## 목표가 아닌 것 (Non-Goals)
 
-- 실시간 알림 기능 (WebSocket) — 현재는 30초 폴링 방식 사용
 - 소셜 로그인 (OAuth)
 
 ## 계획 (Plan)
@@ -65,7 +76,7 @@ flowchart TD
     Backend -->|"Async Connection Pool"| DB
 
     subgraph DB["MySQL Database"]
-        Tables["user, refresh_token, post, comment, post_like,<br/>post_bookmark, comment_like, user_block, post_image,<br/>category, report, email_verification, notification"]
+        Tables["user, refresh_token, post, comment, post_like,<br/>post_bookmark, comment_like, user_block, post_image,<br/>category, report, email_verification, notification,<br/>user_follow, tag, post_tag, poll, poll_option, poll_vote,<br/>dm_conversation, dm_message, post_view_log"]
     end
 ```
 
@@ -85,6 +96,16 @@ erDiagram
     user ||--o{ post_bookmark : "bookmarks"
     user ||--o{ comment_like : "likes comment"
     user ||--o{ user_block : "blocks"
+    user ||--o{ user_follow : "follows"
+    user ||--o{ dm_conversation : "participates"
+    user ||--o{ poll_vote : "votes"
+    post ||--o{ poll : "has poll"
+    poll ||--o{ poll_option : "has options"
+    poll_option ||--o{ poll_vote : "receives"
+    dm_conversation ||--o{ dm_message : "contains"
+    tag ||--o{ post_tag : "tagged"
+    post ||--o{ post_tag : "has tags"
+    post ||--o{ post_view_log : "tracks views"
     post ||--o{ comment : "has"
     post ||--o{ post_like : "receives"
     post ||--o{ post_bookmark : "bookmarked"
@@ -180,7 +201,7 @@ erDiagram
         int user_id FK "수신자"
         int actor_id FK "발신자"
         int post_id FK
-        enum type "like, comment, reply"
+        enum type "like, comment, reply, mention, follow"
         boolean is_read "default FALSE"
         datetime created_at
     }
@@ -211,6 +232,70 @@ erDiagram
         int post_id FK
         varchar image_url
         tinyint sort_order
+        datetime created_at
+    }
+
+    user_follow {
+        int id PK
+        int follower_id FK
+        int following_id FK
+        datetime created_at
+    }
+
+    tag {
+        int id PK
+        varchar name UK
+        datetime created_at
+    }
+
+    post_tag {
+        int post_id PK_FK
+        int tag_id PK_FK
+    }
+
+    poll {
+        int id PK
+        int post_id FK
+        varchar question
+        datetime expires_at
+        datetime created_at
+    }
+
+    poll_option {
+        int id PK
+        int poll_id FK
+        varchar text
+        int sort_order
+    }
+
+    poll_vote {
+        int id PK
+        int poll_option_id FK
+        int user_id FK
+        datetime created_at
+    }
+
+    dm_conversation {
+        int id PK
+        int participant1_id FK
+        int participant2_id FK
+        datetime last_message_at
+        datetime created_at
+    }
+
+    dm_message {
+        int id PK
+        int conversation_id FK
+        int sender_id FK
+        text content
+        datetime created_at
+    }
+
+    post_view_log {
+        int id PK
+        int user_id FK
+        int post_id FK
+        date view_date
         datetime created_at
     }
 ```
@@ -264,7 +349,7 @@ erDiagram
 
 | Method | Endpoint | 설명 | 인증 |
 | ------ | -------- | ---- | ---- |
-| GET | `/v1/posts` | 게시글 목록 (페이지네이션, `?search=`, `?sort=latest\|likes\|views\|comments\|hot`, `?category_id=`) | X |
+| GET | `/v1/posts` | 게시글 목록 (페이지네이션, `?search=`, `?sort=latest\|likes\|views\|comments\|hot`, `?category_id=`, `?tag=태그명`, `?following=true`) | X |
 | POST | `/v1/posts` | 게시글 작성 (`category_id` 필수) | O (이메일 인증) |
 | GET | `/v1/posts/{post_id}` | 게시글 상세 조회 | X |
 | PATCH | `/v1/posts/{post_id}` | 게시글 수정 | O (작성자) |
@@ -281,6 +366,7 @@ erDiagram
 | POST | `/v1/posts/{post_id}/comments/{comment_id}/like` | 댓글 좋아요 | O (이메일 인증) |
 | DELETE | `/v1/posts/{post_id}/comments/{comment_id}/like` | 댓글 좋아요 취소 | O (이메일 인증) |
 | POST | `/v1/posts/image` | 게시글 이미지 업로드 | O |
+| GET | `/v1/posts/{post_id}/related` | 연관 게시글 추천 (`?limit=5`) | X |
 
 #### 사용자 차단 API (`/v1/users`)
 
@@ -311,6 +397,46 @@ erDiagram
 | ------ | -------- | ---- | ---- |
 | POST | `/v1/admin/users/{user_id}/suspend` | 사용자 정지 (`duration_days`, `reason`) | O (관리자) |
 | DELETE | `/v1/admin/users/{user_id}/suspend` | 사용자 정지 해제 | O (관리자) |
+
+#### 팔로우 API (`/v1/users`)
+
+| Method | Endpoint | 설명 | 인증 |
+| ------ | -------- | ---- | ---- |
+| POST | `/v1/users/{user_id}/follow` | 팔로우 | O (이메일 인증) |
+| DELETE | `/v1/users/{user_id}/follow` | 언팔로우 | O (이메일 인증) |
+| GET | `/v1/users/me/followers` | 내 팔로워 목록 | O |
+| GET | `/v1/users/me/following` | 내 팔로잉 목록 | O |
+
+#### 태그 API (`/v1/tags`)
+
+| Method | Endpoint | 설명 | 인증 |
+| ------ | -------- | ---- | ---- |
+| GET | `/v1/tags` | 태그 검색 (`?search=키워드`, 상위 10개) | X |
+
+#### DM API (`/v1/dms`)
+
+| Method | Endpoint | 설명 | 인증 |
+| ------ | -------- | ---- | ---- |
+| GET | `/v1/dms` | DM 대화 목록 | O |
+| POST | `/v1/dms` | 대화 시작 (recipient_id) | O |
+| GET | `/v1/dms/unread-count` | 읽지 않은 대화 수 | O |
+| GET | `/v1/dms/{conversation_id}` | 메시지 목록 | O |
+| DELETE | `/v1/dms/{conversation_id}` | 대화 삭제 (soft delete) | O |
+| POST | `/v1/dms/{conversation_id}/messages` | 메시지 전송 | O |
+| PATCH | `/v1/dms/{conversation_id}/read` | 읽음 처리 | O |
+
+#### 투표 API
+
+| Method | Endpoint | 설명 | 인증 |
+| ------ | -------- | ---- | ---- |
+| POST | `/v1/posts/{post_id}/poll/vote` | 투표 참여 (option_id) | O (이메일 인증) |
+
+#### 관리자 대시보드 API
+
+| Method | Endpoint | 설명 | 인증 |
+| ------ | -------- | ---- | ---- |
+| GET | `/v1/admin/dashboard` | 대시보드 요약 통계 | O (관리자) |
+| GET | `/v1/admin/users` | 사용자 관리 목록 | O (관리자) |
 
 #### 응답 형식
 
@@ -382,7 +508,7 @@ sequenceDiagram
 
 ```text
 2-cho-community-fe/
-├── html/                    # 14개 정적 HTML 페이지
+├── html/                    # 17개 정적 HTML 페이지
 │   ├── post_list.html       # 메인 피드
 │   ├── post_detail.html     # 게시글 상세
 │   ├── post_write.html      # 게시글 작성
@@ -396,7 +522,10 @@ sequenceDiagram
 │   ├── notifications.html   # 알림
 │   ├── my-activity.html     # 내 활동
 │   ├── user-profile.html    # 타 사용자 프로필
-│   └── admin-reports.html   # 관리자 신고 관리
+│   ├── admin-reports.html   # 관리자 신고 관리
+│   ├── admin_dashboard.html # 관리자 대시보드
+│   ├── dm_list.html         # DM 목록
+│   └── dm_detail.html       # DM 상세
 │
 ├── js/
 │   ├── app/                 # 페이지별 진입점
@@ -404,7 +533,7 @@ sequenceDiagram
 │   ├── models/              # API 통신 계층
 │   ├── views/               # DOM 렌더링
 │   ├── components/          # 재사용 UI 컴포넌트 (MarkdownEditor)
-│   ├── services/            # ApiService (HTTP 클라이언트)
+│   ├── services/            # ApiService (HTTP 클라이언트), WebSocketService, DraftService
 │   ├── utils/               # Logger, Validators, Formatters, Markdown
 │   ├── config.js            # API_BASE_URL
 │   └── constants.js         # 엔드포인트, 메시지, 라우트
@@ -420,9 +549,9 @@ sequenceDiagram
 
 #### MVC 패턴
 
-- **Model**: API 호출 담당. `AuthModel`, `PostModel`, `UserModel`, `CommentModel`, `NotificationModel`, `ActivityModel`, `ReportModel`, `CategoryModel`
+- **Model**: API 호출 담당. `AuthModel`, `PostModel`, `UserModel`, `CommentModel`, `NotificationModel`, `ActivityModel`, `ReportModel`, `CategoryModel`, `DMModel`, `TagModel`
 - **View**: DOM 렌더링. 정적 메서드로 HTML 생성 및 이벤트 바인딩
-- **Controller**: 비즈니스 로직. Model과 View 조정, 상태 관리 (`MainController`, `DetailController`, `WriteController`, `NotificationController`, `MyActivityController`, `UserProfileController` 등)
+- **Controller**: 비즈니스 로직. Model과 View 조정, 상태 관리 (`MainController`, `DetailController`, `WriteController`, `NotificationController`, `MyActivityController`, `UserProfileController`, `DMListController`, `DMDetailController`, `AdminReportController`, `AdminDashboardController` 등)
 
 #### 주요 패턴
 
@@ -441,6 +570,9 @@ sequenceDiagram
 - **비동기 응답 무효화**: 검색/정렬 변경 시 `loadGeneration` 카운터로 in-flight 응답 폐기
 - **마크다운 렌더링**: `marked`(GFM 파싱) + `DOMPurify`(XSS 방지) + `highlight.js`(코드 구문 강조). 게시글 본문은 `renderMarkdownTo()`, 댓글은 `renderMarkdown()` + `<template>` 요소 패턴. `breaks: true` 설정으로 기존 플레인텍스트 호환
 - **마크다운 에디터**: `MarkdownEditor` 컴포넌트가 textarea 래핑. 풀 모드(게시글: 14버튼 툴바) / 컴팩트 모드(댓글: 5버튼). 미리보기 토글, Ctrl+B/I 단축키 지원
+- **WebSocket 실시간 알림**: WebSocketService 싱글턴 (JWT 인증, 지수 백오프 재연결, heartbeat), 폴링 자동 폴백
+- **임시 저장**: DraftService — localStorage 기반 자동 저장 (500ms 디바운스, 7일 만료)
+- **이미지 드래그 앤 드롭**: MarkdownEditor에서 DnD + 클립보드 붙여넣기 (플레이스홀더 → 업로드 → 마크다운 교체)
 
 ### 6. 보안 고려사항
 
@@ -451,6 +583,7 @@ sequenceDiagram
 | CORS | 허용 출처 명시적 설정 (`localhost:8080`) |
 | SQL Injection | Parameterized queries (`aiomysql`) |
 | XSS | `createElement()` / `textContent` 기반 DOM 생성. 마크다운 렌더링만 DOMPurify sanitize 후 innerHTML 사용 |
+| 마크다운 렌더링 | `marked` → `DOMPurify.sanitize()` → `<template>.innerHTML` (유일한 innerHTML 진입점) |
 | Timing Attack | 로그인 시 존재하지 않는 사용자도 `bcrypt` 검증 수행 |
 
 ### 7. 비밀번호 정책
@@ -484,6 +617,11 @@ sequenceDiagram
   - 팔로잉 피드: 게시글 목록에 "팔로잉" 토글 버튼 (로그인 시만 표시, 기존 정렬과 조합 가능)
   - 연관 게시글: 상세 페이지에 관련 게시글 섹션 (태그/카테고리 기반, lazy load, 0건이면 숨김)
   - 팔로잉 빈 상태 메시지: "팔로우한 사용자의 게시글이 여기에 표시됩니다."
+
+- **03-08: DM 쪽지 기능**
+  - DM 대화 목록 (`dm_list.html`) + 상세 페이지 (`dm_detail.html`)
+  - 프로필에서 "메시지 보내기" 버튼, 헤더 DM 아이콘 + 읽지 않은 배지
+  - MarkdownEditor 컴팩트 모드 (5버튼), WebSocket `type: "dm"` 실시간 수신
 
 - **03-06: 투표 생성/참여 UI**
   - 게시글 작성 시 "투표 추가" 토글 — 질문, 동적 옵션(2~10개), 만료일 입력

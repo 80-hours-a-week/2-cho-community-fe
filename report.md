@@ -38,7 +38,7 @@
 | **백엔드** | FastAPI (Python 3.13) | 비동기 I/O, 자동 API 문서화 | Lambda 컨테이너 실행, 콜드 스타트 영향 |
 | **데이터베이스** | MySQL 8.0 (aiomysql) | FULLTEXT 검색(ngram), 트랜잭션 격리 | 커넥션 풀 관리, Lambda 스케일링 시 폭발 위험 |
 | **인증** | JWT (Access 30분 + Refresh 7일) | Stateless 인증, XSS 방어 | 토큰 저장소 DB 의존, 만료 토큰 주기적 정리 |
-| **인프라** | AWS (Terraform 15개 모듈) | 서버리스 아키텍처, IaC 재현성 | 3개 환경(Dev/Staging/Prod) 차등 설계 |
+| **인프라** | AWS (Terraform 18개 모듈) | 서버리스 아키텍처, IaC 재현성 | 3개 환경(Dev/Staging/Prod) 차등 설계 |
 | **CI/CD** | GitHub Actions + OIDC | 장기 자격 증명 없는 배포 | 환경별 분리 배포, ECR 이미지 롤백 지원 |
 | **부하 테스트** | Locust (gevent 기반) | 3종 사용자 시나리오 | 병목 사전 식별, 50~200 동시 사용자 검증 완료 |
 
@@ -51,11 +51,12 @@
 | **읽기 중심 워크로드** (게시글 목록·상세 조회가 전체 요청의 ~80%) | DB 읽기 부하 분산, 캐싱 전략 | RDS Read Replica (미적용), CloudFront 캐싱 고려 |
 | **이미지 업로드** (게시글당 최대 5장, 프로필 이미지) | 파일 저장소 내구성, 처리량 확보 | EFS 마운트 (3-AZ 자동 복제), 백업 필요 |
 | **FULLTEXT 검색** (한국어 ngram 파서) | DB CPU 부하 증가, 인덱스 유지 비용 | MySQL FULLTEXT INDEX, 대량 데이터 시 별도 검색 엔진 고려 |
-| **알림 폴링** (30초 간격, 로그인 사용자 전원) | 사용자 수에 비례하는 상시 요청 발생 | DAU 300+ 시 WebSocket 전환 검토 필요 |
+| **실시간 알림** (WebSocket 푸시 + 폴링 폴백) | WebSocket 연결 관리, 상태 저장소 필요 | DynamoDB 연결 매핑 + API GW Management API, 폴링 자동 폴백 |
 | **인증 토큰 관리** (JWT 발급·갱신·폐기) | 토큰 저장소 정합성, 브루트포스 방어 | DB 행 잠금, Rate Limiting (분산 환경 한계 존재) |
 | **동시 쓰기** (좋아요·북마크·댓글 동시 요청) | 경쟁 상태 방지, 트랜잭션 격리 | UNIQUE 제약, READ COMMITTED 격리 수준 |
 | **계정 정지** (관리자 기간 정지 + 신고 연동) | 정지 상태 3중 검증 (로그인·토큰·갱신) | `suspended_until` 시간 비교, 자동 해제 (배치 불필요) |
 | **마크다운 렌더링** (게시글·댓글 GFM + 코드 강조) | HTML 삽입에 따른 XSS 벡터 차단 | DOMPurify 라이브러리 sanitize, 단일 진입점(`renderMarkdown`) |
+| **DM 쪽지** (1:1 비공개 메시지) | 실시간 전달, 차단 연동 | WebSocket `type: "dm"` 푸시, 참가자 정규화 UNIQUE 제약 |
 
 ---
 
@@ -435,7 +436,8 @@ flowchart LR
 | **접근 관리** | IAM (MFA 강제) | 최소 권한 원칙, OIDC 역할 |
 | **네트워크** | VPC (2-AZ) | Private Subnet 격리, NAT Gateway |
 | **배포** | GitHub Actions + OIDC | 장기 자격 증명 없는 CI/CD |
-| **IaC** | Terraform (>= 1.5.0) | 15개 모듈, 3개 환경 |
+| **실시간 알림** | API Gateway (WebSocket API) + DynamoDB | WebSocket 연결 관리, 실시간 이벤트 푸시 |
+| **IaC** | Terraform (>= 1.5.0) | 18개 모듈, 3개 환경 |
 
 ---
 
@@ -991,7 +993,7 @@ flowchart TD
 | 강점 | 설명 |
 | ------ | ------ |
 | **완전 서버리스** | Lambda + API Gateway로 서버 관리 부담 제거, 유휴 시 비용 0 |
-| **IaC 완전 관리** | Terraform 15개 모듈로 전체 인프라 코드화, 환경 재현 가능 |
+| **IaC 완전 관리** | Terraform 18개 모듈로 전체 인프라 코드화, 환경 재현 가능 |
 | **보안 계층화** | VPC 격리, SSM 시크릿, OIDC 배포, MFA 강제, OAC 전용 S3 |
 | **환경별 차등 설계** | Dev(비용 최소) → Staging(중간) → Prod(HA 강화) 단계적 구성 |
 | **모니터링 기반** | CloudWatch 6개 알람 + 4개 위젯 대시보드 + CloudTrail 감사 |
@@ -1043,7 +1045,7 @@ flowchart TD
 | Aurora Serverless v2 | RDS → Aurora | 자동 스케일링, 최대 128 ACU |
 | S3 이미지 마이그레이션 | EFS → S3 + CloudFront | 이미지 CDN 배포, 무제한 확장 |
 | 3-AZ 확장 | VPC 서브넷 3개 AZ로 확장 | 가용 영역 장애 내성 강화 |
-| 실시간 알림 | WebSocket (API Gateway WebSocket API) | 폴링 제거, 사용자 경험 개선 |
+| ~~실시간 알림~~ | ~~WebSocket (API Gateway WebSocket API)~~ | ~~구현 완료~~ (별도 WebSocket API GW + Lambda + DynamoDB) |
 
 ---
 
