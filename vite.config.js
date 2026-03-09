@@ -21,6 +21,7 @@ function mpaRewritePlugin() {
     '/admin/reports': '/admin_reports.html',
     '/admin/dashboard': '/admin_dashboard.html',
     '/messages': '/dm_list.html',
+    '/messages/inbox': '/dm.html',
     '/messages/detail': '/dm_detail.html',
   };
 
@@ -64,6 +65,7 @@ export default defineConfig({
         admin_dashboard: resolve(__dirname, 'admin_dashboard.html'),
         dm_list: resolve(__dirname, 'dm_list.html'),
         dm_detail: resolve(__dirname, 'dm_detail.html'),
+        dm: resolve(__dirname, 'dm.html'),
       },
     },
   },

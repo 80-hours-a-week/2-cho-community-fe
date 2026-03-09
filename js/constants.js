@@ -208,6 +208,7 @@ export const NAV_PATHS = {
     ADMIN_REPORTS: '/admin/reports',
     ADMIN_DASHBOARD: '/admin/dashboard',
     DM_LIST: '/messages',
+    DM_INBOX: '/messages/inbox',
     /** @param {string|number} id */
     DM_DETAIL: (id) => `/messages/detail?id=${id}`,
 };
@@ -250,6 +251,7 @@ export const HTML_PATHS = {
     '/admin/reports': '/admin_reports.html',
     '/admin/dashboard': '/admin_dashboard.html',
     '/messages': '/dm_list.html',
+    '/messages/inbox': '/dm.html',
     '/messages/detail': '/dm_detail.html',
 };
 
