@@ -153,6 +153,16 @@ class PostModel {
     }
 
     /**
+     * 연관 게시글 조회
+     * @param {string|number} postId - 게시글 ID
+     * @param {number} [limit=5] - 조회 개수
+     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     */
+    static async getRelatedPosts(postId, limit = 5) {
+        return ApiService.get(`${API_ENDPOINTS.POSTS.RELATED(postId)}?limit=${limit}`);
+    }
+
+    /**
      * 이미지 업로드
      * @param {File} file - 이미지 파일
      * @returns {Promise<{ok: boolean, status: number, data: any}>}
