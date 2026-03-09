@@ -175,6 +175,19 @@ class PostListView {
     }
 
     /**
+     * 추천 피드 빈 상태 메시지 표시
+     * @param {HTMLElement} container - 목록 컨테이너
+     */
+    static showForYouEmptyState(container) {
+        container.textContent = '';
+        container.appendChild(
+            createElement('div', { className: 'empty-state' }, [
+                createElement('p', {}, ['추천 게시글을 준비 중입니다. 게시글을 읽고, 좋아요와 북마크를 남겨보세요!'])
+            ])
+        );
+    }
+
+    /**
      * 팔로잉 피드 빈 상태 메시지 표시
      * @param {HTMLElement} container - 목록 컨테이너
      */

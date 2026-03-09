@@ -213,6 +213,7 @@ export const SORT_OPTIONS = {
     VIEWS: 'views',
     COMMENTS: 'comments',
     HOT: 'hot',
+    FOR_YOU: 'for_you',
 };
 
 export const SORT_LABELS = {
@@ -221,6 +222,7 @@ export const SORT_LABELS = {
     views: '조회순',
     comments: '댓글순',
     hot: '핫',
+    for_you: '추천',
 };
 
 // 클린 URL → 실제 HTML 파일 매핑

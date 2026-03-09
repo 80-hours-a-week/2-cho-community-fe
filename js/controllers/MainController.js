@@ -29,6 +29,7 @@ class MainController {
         this.currentCategory = null;
         this.currentTag = null;
         this.currentFollowing = false;
+        this.currentForYou = false;
         // 검색/정렬 변경 시 이전 요청의 응답을 무시하기 위한 세대 카운터
         this.loadGeneration = 0;
     }
@@ -50,10 +51,12 @@ class MainController {
         this._setupInfiniteScroll();
         this._setupSearchAndSort();
 
-        // 로그인 상태이면 팔로잉 버튼 표시
+        // 로그인 상태이면 추천/팔로잉 버튼 표시
         if (getAccessToken()) {
+            const forYouBtn = document.getElementById('foryou-btn');
             const followingBtn = document.getElementById('following-btn');
             const filterDivider = document.getElementById('filter-divider');
+            if (forYouBtn) forYouBtn.classList.remove('hidden');
             if (followingBtn) followingBtn.classList.remove('hidden');
             if (filterDivider) filterDivider.classList.remove('hidden');
         }
@@ -88,11 +91,49 @@ class MainController {
             });
         }
 
+        const forYouBtn = document.getElementById('foryou-btn');
         const followingBtn = document.getElementById('following-btn');
+
+        if (forYouBtn) {
+            forYouBtn.addEventListener('click', () => {
+                this.currentForYou = !this.currentForYou;
+                forYouBtn.classList.toggle('active', this.currentForYou);
+
+                if (this.currentForYou) {
+                    // 추천 활성화 시 팔로잉 해제 + 정렬 버튼 비활성화
+                    this.currentFollowing = false;
+                    if (followingBtn) followingBtn.classList.remove('active');
+                    if (sortButtons) {
+                        sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                    }
+                } else {
+                    // 추천 비활성화 시 최신순으로 복귀
+                    this.currentSort = 'latest';
+                    if (sortButtons) {
+                        const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
+                        if (latestBtn) latestBtn.classList.add('active');
+                    }
+                }
+                this._resetAndReload();
+            });
+        }
+
         if (followingBtn) {
             followingBtn.addEventListener('click', () => {
                 this.currentFollowing = !this.currentFollowing;
                 followingBtn.classList.toggle('active', this.currentFollowing);
+
+                // 팔로잉 활성화 시 추천 해제
+                if (this.currentFollowing && this.currentForYou) {
+                    this.currentForYou = false;
+                    if (forYouBtn) forYouBtn.classList.remove('active');
+                    // 정렬 버튼 복원
+                    this.currentSort = 'latest';
+                    if (sortButtons) {
+                        const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
+                        if (latestBtn) latestBtn.classList.add('active');
+                    }
+                }
                 this._resetAndReload();
             });
         }
@@ -103,7 +144,13 @@ class MainController {
                 if (!btn) return;
 
                 const sort = btn.dataset.sort;
-                if (sort === this.currentSort) return;
+                if (sort === this.currentSort && !this.currentForYou) return;
+
+                // 정렬 버튼 클릭 시 추천 모드 해제
+                if (this.currentForYou) {
+                    this.currentForYou = false;
+                    if (forYouBtn) forYouBtn.classList.remove('active');
+                }
 
                 sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -219,8 +266,9 @@ class MainController {
         PostListView.toggleLoadingSentinel(sentinel, true);
 
         try {
+            const sort = this.currentForYou ? 'for_you' : this.currentSort;
             const result = await PostModel.getPosts(
-                this.currentOffset, this.LIMIT, this.currentSearch, this.currentSort,
+                this.currentOffset, this.LIMIT, this.currentSearch, sort,
                 null, this.currentCategory, this.currentTag, this.currentFollowing
             );
 
@@ -252,7 +300,9 @@ class MainController {
             }
 
             if (this.currentOffset === 0 && newPosts.length === 0) {
-                if (this.currentFollowing) {
+                if (this.currentForYou) {
+                    PostListView.showForYouEmptyState(listElement);
+                } else if (this.currentFollowing) {
                     PostListView.showFollowingEmptyState(listElement);
                 } else if (this.currentSearch) {
                     PostListView.showSearchEmptyState(listElement, this.currentSearch);
