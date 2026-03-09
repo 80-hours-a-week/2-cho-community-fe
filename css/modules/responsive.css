@@ -449,3 +449,19 @@ html {
         height: calc(100dvh - 48px);
     }
 }
+
+/* ============================= */
+/* DM 분할 레이아웃               */
+/* ============================= */
+@media (max-width: 768px) {
+    .dm-desktop-layout {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .dm-sidebar {
+        min-width: 280px;
+        max-width: 400px;
+    }
+}

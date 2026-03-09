@@ -109,6 +109,21 @@
   --color-table-border: #d0d7de;
   --color-table-row-alt: #f6f8fa;
 
+  /* DM */
+  --dm-bubble-mine: var(--color-primary);
+  --dm-bubble-mine-text: var(--color-text-white);
+  --dm-bubble-other: var(--color-bg-tertiary);
+  --dm-bubble-other-text: var(--color-text-primary);
+  --dm-bubble-deleted: var(--color-bg-input);
+  --dm-bubble-deleted-text: var(--color-text-placeholder);
+  --dm-panel-bg: var(--color-bg-primary);
+  --dm-sidebar-bg: var(--color-bg-secondary);
+  --dm-sidebar-active: var(--color-primary-bg);
+  --dm-sidebar-active-border: var(--color-primary);
+  --dm-divider-color: var(--color-border-light);
+  --dm-typing-dot: var(--color-text-placeholder);
+  --dm-read-check: var(--color-primary-light);
+
   /* ============================= */
   /* Spacing (4px 기반)             */
   /* ============================= */
@@ -285,6 +300,21 @@
   --color-blockquote-text: #8b949e;
   --color-table-border: #30363d;
   --color-table-row-alt: #161b22;
+
+  /* DM */
+  --dm-bubble-mine: var(--color-primary);
+  --dm-bubble-mine-text: var(--color-text-white);
+  --dm-bubble-other: var(--color-bg-tertiary);
+  --dm-bubble-other-text: var(--color-text-primary);
+  --dm-bubble-deleted: var(--color-bg-input);
+  --dm-bubble-deleted-text: var(--color-text-placeholder);
+  --dm-panel-bg: var(--color-bg-primary);
+  --dm-sidebar-bg: var(--color-bg-secondary);
+  --dm-sidebar-active: var(--color-primary-bg);
+  --dm-sidebar-active-border: var(--color-primary);
+  --dm-divider-color: var(--color-border-light);
+  --dm-typing-dot: var(--color-text-placeholder);
+  --dm-read-check: var(--color-primary-light);
 
   /* Shadow */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);

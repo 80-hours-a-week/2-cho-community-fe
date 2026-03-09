@@ -28,7 +28,7 @@
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border-light);
+    border-bottom: 1px solid var(--dm-divider-color);
     cursor: pointer;
     transition: background-color var(--transition-fast);
     text-decoration: none;
@@ -45,6 +45,16 @@
 
 .dm-card.unread:hover {
     background: var(--color-notification-unread-hover);
+}
+
+/* 대화 카드 활성 상태 (데스크톱 분할 레이아웃) */
+.dm-card--active {
+    background: var(--dm-sidebar-active);
+    border-left: 3px solid var(--dm-sidebar-active-border);
+}
+
+.dm-card--active:hover {
+    background: var(--dm-sidebar-active);
 }
 
 .dm-card__avatar {
@@ -137,6 +147,93 @@
 }
 
 /* ============================= */
+/* 데스크톱 분할 레이아웃         */
+/* ============================= */
+
+.dm-desktop-layout {
+    display: flex;
+    height: calc(100vh - 60px);
+    background: var(--dm-panel-bg);
+}
+
+.dm-sidebar {
+    width: 340px;
+    border-right: 1px solid var(--dm-divider-color);
+    background: var(--dm-sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.dm-sidebar-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--dm-divider-color);
+}
+
+.dm-sidebar-header .page-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.dm-sidebar .dm-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.dm-main-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dm-no-selection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-placeholder);
+    font-size: var(--font-size-lg);
+}
+
+.dm-chat-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ============================= */
+/* 검색바                        */
+/* ============================= */
+
+.dm-search-bar {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-bottom: 1px solid var(--dm-divider-color);
+}
+
+.dm-search-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-input);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.dm-search-input:focus {
+    border-color: var(--color-primary);
+}
+
+.dm-search-input::placeholder {
+    color: var(--color-text-placeholder);
+}
+
+/* ============================= */
 /* DM 대화 상세 페이지           */
 /* ============================= */
 
@@ -154,8 +251,8 @@
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 1px solid var(--color-border-light);
-    background: var(--color-bg-primary);
+    border-bottom: 1px solid var(--dm-divider-color);
+    background: var(--dm-panel-bg);
     position: sticky;
     top: 0;
     z-index: var(--z-header);
@@ -202,19 +299,36 @@
 /* 내 메시지 (오른쪽) */
 .dm-msg--mine {
     align-self: flex-end;
-    background: var(--color-primary);
-    color: var(--color-text-white);
+    background: var(--dm-bubble-mine);
+    color: var(--dm-bubble-mine-text);
     border-bottom-right-radius: var(--radius-sm);
 }
 
 /* 상대방 메시지 (왼쪽) */
 .dm-msg--other {
     align-self: flex-start;
-    background: var(--color-bg-tertiary);
-    color: var(--color-text-primary);
+    background: var(--dm-bubble-other);
+    color: var(--dm-bubble-other-text);
     border-bottom-left-radius: var(--radius-sm);
     display: flex;
     gap: var(--spacing-xs);
+}
+
+/* 삭제된 메시지 */
+.dm-msg--deleted .dm-msg__content {
+    font-style: italic;
+    color: var(--dm-bubble-deleted-text);
+}
+
+.dm-msg--deleted.dm-msg--mine {
+    background: var(--dm-bubble-deleted);
+}
+
+.dm-msg--deleted.dm-msg--other .dm-msg__body {
+    background: var(--dm-bubble-deleted);
+    border-radius: var(--radius-lg);
+    border-bottom-left-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
 }
 
 /* 빈 메시지 상태 */
@@ -259,12 +373,24 @@
 
 .dm-msg--mine .dm-msg__time {
     text-align: right;
-    color: var(--color-text-white);
+    color: var(--dm-bubble-mine-text);
 }
 
 .dm-msg--other .dm-msg__time {
     text-align: left;
     color: var(--color-text-placeholder);
+}
+
+/* 읽음 체크마크 */
+.dm-msg__read-status {
+    font-size: var(--font-size-xs);
+    margin-left: var(--spacing-xs);
+    opacity: 0.7;
+}
+
+.dm-msg__read-status--read {
+    color: var(--dm-read-check);
+    opacity: 1;
 }
 
 /* 날짜 구분선 */
@@ -283,7 +409,7 @@
     top: 50%;
     width: 30%;
     height: 1px;
-    background: var(--color-border-light);
+    background: var(--dm-divider-color);
 }
 
 .dm-date-divider::before {
@@ -294,14 +420,57 @@
     right: 0;
 }
 
-/* 입력 영역 */
+/* ============================= */
+/* 타이핑 인디케이터              */
+/* ============================= */
+
+.dm-typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-lg);
+    color: var(--color-text-placeholder);
+    font-size: var(--font-size-sm);
+    min-height: 24px;
+}
+
+.dm-typing-indicator:empty {
+    display: none;
+}
+
+.dm-typing-dots {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.dm-typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dm-typing-dot);
+    animation: dm-typing-bounce 1.4s infinite ease-in-out;
+}
+
+.dm-typing-dot:nth-child(1) { animation-delay: 0s; }
+.dm-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.dm-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dm-typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+}
+
+/* ============================= */
+/* 입력 영역                     */
+/* ============================= */
+
 .dm-input-area {
     display: flex;
     align-items: flex-end;
     gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid var(--color-border-light);
-    background: var(--color-bg-primary);
+    border-top: 1px solid var(--dm-divider-color);
+    background: var(--dm-panel-bg);
     position: sticky;
     bottom: 0;
 }
@@ -318,7 +487,41 @@
     border-radius: var(--radius-md);
 }
 
-/* 아이콘 버튼 (삭제 등) */
+/* ============================= */
+/* 컨텍스트 메뉴                 */
+/* ============================= */
+
+.dm-context-menu {
+    position: fixed;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-modal);
+    min-width: 120px;
+    padding: var(--spacing-xs) 0;
+}
+
+.dm-context-menu__item {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: none;
+    color: var(--color-danger);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    text-align: left;
+}
+
+.dm-context-menu__item:hover {
+    background: var(--color-bg-input);
+}
+
+/* ============================= */
+/* 아이콘 버튼 (삭제 등)          */
+/* ============================= */
+
 .dm-detail-header .btn-icon {
     display: inline-flex;
     align-items: center;
