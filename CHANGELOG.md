@@ -2,6 +2,12 @@
 
 ## 2026-03 (Mar)
 
+- **03-09: 모바일 반응형 UI 전면 개선**
+  - `css/modules/responsive.css` 신규: 4개 미디어 쿼리 (480px 모바일, 768px 태블릿, 터치 디바이스, 가로 모드)
+  - iOS 입력 줌 방지 (`font-size: 16px`), `viewport-fit=cover` + safe-area 노치 대응
+  - 헤더 축소 (모바일 60px / 태블릿 80px / 가로 48px), 터치 타겟 44px 확보
+  - 터치 디바이스 hover 잔상 제거 + `scale()` active 피드백, 마크다운 테이블 가로 스크롤
+
 - **03-09: 추천 피드(For You Feed) UI**
   - '추천' 토글 버튼 (로그인 시만 표시), `sort=for_you`로 개인화 피드 요청
   - 추천/팔로잉 상호 배제 처리, 정렬 버튼과의 상호 배제
