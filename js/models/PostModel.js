@@ -1,3 +1,4 @@
+// @ts-check
 // js/models/PostModel.js
 // 게시글 관련 API 호출 관리
 
@@ -18,7 +19,7 @@ class PostModel {
      * @param {number|null} [categoryId=null] - 카테고리 ID 필터
      * @param {string|null} [tag=null] - 태그 필터
      * @param {boolean} [following=false] - 팔로잉 피드 필터
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<{posts: PostSummary[], pagination: Pagination}>>}
      */
     static async getPosts(offset = 0, limit = 10, search = null, sort = 'latest', authorId = null, categoryId = null, tag = null, following = false) {
         let url = `${API_ENDPOINTS.POSTS.ROOT}/?offset=${offset}&limit=${limit}&sort=${sort}`;
@@ -43,7 +44,8 @@ class PostModel {
     /**
      * 게시글 상세 조회
      * @param {string|number} postId - 게시글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @param {string} [commentSort='oldest'] - 댓글 정렬 기준
+     * @returns {Promise<ApiResponse<PostDetail>>}
      */
     static async getPost(postId, commentSort = 'oldest') {
         let url = `${API_ENDPOINTS.POSTS.ROOT}/${postId}`;
@@ -55,8 +57,8 @@ class PostModel {
 
     /**
      * 게시글 작성
-     * @param {object} data - 게시글 데이터 (title, content, image_urls)
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @param {{title: string, content: string, category_id: number, image_urls?: string[], tags?: string[], poll?: {question: string, options: string[], expires_in_hours?: number}}} data - 게시글 데이터
+     * @returns {Promise<ApiResponse<CreatePostResponse>>}
      */
     static async createPost(data) {
         return ApiService.post(`${API_ENDPOINTS.POSTS.ROOT}/`, data);
@@ -65,8 +67,8 @@ class PostModel {
     /**
      * 게시글 수정
      * @param {string|number} postId - 게시글 ID
-     * @param {object} data - 수정할 데이터 (title, content)
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @param {{title?: string, content?: string, category_id?: number, image_urls?: string[], tags?: string[]}} data - 수정할 데이터
+     * @returns {Promise<ApiResponse<UpdatePostResponse>>}
      */
     static async updatePost(postId, data) {
         return ApiService.patch(`${API_ENDPOINTS.POSTS.ROOT}/${postId}`, data);
@@ -75,7 +77,7 @@ class PostModel {
     /**
      * 게시글 삭제
      * @param {string|number} postId - 게시글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async deletePost(postId) {
         return ApiService.delete(`${API_ENDPOINTS.POSTS.ROOT}/${postId}`);
@@ -84,7 +86,7 @@ class PostModel {
     /**
      * 게시글 좋아요
      * @param {string|number} postId - 게시글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async likePost(postId) {
         return ApiService.post(`${API_ENDPOINTS.POSTS.ROOT}/${postId}/likes`, {});
@@ -93,7 +95,7 @@ class PostModel {
     /**
      * 게시글 좋아요 취소
      * @param {string|number} postId - 게시글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async unlikePost(postId) {
         return ApiService.delete(`${API_ENDPOINTS.POSTS.ROOT}/${postId}/likes`);
@@ -102,6 +104,7 @@ class PostModel {
     /**
      * 게시글 북마크
      * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async bookmarkPost(postId) {
         return ApiService.post(API_ENDPOINTS.BOOKMARKS.ROOT(postId), {});
@@ -110,6 +113,7 @@ class PostModel {
     /**
      * 게시글 북마크 해제
      * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async unbookmarkPost(postId) {
         return ApiService.delete(API_ENDPOINTS.BOOKMARKS.ROOT(postId));
@@ -118,7 +122,7 @@ class PostModel {
     /**
      * 게시글 고정
      * @param {string|number} postId - 게시글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async pinPost(postId) {
         return ApiService.patch(API_ENDPOINTS.POSTS.PIN(postId), {});
@@ -127,7 +131,7 @@ class PostModel {
     /**
      * 게시글 고정 해제
      * @param {string|number} postId - 게시글 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async unpinPost(postId) {
         return ApiService.delete(API_ENDPOINTS.POSTS.PIN(postId));
@@ -136,7 +140,7 @@ class PostModel {
     /**
      * 태그 자동완성 검색
      * @param {string} search - 검색어
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<TagSearchResult[]>>}
      */
     static async searchTags(search) {
         return ApiService.get(`${API_ENDPOINTS.TAGS.ROOT}?search=${encodeURIComponent(search)}`);
@@ -146,7 +150,7 @@ class PostModel {
      * 투표 참여
      * @param {string|number} postId - 게시글 ID
      * @param {number} optionId - 선택한 옵션 ID
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<void>>}
      */
     static async votePoll(postId, optionId) {
         return ApiService.post(API_ENDPOINTS.POSTS.VOTE_POLL(postId), { option_id: optionId });
@@ -156,7 +160,7 @@ class PostModel {
      * 연관 게시글 조회
      * @param {string|number} postId - 게시글 ID
      * @param {number} [limit=5] - 조회 개수
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<RelatedPost[]>>}
      */
     static async getRelatedPosts(postId, limit = 5) {
         return ApiService.get(`${API_ENDPOINTS.POSTS.RELATED(postId)}?limit=${limit}`);
@@ -165,7 +169,7 @@ class PostModel {
     /**
      * 이미지 업로드
      * @param {File} file - 이미지 파일
-     * @returns {Promise<{ok: boolean, status: number, data: any}>}
+     * @returns {Promise<ApiResponse<ImageUploadResponse>>}
      */
     static async uploadImage(file) {
         const formData = new FormData();
