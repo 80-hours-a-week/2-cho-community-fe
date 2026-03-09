@@ -8,5 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const headerController = new HeaderController();
     await headerController.init();
 
+    // 재초기화 시 이전 상태 정리 (HMR, 페이지 캐시 대비)
+    DMDetailController.destroy();
     DMDetailController.init();
 });
+
+// 페이지 이탈 시 이벤트 리스너 정리
+window.addEventListener('pagehide', () => DMDetailController.destroy());

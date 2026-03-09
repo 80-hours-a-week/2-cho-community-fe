@@ -298,6 +298,7 @@ class DetailController {
 
         const likeBox = document.getElementById('like-box');
         const countEl = document.getElementById('like-count');
+        if (!likeBox || !countEl) return;
         const originalCount = parseInt(countEl.innerText) || 0;
         const wasLiked = likeBox.classList.contains('active');
 
@@ -336,6 +337,7 @@ class DetailController {
 
         const bookmarkBox = document.getElementById('bookmark-box');
         const countEl = document.getElementById('bookmark-count');
+        if (!bookmarkBox || !countEl) return;
         const originalCount = parseInt(countEl.innerText) || 0;
         const wasBookmarked = bookmarkBox.classList.contains('active');
 

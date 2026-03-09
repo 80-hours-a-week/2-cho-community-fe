@@ -80,6 +80,7 @@ class MainController {
         const sortButtons = document.getElementById('sort-buttons');
 
         const doSearch = () => {
+            if (!searchInput) return;
             this.currentSearch = searchInput.value.trim() || null;
             this._resetAndReload();
         };

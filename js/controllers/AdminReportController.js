@@ -21,6 +21,7 @@ class AdminReportController {
         this.LIMIT = 20;
         this.isLoading = false;
         this.hasMore = true;
+        this.loadGeneration = 0;
         this.scrollObserver = null;
         this.resolveTargetId = null;
         this.resolveAction = null; // 'resolved' | 'dismissed'
@@ -96,6 +97,10 @@ class AdminReportController {
         this.currentOffset = 0;
         this.hasMore = true;
         this.isLoading = false;
+        this.loadGeneration++;
+        // 목록 즉시 클리어하여 stale 데이터 방지
+        const listEl = document.getElementById('report-list');
+        if (listEl) listEl.textContent = '';
         this._loadReports();
     }
 
@@ -107,6 +112,7 @@ class AdminReportController {
         if (this.isLoading || !this.hasMore) return;
 
         this.isLoading = true;
+        const generation = this.loadGeneration;
         const listEl = document.getElementById('report-list');
         const sentinel = document.getElementById('loading-sentinel');
 
@@ -116,6 +122,9 @@ class AdminReportController {
             const result = await ReportModel.getReports(
                 this.currentStatus, this.currentOffset, this.LIMIT
             );
+
+            // 비동기 응답 무효화: 요청 중 탭 전환 시 stale 응답 무시
+            if (generation !== this.loadGeneration) return;
 
             if (!result.ok) throw new Error('신고 목록 로드 실패');
 
