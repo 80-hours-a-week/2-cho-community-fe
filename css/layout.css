@@ -11,10 +11,10 @@ header {
     width: 100%;
     height: 104px;
     z-index: var(--z-header);
-    background-color: var(--color-bg-secondary);
+    background-color: var(--header-bg);
     display: flex;
     justify-content: center;
-    border-bottom: 1px solid var(--color-gray-900);
+    border-bottom: 1px solid var(--header-border);
 }
 
 /* Wrapper: Matches main-container width (Max 600px) */
@@ -24,7 +24,7 @@ header {
     align-items: center;
     width: 100%;
     max-width: 600px;
-    padding: 0 20px;
+    padding: 0 var(--spacing-xl);
     box-sizing: border-box;
     height: 100%;
     /* Fill header height */
@@ -35,7 +35,7 @@ header {
 /* Back Button: Far Left */
 .back-button {
     position: absolute;
-    left: 12px;
+    left: var(--spacing-md);
     /* 20px - 8px padding = 12px for visual alignment */
     top: 50%;
     transform: translateY(-50%);
@@ -97,12 +97,12 @@ header {
 /* Auth/Profile: Next to Title (Left side of Col 3) */
 .header-auth {
     position: absolute;
-    right: 20px;
+    right: var(--spacing-xl);
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--spacing-md);
 }
 
 .profile-circle {
@@ -155,7 +155,7 @@ header {
 }
 
 .header-dropdown li {
-    padding: 10px 12px;
+    padding: var(--spacing-md);
     font-size: var(--font-size-base);
     color: var(--color-text-primary);
     cursor: pointer;
@@ -171,7 +171,7 @@ header {
 /* Main Container                */
 /* ============================= */
 .main-container {
-    margin-top: 104px;
+    margin-top: var(--header-height);
     width: 100%;
     max-width: 600px;
     padding: 0 var(--spacing-xl);

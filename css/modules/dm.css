@@ -113,7 +113,7 @@
     font-weight: var(--font-weight-bold);
     min-width: 18px;
     height: 18px;
-    border-radius: 9px;
+    border-radius: var(--badge-radius);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -123,7 +123,7 @@
 /* 빈 상태 */
 .dm-empty {
     text-align: center;
-    padding: 60px var(--spacing-xl);
+    padding: var(--spacing-6xl) var(--spacing-xl);
     color: var(--color-text-placeholder);
     font-size: var(--font-size-md);
 }
@@ -339,7 +339,7 @@
 /* 빈 메시지 상태 */
 .dm-messages-empty {
     text-align: center;
-    padding: 60px var(--spacing-xl);
+    padding: var(--spacing-6xl) var(--spacing-xl);
     color: var(--color-text-placeholder);
     font-size: var(--font-size-md);
 }

@@ -16,8 +16,8 @@
 .signup-title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
-    margin-top: 40px;
-    margin-bottom: 30px;
+    margin-top: var(--spacing-4xl);
+    margin-bottom: var(--spacing-3xl);
     text-align: center;
 }
 
@@ -31,14 +31,14 @@
 }
 
 .profile-label-group {
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-md);
 }
 
 .profile-label {
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-base);
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: var(--spacing-xs);
 }
 
 .helper-text {
@@ -51,7 +51,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    margin-top: var(--spacing-md);
 }
 
 .signup-profile-circle {
@@ -68,7 +68,7 @@
 }
 
 .plus-icon {
-    font-size: 40px;
+    font-size: var(--font-size-3xl);
     color: var(--color-gray-600);
     font-weight: 300;
 }
@@ -100,7 +100,7 @@
     width: 100%;
     padding: var(--spacing-md);
     border: 1px solid var(--color-border-dark);
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     font-size: var(--font-size-base);
     box-sizing: border-box;
     background-color: var(--color-bg-tertiary);
@@ -121,15 +121,15 @@
 /* 버튼 스타일 */
 .signup-btn {
     width: 100%;
-    padding: 14px;
+    padding: var(--spacing-md);
     background-color: var(--color-primary);
     color: var(--color-text-white);
     border: none;
-    border-radius: 5px;
+    border-radius: var(--radius-sm);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: var(--spacing-md);
 }
 
 .signup-btn:disabled {
@@ -139,7 +139,7 @@
 }
 
 .login-link-container {
-    margin-top: 20px;
+    margin-top: var(--spacing-xl);
     text-align: center;
 }
 

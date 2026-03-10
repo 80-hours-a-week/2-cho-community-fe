@@ -64,7 +64,7 @@ ol {
 
 .page-title {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: var(--spacing-3xl);
 }
 
 .hidden {
@@ -93,7 +93,7 @@ ol {
     width: 100%;
     height: 1px;
     background-color: var(--color-border);
-    margin: 10px 0;
+    margin: var(--spacing-md) 0;
 }
 
 /* ============================= */

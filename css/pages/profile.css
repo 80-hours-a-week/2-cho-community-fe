@@ -6,8 +6,8 @@
 /* ============================= */
 .profile-edit-section {
     text-align: center;
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-3xl);
     position: relative;
     display: inline-block;
     left: 50%;
@@ -16,7 +16,7 @@
 
 .profile-label {
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-md);
 }
 
 .profile-img-wrapper {
@@ -40,11 +40,11 @@
     background-color: rgba(50, 50, 50, 0.8);
     /* 더 어두운 배경 */
     border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     width: max-content;
     /* 전체 너비 늘어짐 방지 */
     height: auto;
-    padding: 6px 16px;
+    padding: var(--spacing-xs) var(--spacing-lg);
     /* 알약 모양 패딩 */
     display: flex;
     justify-content: center;
@@ -59,6 +59,6 @@
 
 .change-btn-text {
     color: var(--color-text-white);
-    font-size: 13px;
+    font-size: var(--font-size-caption);
     font-weight: var(--font-weight-medium);
 }

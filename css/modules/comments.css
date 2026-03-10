@@ -12,7 +12,7 @@
 /* Comment Input                 */
 /* ============================= */
 .comment-input-wrapper {
-    margin-bottom: 30px;
+    margin-bottom: var(--spacing-3xl);
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -28,11 +28,11 @@
     box-sizing: border-box;
     font-family: inherit;
     resize: none;
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-md);
 }
 
 .comment-submit-btn {
-    padding: 10px 20px;
+    padding: var(--btn-padding-md);
     background-color: var(--color-primary);
     color: var(--color-text-white);
     border: none;
@@ -117,8 +117,8 @@
 .comment-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
 }
 
 .comment-author-name {
@@ -134,7 +134,7 @@
 .comment-actions {
     margin-left: auto;
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-sm);
 }
 
 /* ============================= */
@@ -185,7 +185,7 @@
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--color-reply-indicator-bg);
     border-radius: var(--radius-md) var(--radius-md) 0 0;
-    font-size: 13px;
+    font-size: var(--font-size-caption);
     color: var(--color-primary-accent);
 }
 
@@ -198,7 +198,7 @@
     border: none;
     color: var(--color-text-placeholder);
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--font-size-caption);
 }
 
 .reply-cancel-btn:hover {

@@ -8,7 +8,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px 24px;
+    padding: var(--spacing-4xl) var(--spacing-xl) var(--spacing-2xl);
     gap: var(--spacing-lg);
 }
 
@@ -69,11 +69,11 @@
 /* 작성한 글 섹션 (Posts Section) */
 /* ============================= */
 .user-profile-posts {
-    padding: 0 20px 40px;
+    padding: 0 var(--spacing-xl) var(--spacing-4xl);
 }
 
 .user-profile-posts h2 {
-    font-size: 18px;
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
     margin: 0 0 var(--spacing-lg);

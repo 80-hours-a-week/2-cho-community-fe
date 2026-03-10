@@ -17,27 +17,27 @@
 /* 게시글 카드 (Post Card) */
 /* ============================= */
 .post-card {
-    background: var(--color-bg-primary);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-2xl);
-    box-shadow: var(--shadow-sm);
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--card-shadow);
     cursor: pointer;
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--card-border);
     display: flex;
     flex-direction: column;
 }
 
 .post-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--card-shadow-hover);
 }
 
 .post-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-md);
 }
 
 .post-title {
@@ -64,12 +64,12 @@
     gap: var(--spacing-lg);
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    margin-bottom: 10px;
+    margin-bottom: var(--spacing-md);
 }
 
 /* 카드 구분선 - 검정 (Card Divider - Black) */
 .post-card .post-divider {
-    background-color: var(--color-gray-900);
+    background-color: var(--card-divider);
 }
 
 /* ============================= */
@@ -82,8 +82,8 @@
 }
 
 .author-profile-img {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-full);
     background-color: var(--color-border);
     object-fit: cover;
@@ -112,7 +112,7 @@
     padding: var(--spacing-2xs) var(--spacing-sm);
     background: var(--color-warning);
     color: var(--color-text-white);
-    border-radius: var(--radius-sm);
+    border-radius: var(--badge-radius);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-bold);
 }
@@ -122,7 +122,7 @@
     padding: var(--spacing-2xs) var(--spacing-sm);
     background: var(--color-badge-category-bg);
     color: var(--color-badge-category-text);
-    border-radius: var(--radius-sm);
+    border-radius: var(--badge-radius);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
 }
