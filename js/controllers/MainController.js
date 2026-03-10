@@ -11,6 +11,15 @@ import { getAccessToken } from '../services/ApiService.js';
 
 const logger = Logger.createLogger('MainController');
 
+const DEFAULT_FILTERS = Object.freeze({
+    search: null,
+    sort: 'latest',
+    category: null,
+    tag: null,
+    following: false,
+    forYou: false,
+});
+
 /**
  * 메인 페이지 컨트롤러
  */
@@ -24,12 +33,7 @@ class MainController {
         this.loadedPostIds = new Set();
         // IntersectionObserver 참조 (cleanup용)
         this.scrollObserver = null;
-        this.currentSearch = null;
-        this.currentSort = 'latest';
-        this.currentCategory = null;
-        this.currentTag = null;
-        this.currentFollowing = false;
-        this.currentForYou = false;
+        this.filters = { ...DEFAULT_FILTERS };
         // 검색/정렬 변경 시 이전 요청의 응답을 무시하기 위한 세대 카운터
         this.loadGeneration = 0;
     }
@@ -42,7 +46,7 @@ class MainController {
         const urlParams = new URLSearchParams(window.location.search);
         const tagParam = urlParams.get('tag');
         if (tagParam) {
-            this.currentTag = tagParam;
+            this.filters.tag = tagParam;
         }
 
         // 헤더의 인증 관련 로직은 HeaderController에서 처리
@@ -81,7 +85,7 @@ class MainController {
 
         const doSearch = () => {
             if (!searchInput) return;
-            this.currentSearch = searchInput.value.trim() || null;
+            this.filters.search = searchInput.value.trim() || null;
             this._resetAndReload();
         };
 
@@ -97,19 +101,19 @@ class MainController {
 
         if (forYouBtn) {
             forYouBtn.addEventListener('click', () => {
-                this.currentForYou = !this.currentForYou;
-                forYouBtn.classList.toggle('active', this.currentForYou);
+                this.filters.forYou = !this.filters.forYou;
+                forYouBtn.classList.toggle('active', this.filters.forYou);
 
-                if (this.currentForYou) {
+                if (this.filters.forYou) {
                     // 추천 활성화 시 팔로잉 해제 + 정렬 버튼 비활성화
-                    this.currentFollowing = false;
+                    this.filters.following = false;
                     if (followingBtn) followingBtn.classList.remove('active');
                     if (sortButtons) {
                         sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
                     }
                 } else {
                     // 추천 비활성화 시 최신순으로 복귀
-                    this.currentSort = 'latest';
+                    this.filters.sort = 'latest';
                     if (sortButtons) {
                         const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
                         if (latestBtn) latestBtn.classList.add('active');
@@ -121,15 +125,15 @@ class MainController {
 
         if (followingBtn) {
             followingBtn.addEventListener('click', () => {
-                this.currentFollowing = !this.currentFollowing;
-                followingBtn.classList.toggle('active', this.currentFollowing);
+                this.filters.following = !this.filters.following;
+                followingBtn.classList.toggle('active', this.filters.following);
 
                 // 팔로잉 활성화 시 추천 해제
-                if (this.currentFollowing && this.currentForYou) {
-                    this.currentForYou = false;
+                if (this.filters.following && this.filters.forYou) {
+                    this.filters.forYou = false;
                     if (forYouBtn) forYouBtn.classList.remove('active');
                     // 정렬 버튼 복원
-                    this.currentSort = 'latest';
+                    this.filters.sort = 'latest';
                     if (sortButtons) {
                         const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
                         if (latestBtn) latestBtn.classList.add('active');
@@ -145,18 +149,18 @@ class MainController {
                 if (!btn) return;
 
                 const sort = btn.dataset.sort;
-                if (sort === this.currentSort && !this.currentForYou) return;
+                if (sort === this.filters.sort && !this.filters.forYou) return;
 
                 // 정렬 버튼 클릭 시 추천 모드 해제
-                if (this.currentForYou) {
-                    this.currentForYou = false;
+                if (this.filters.forYou) {
+                    this.filters.forYou = false;
                     if (forYouBtn) forYouBtn.classList.remove('active');
                 }
 
                 sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
-                this.currentSort = sort;
+                this.filters.sort = sort;
                 this._resetAndReload();
             });
         }
@@ -206,9 +210,9 @@ class MainController {
         const tabContainer = document.getElementById('category-tabs');
         if (!tabContainer || !this._categories) return;
 
-        PostListView.renderCategoryTabs(tabContainer, this._categories, this.currentCategory, (categoryId) => {
-            if (categoryId === this.currentCategory) return;
-            this.currentCategory = categoryId;
+        PostListView.renderCategoryTabs(tabContainer, this._categories, this.filters.category, (categoryId) => {
+            if (categoryId === this.filters.category) return;
+            this.filters.category = categoryId;
             this._renderCategoryTabs();
             this._resetAndReload();
         });
@@ -267,10 +271,10 @@ class MainController {
         PostListView.toggleLoadingSentinel(sentinel, true);
 
         try {
-            const sort = this.currentForYou ? 'for_you' : this.currentSort;
+            const sort = this.filters.forYou ? 'for_you' : this.filters.sort;
             const result = await PostModel.getPosts(
-                this.currentOffset, this.LIMIT, this.currentSearch, sort,
-                null, this.currentCategory, this.currentTag, this.currentFollowing
+                this.currentOffset, this.LIMIT, this.filters.search, sort,
+                null, this.filters.category, this.filters.tag, this.filters.following
             );
 
             // 검색/정렬이 변경되어 세대가 바뀌었으면 이전 응답 무시
@@ -301,12 +305,12 @@ class MainController {
             }
 
             if (this.currentOffset === 0 && newPosts.length === 0) {
-                if (this.currentForYou) {
+                if (this.filters.forYou) {
                     PostListView.showForYouEmptyState(listElement);
-                } else if (this.currentFollowing) {
+                } else if (this.filters.following) {
                     PostListView.showFollowingEmptyState(listElement);
-                } else if (this.currentSearch) {
-                    PostListView.showSearchEmptyState(listElement, this.currentSearch);
+                } else if (this.filters.search) {
+                    PostListView.showSearchEmptyState(listElement, this.filters.search);
                 } else {
                     PostListView.showEmptyState(listElement);
                 }
