@@ -41,7 +41,7 @@ html {
 
     /* --- 헤더 드롭다운 화면 밖 방지 --- */
     .header-dropdown {
-        right: -8px;
+        right: calc(-1 * var(--spacing-sm));
     }
 
     /* --- 입력 필드 iOS 줌 방지 (16px 이상) --- */
@@ -60,7 +60,7 @@ html {
 
     /* --- 터치 타겟 최소 44px --- */
     .action-btn {
-        padding: 10px 14px;
+        padding: var(--spacing-md) var(--spacing-md);
         font-size: var(--font-size-base);
         min-height: 44px;
     }
@@ -82,22 +82,22 @@ html {
     }
 
     .write-btn {
-        padding: 12px 20px;
+        padding: var(--spacing-md) var(--spacing-xl);
         min-height: 44px;
     }
 
     .comment-submit-btn {
-        padding: 12px 20px;
+        padding: var(--spacing-md) var(--spacing-xl);
         min-height: 44px;
     }
 
     .search-btn {
-        padding: 12px 20px;
+        padding: var(--spacing-md) var(--spacing-xl);
         min-height: 44px;
     }
 
     .back-button {
-        padding: 10px;
+        padding: var(--spacing-md);
     }
 
     .md-toolbar-btn {
@@ -166,7 +166,7 @@ html {
 
     .post-title {
         margin-right: 0;
-        font-size: 18px;
+        font-size: var(--font-size-md);
     }
 
     /* --- 모달 --- */
@@ -182,14 +182,14 @@ html {
 
     .modal-buttons button {
         width: 100%;
-        padding: 14px;
+        padding: var(--spacing-md);
         min-height: 44px;
     }
 
     /* --- 토스트 키보드 겹침 방지 --- */
     #toast {
         bottom: max(40px, env(safe-area-inset-bottom, 40px));
-        max-width: calc(100vw - 32px);
+        max-width: calc(100vw - var(--spacing-3xl));
     }
 
     /* --- 검색/정렬 --- */
@@ -423,7 +423,7 @@ html {
 
     /* 헤더 드롭다운 터치 타겟 확대 */
     .header-dropdown li {
-        padding: 14px 12px;
+        padding: var(--spacing-md) var(--spacing-md);
         min-height: 44px;
     }
 }
