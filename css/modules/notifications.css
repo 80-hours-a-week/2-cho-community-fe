@@ -62,7 +62,7 @@
 }
 
 .notification-message {
-    margin: 0 0 4px;
+    margin: 0 0 var(--spacing-xs);
     font-size: var(--font-size-base);
     line-height: var(--line-height-normal);
     color: var(--color-text-primary);
@@ -99,7 +99,7 @@
 
 .notification-empty {
     text-align: center;
-    padding: 60px 20px;
+    padding: 60px var(--spacing-xl);
     color: var(--color-text-placeholder);
     font-size: var(--font-size-md);
 }
@@ -109,7 +109,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    margin-right: 12px;
+    margin-right: var(--spacing-md);
     text-decoration: none;
     cursor: pointer;
 }
@@ -130,11 +130,11 @@
     font-weight: var(--font-weight-bold);
     min-width: 18px;
     height: 18px;
-    border-radius: 9px;
+    border-radius: var(--badge-radius);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
+    padding: 0 var(--spacing-xs);
 }
 
 .notification-badge.hidden {

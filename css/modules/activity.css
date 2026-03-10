@@ -12,7 +12,7 @@
 
 .tab-btn {
     flex: 1;
-    padding: 10px 16px;
+    padding: var(--spacing-md) var(--spacing-lg);
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-md);
@@ -51,7 +51,7 @@
 /* ============================= */
 .activity-empty {
     text-align: center;
-    padding: 60px 20px;
+    padding: 60px var(--spacing-xl);
     color: var(--color-text-placeholder);
     font-size: var(--font-size-md);
 }
@@ -66,7 +66,7 @@
 .comment-card {
     background: var(--color-bg-primary);
     border-radius: var(--radius-lg);
-    padding: 20px 24px;
+    padding: var(--spacing-xl) var(--spacing-2xl);
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-border-light);
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
@@ -83,7 +83,7 @@
 
 .comment-text {
     margin: 0;
-    font-size: 15px;
+    font-size: var(--font-size-base);
     line-height: var(--line-height-normal);
     color: var(--color-text-primary);
     word-break: break-word;
@@ -93,17 +93,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--font-size-caption);
     color: var(--color-text-tertiary);
 }
 
 .comment-card-post {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--spacing-2xs);
     min-width: 0;
     flex: 1;
-    margin-right: 12px;
+    margin-right: var(--spacing-md);
 }
 
 .comment-post-title {

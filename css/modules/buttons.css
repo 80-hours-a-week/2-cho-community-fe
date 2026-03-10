@@ -5,7 +5,7 @@
 /* 기본 버튼 (Primary Buttons) */
 /* ============================= */
 .write-btn {
-    padding: 10px 20px;
+    padding: var(--btn-padding-md);
     background-color: var(--color-primary);
     color: var(--color-text-white);
     border: none;
@@ -24,7 +24,7 @@
 /* 액션 버튼 (Action Buttons) */
 /* ============================= */
 .action-btn {
-    padding: 6px 12px;
+    padding: var(--spacing-sm) var(--spacing-md);
     border: 1px solid var(--color-border-dark);
     background: var(--color-bg-primary);
     border-radius: var(--radius-md);
@@ -34,7 +34,7 @@
 }
 
 .action-btn:hover {
-    background: #f0f0f0;
+    background: var(--surface-hover);
 }
 
 /* ============================= */
@@ -54,7 +54,7 @@
 /* ============================= */
 .submit-btn {
     width: 100%;
-    padding: 14px;
+    padding: var(--spacing-lg);
     background-color: var(--color-primary);
     color: var(--color-text-white);
     border: none;
@@ -87,7 +87,7 @@
 .login-btn,
 .signup-btn {
     width: 100%;
-    padding: 14px;
+    padding: var(--spacing-lg);
     background-color: var(--color-primary);
     color: var(--color-text-white);
     border: none;
@@ -116,7 +116,7 @@
 /* 보조/기본 버튼 (Secondary/Primary Buttons) */
 /* ============================= */
 .secondary-btn {
-    background: #f0f0f0;
+    background: var(--surface-hover);
     color: var(--color-text-primary);
 }
 
@@ -170,7 +170,7 @@
 /* ============================= */
 .category-select {
     width: 100%;
-    padding: 10px 14px;
+    padding: var(--spacing-md) var(--spacing-lg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     font-size: var(--font-size-base);
@@ -202,7 +202,7 @@
 /* 탈퇴 버튼 (Withdraw Button) */
 /* ============================= */
 .withdraw-btn {
-    margin-top: 10px;
+    margin-top: var(--spacing-md);
     background: none;
     border: none;
     cursor: pointer;

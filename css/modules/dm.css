@@ -113,7 +113,7 @@
     font-weight: var(--font-weight-bold);
     min-width: 18px;
     height: 18px;
-    border-radius: 9px;
+    border-radius: var(--badge-radius);
     display: flex;
     align-items: center;
     justify-content: center;
