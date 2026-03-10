@@ -36,6 +36,8 @@ class MainController {
         this.filters = { ...DEFAULT_FILTERS };
         // 검색/정렬 변경 시 이전 요청의 응답을 무시하기 위한 세대 카운터
         this.loadGeneration = 0;
+        // 이전 API 요청 취소용
+        this._abortController = null;
     }
 
     /**
@@ -244,6 +246,10 @@ class MainController {
      * 컨트롤러 정리 (페이지 이탈 시 호출)
      */
     destroy() {
+        if (this._abortController) {
+            this._abortController.abort();
+            this._abortController = null;
+        }
         if (this.scrollObserver) {
             this.scrollObserver.disconnect();
             this.scrollObserver = null;
@@ -263,6 +269,12 @@ class MainController {
     async _loadPosts() {
         if (this.isLoading || !this.hasMore) return;
 
+        // 이전 요청 취소
+        if (this._abortController) {
+            this._abortController.abort();
+        }
+        this._abortController = new AbortController();
+
         this.isLoading = true;
         const generation = this.loadGeneration;
         const listElement = document.getElementById('post-list');
@@ -274,8 +286,12 @@ class MainController {
             const sort = this.filters.forYou ? 'for_you' : this.filters.sort;
             const result = await PostModel.getPosts(
                 this.currentOffset, this.LIMIT, this.filters.search, sort,
-                null, this.filters.category, this.filters.tag, this.filters.following
+                null, this.filters.category, this.filters.tag, this.filters.following,
+                { signal: this._abortController.signal }
             );
+
+            // 취소된 요청은 무시
+            if (result?.aborted) return;
 
             // 검색/정렬이 변경되어 세대가 바뀌었으면 이전 응답 무시
             if (generation !== this.loadGeneration) return;

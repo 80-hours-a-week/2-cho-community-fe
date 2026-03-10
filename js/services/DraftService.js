@@ -2,9 +2,15 @@
 // js/services/DraftService.js
 // localStorage 기반 게시글 임시 저장 서비스
 
+import Logger from '../utils/Logger.js';
+
+const logger = Logger.createLogger('DraftService');
 const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7일
 
 class DraftService {
+    /** @type {boolean} */
+    static _notifiedStorageFull = false;
+
     /**
      * 임시 저장 데이터를 localStorage에 저장.
      * savedAt 타임스탬프 자동 추가.
@@ -21,8 +27,14 @@ class DraftService {
                 savedAt: new Date().toISOString(),
             };
             localStorage.setItem(key, JSON.stringify(data));
-        } catch {
-            // localStorage 용량 초과 등 — 조용히 실패
+        } catch (e) {
+            logger.warn('임시 저장 실패', e);
+            if (!DraftService._notifiedStorageFull) {
+                DraftService._notifiedStorageFull = true;
+                import('../views/helpers.js').then(({ showToast }) => {
+                    showToast('저장 공간이 부족하여 임시 저장이 비활성화되었습니다');
+                });
+            }
         }
     }
 
@@ -54,7 +66,8 @@ class DraftService {
                 categoryId: data.categoryId ?? null,
                 savedAt: data.savedAt,
             };
-        } catch {
+        } catch (e) {
+            logger.warn('임시 저장 로드 실패', e);
             return null;
         }
     }

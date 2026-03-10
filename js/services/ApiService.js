@@ -94,21 +94,36 @@ class ApiService {
     /**
      * GET 요청 (자동 재시도 적용)
      * @param {string} endpoint - API 엔드포인트 (예: '/v1/users/me')
-     * @param {boolean} [_isRetry=false] - 401 refresh 후 재시도 여부 (내부용)
-     * @param {Record<string, string>} [extraHeaders] - 추가 헤더 (예: ETag용 If-None-Match)
+     * @param {boolean | {_isRetry?: boolean, signal?: AbortSignal, extraHeaders?: Record<string, string>}} [optionsOrRetry=false] - 옵션 객체 또는 하위 호환용 boolean
+     * @param {Record<string, string>} [extraHeadersArg] - 추가 헤더 (하위 호환용)
      * @returns {Promise<ApiResponse>}
      */
-    static async get(endpoint, _isRetry = false, extraHeaders = undefined) {
+    static async get(endpoint, optionsOrRetry = false, extraHeadersArg = undefined) {
+        // 하위 호환: 기존 boolean 호출 지원
+        /** @type {{_isRetry?: boolean, signal?: AbortSignal, extraHeaders?: Record<string, string>}} */
+        let options = {};
+        if (typeof optionsOrRetry === 'boolean') {
+            options = { _isRetry: optionsOrRetry, extraHeaders: extraHeadersArg };
+        } else {
+            options = optionsOrRetry || {};
+        }
+
+        const { _isRetry = false, signal, extraHeaders } = options;
+
         logger.debug(`GET 요청: ${endpoint}`);
 
         try {
             // ErrorBoundary.withRetry를 사용하여 네트워크 에러/5xx/429 시 재시도
             return await ErrorBoundary.withRetry(async () => {
-                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                /** @type {RequestInit} */
+                const fetchOptions = {
                     method: 'GET',
                     headers: ApiService._buildHeaders(extraHeaders),
                     credentials: 'include'
-                });
+                };
+                if (signal) fetchOptions.signal = signal;
+
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, fetchOptions);
 
                 // 5xx 서버 에러나 429 Too Many Requests는 재시도 대상
                 if (response.status >= 500 || response.status === 429) {
@@ -119,7 +134,7 @@ class ApiService {
                 }
 
                 return ApiService._handleResponse(response, 'GET', endpoint, {
-                    retryFn: () => ApiService.get(endpoint, true, extraHeaders),
+                    retryFn: () => ApiService.get(endpoint, { _isRetry: true, signal, extraHeaders }),
                     _isRetry
                 });
             }, {
@@ -130,6 +145,9 @@ class ApiService {
                 }
             });
         } catch (error) {
+            if (/** @type {Error} */ (error).name === 'AbortError') {
+                return /** @type {any} */ ({ ok: false, aborted: true, data: null });
+            }
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'GET', endpoint);
         }
     }
