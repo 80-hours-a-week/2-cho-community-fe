@@ -4,7 +4,7 @@
 import { formatDate, formatCount, truncateTitle, escapeCssUrl } from '../utils/formatters.js';
 import { getImageUrl } from './helpers.js';
 import { createElement } from '../utils/dom.js';
-import { UI_MESSAGES, NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
+import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 
 /**
@@ -150,52 +150,13 @@ class PostListView {
     /**
      * 빈 목록 메시지 표시
      * @param {HTMLElement} container - 목록 컨테이너
+     * @param {string} message - 표시할 메시지
      */
-    static showEmptyState(container) {
-        container.textContent = ''; // 기존 내용 제거
-        container.appendChild(
-            createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, ['등록된 게시글이 없습니다.'])
-            ])
-        );
-    }
-
-    /**
-     * 검색 결과 없음 메시지 표시
-     * @param {HTMLElement} container - 목록 컨테이너
-     * @param {string} searchTerm - 검색어
-     */
-    static showSearchEmptyState(container, searchTerm) {
+    static showEmptyState(container, message) {
         container.textContent = '';
         container.appendChild(
             createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, [`'${searchTerm}' — ${UI_MESSAGES.SEARCH_NO_RESULTS}`])
-            ])
-        );
-    }
-
-    /**
-     * 추천 피드 빈 상태 메시지 표시
-     * @param {HTMLElement} container - 목록 컨테이너
-     */
-    static showForYouEmptyState(container) {
-        container.textContent = '';
-        container.appendChild(
-            createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, ['추천 게시글을 준비 중입니다. 게시글을 읽고, 좋아요와 북마크를 남겨보세요!'])
-            ])
-        );
-    }
-
-    /**
-     * 팔로잉 피드 빈 상태 메시지 표시
-     * @param {HTMLElement} container - 목록 컨테이너
-     */
-    static showFollowingEmptyState(container) {
-        container.textContent = '';
-        container.appendChild(
-            createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, ['팔로우한 사용자의 게시글이 여기에 표시됩니다.'])
+                createElement('p', {}, [message])
             ])
         );
     }

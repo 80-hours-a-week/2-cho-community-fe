@@ -171,6 +171,54 @@ class HeaderView {
     }
 
     /**
+     * 알림 아이콘 링크 생성
+     * @param {number} count - 읽지 않은 알림 수
+     * @param {string} href - 링크 URL
+     * @param {Function} iconFactory - 아이콘 생성 함수 (Icons.bell 또는 Icons.mail)
+     * @param {string} linkId - 링크 요소 ID
+     * @param {string} badgeId - 뱃지 요소 ID
+     * @returns {HTMLElement}
+     */
+    static createIconLink(count, href, iconFactory, linkId, badgeId) {
+        const link = document.createElement('a');
+        link.href = href;
+        link.className = 'notification-icon-wrapper';
+        link.id = linkId;
+
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'notification-bell';
+        iconSpan.appendChild(iconFactory(20));
+        link.appendChild(iconSpan);
+
+        if (count > 0) {
+            const badge = document.createElement('span');
+            badge.id = badgeId;
+            badge.className = 'notification-badge';
+            badge.textContent = count > 99 ? '99+' : String(count);
+            link.appendChild(badge);
+        }
+
+        return link;
+    }
+
+    /**
+     * 뱃지 카운트 업데이트
+     * @param {string} badgeId - 뱃지 요소 ID
+     * @param {number} count - 새 카운트
+     */
+    static updateBadge(badgeId, count) {
+        const badge = document.getElementById(badgeId);
+        if (count > 0) {
+            if (badge) {
+                badge.textContent = count > 99 ? '99+' : String(count);
+                badge.classList.remove('hidden');
+            }
+        } else if (badge) {
+            badge.classList.add('hidden');
+        }
+    }
+
+    /**
      * 이벤트 리스너 정리 (메모리 누수 방지)
      */
     static cleanup() {

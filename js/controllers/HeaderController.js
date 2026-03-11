@@ -240,75 +240,31 @@ class HeaderController {
      * @private
      */
     _updateDmBadge(count) {
-        let badge = document.getElementById('dm-badge');
-        if (count > 0) {
-            if (!badge) {
-                const authSection = document.getElementById('auth-section');
-                if (authSection) {
-                    const dmBtn = document.createElement('a');
-                    dmBtn.href = resolveNavPath(NAV_PATHS.DM_LIST);
-                    dmBtn.className = 'notification-icon-wrapper';
-                    dmBtn.id = 'dm-link';
-
-                    badge = document.createElement('span');
-                    badge.id = 'dm-badge';
-                    badge.className = 'notification-badge';
-                    badge.textContent = count > 99 ? '99+' : String(count);
-
-                    const mailIcon = document.createElement('span');
-                    mailIcon.className = 'notification-bell';
-                    mailIcon.appendChild(Icons.mail(20));
-
-                    dmBtn.appendChild(mailIcon);
-                    dmBtn.appendChild(badge);
-
-                    // 알림 아이콘 뒤에 삽입 (없으면 맨 앞)
-                    const notifLink = document.getElementById('notification-link');
-                    if (notifLink && notifLink.nextSibling) {
-                        authSection.insertBefore(dmBtn, notifLink.nextSibling);
-                    } else if (notifLink) {
-                        authSection.appendChild(dmBtn);
-                    } else {
-                        authSection.insertBefore(dmBtn, authSection.firstChild);
-                    }
+        const badge = document.getElementById('dm-badge');
+        if (!badge && !document.getElementById('dm-link')) {
+            // DM 아이콘이 아직 없으면 생성
+            const authSection = document.getElementById('auth-section');
+            if (authSection) {
+                const link = HeaderView.createIconLink(
+                    count,
+                    resolveNavPath(NAV_PATHS.DM_LIST),
+                    Icons.mail,
+                    'dm-link',
+                    'dm-badge'
+                );
+                // 알림 아이콘 뒤에 삽입
+                const notifLink = document.getElementById('notification-link');
+                if (notifLink && notifLink.nextSibling) {
+                    authSection.insertBefore(link, notifLink.nextSibling);
+                } else if (notifLink) {
+                    authSection.appendChild(link);
+                } else {
+                    authSection.insertBefore(link, authSection.firstChild);
                 }
-            } else {
-                badge.textContent = count > 99 ? '99+' : String(count);
-                badge.classList.remove('hidden');
-            }
-        } else {
-            // count가 0이어도 아이콘은 유지, 배지만 숨김
-            if (badge) {
-                badge.classList.add('hidden');
-            } else {
-                // 배지 없이 아이콘만 표시
-                const dmLink = document.getElementById('dm-link');
-                if (!dmLink) {
-                    const authSection = document.getElementById('auth-section');
-                    if (authSection) {
-                        const dmBtn = document.createElement('a');
-                        dmBtn.href = resolveNavPath(NAV_PATHS.DM_LIST);
-                        dmBtn.className = 'notification-icon-wrapper';
-                        dmBtn.id = 'dm-link';
-
-                        const mailIcon = document.createElement('span');
-                        mailIcon.className = 'notification-bell';
-                        mailIcon.appendChild(Icons.mail(20));
-
-                        dmBtn.appendChild(mailIcon);
-
-                        const notifLink = document.getElementById('notification-link');
-                        if (notifLink && notifLink.nextSibling) {
-                            authSection.insertBefore(dmBtn, notifLink.nextSibling);
-                        } else if (notifLink) {
-                            authSection.appendChild(dmBtn);
-                        } else {
-                            authSection.insertBefore(dmBtn, authSection.firstChild);
-                        }
-                    }
-                }
+                return;
             }
         }
+        HeaderView.updateBadge('dm-badge', count);
     }
 
     /**
@@ -317,38 +273,23 @@ class HeaderController {
      * @private
      */
     _updateNotificationBadge(count) {
-        let badge = document.getElementById('notification-badge');
-        if (count > 0) {
-            if (!badge) {
-                // 알림 아이콘이 아직 없으면 헤더에 추가
-                const authSection = document.getElementById('auth-section');
-                if (authSection) {
-                    const notifBtn = document.createElement('a');
-                    notifBtn.href = resolveNavPath(NAV_PATHS.NOTIFICATIONS);
-                    notifBtn.className = 'notification-icon-wrapper';
-                    notifBtn.id = 'notification-link';
-
-                    badge = document.createElement('span');
-                    badge.id = 'notification-badge';
-                    badge.className = 'notification-badge';
-                    badge.textContent = count > 99 ? '99+' : String(count);
-
-                    // 벨 아이콘 (SVG)
-                    const bell = document.createElement('span');
-                    bell.className = 'notification-bell';
-                    bell.appendChild(Icons.bell(20));
-
-                    notifBtn.appendChild(bell);
-                    notifBtn.appendChild(badge);
-                    authSection.insertBefore(notifBtn, authSection.firstChild);
-                }
-            } else {
-                badge.textContent = count > 99 ? '99+' : String(count);
-                badge.classList.remove('hidden');
+        const badge = document.getElementById('notification-badge');
+        if (!badge && !document.getElementById('notification-link')) {
+            // 아이콘이 아직 없으면 생성
+            const authSection = document.getElementById('auth-section');
+            if (authSection) {
+                const link = HeaderView.createIconLink(
+                    count,
+                    resolveNavPath(NAV_PATHS.NOTIFICATIONS),
+                    Icons.bell,
+                    'notification-link',
+                    'notification-badge'
+                );
+                authSection.insertBefore(link, authSection.firstChild);
+                return;
             }
-        } else if (badge) {
-            badge.classList.add('hidden');
         }
+        HeaderView.updateBadge('notification-badge', count);
     }
 }
 
