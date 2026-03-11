@@ -122,7 +122,9 @@ class HeaderController {
                     }
                 });
 
-                await this._notifService.start(() => getAccessToken());
+                // WebSocket 연결은 fire-and-forget (init() 반환을 차단하지 않음)
+                // 연결 실패 시 NotificationService 내부에서 폴링으로 폴백
+                this._notifService.start(() => getAccessToken());
             } else {
                 // 로그인/회원가입 페이지가 아니면 로그인으로 리다이렉트
                 if (!this._isAuthPage()) {

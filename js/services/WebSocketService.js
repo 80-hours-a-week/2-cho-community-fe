@@ -15,6 +15,9 @@ const MAX_RECONNECT_DELAY = 30000;    // 30초
 /** Heartbeat 설정 */
 const HEARTBEAT_INTERVAL = 25000;     // 25초 (API GW 10분 idle timeout 방지)
 
+/** 인증 타임아웃 */
+const AUTH_TIMEOUT = 5000;            // 5초 (auth_ok 미수신 시 연결 종료)
+
 /**
  * WebSocket 연결 생명주기 관리
  *
@@ -152,11 +155,21 @@ class WebSocketService {
                 return;
             }
 
+            // 인증 타임아웃: auth_ok/auth_error 미수신 시 연결 종료 → 폴링 폴백
+            let authTimer = setTimeout(() => {
+                if (this._state === 'authenticating') {
+                    logger.warn('WebSocket 인증 타임아웃 (%dms)', AUTH_TIMEOUT);
+                    this._ws?.close();
+                    reject(new Error('Auth timeout'));
+                }
+            }, AUTH_TIMEOUT);
+
             this._ws.onopen = () => {
                 this._state = 'authenticating';
                 const token = this._getToken?.();
                 const ws = this._ws;
                 if (!token || !ws) {
+                    clearTimeout(authTimer);
                     logger.warn('Access Token 없음 — 연결 종료');
                     ws?.close();
                     reject(new Error('No access token'));
@@ -175,6 +188,7 @@ class WebSocketService {
 
                 // 인증 응답 처리
                 if (msg.type === 'auth_ok') {
+                    clearTimeout(authTimer);
                     this._state = 'connected';
                     this._reconnectAttempts = 0;
                     this._startHeartbeat();
@@ -184,6 +198,7 @@ class WebSocketService {
                 }
 
                 if (msg.type === 'auth_error') {
+                    clearTimeout(authTimer);
                     this._state = 'disconnected';
                     logger.warn('WebSocket 인증 실패: %s', msg.message);
                     reject(new Error(msg.message));
@@ -199,6 +214,7 @@ class WebSocketService {
             };
 
             this._ws.onclose = (event) => {
+                clearTimeout(authTimer);
                 this._stopHeartbeat();
                 const wasConnected = this._state === 'connected';
                 const wasHandshaking = this._state === 'connecting' || this._state === 'authenticating';
