@@ -51,11 +51,10 @@ class MainController {
             this.filters.tag = tagParam;
         }
 
-        // 헤더의 인증 관련 로직은 HeaderController에서 처리
-        await this._loadCategories();
-        await this._loadPosts();
-        this._setupInfiniteScroll();
+        // DOM 이벤트 바인딩을 먼저 수행 (네트워크 실패와 무관하게 동작 보장)
+        this._setupWriteButton();
         this._setupSearchAndSort();
+        this._setupInfiniteScroll();
 
         // 로그인 상태이면 추천/팔로잉 버튼 표시
         if (getAccessToken()) {
@@ -67,7 +66,16 @@ class MainController {
             if (filterDivider) filterDivider.classList.remove('hidden');
         }
 
-        // 게시글 작성 버튼
+        // 헤더의 인증 관련 로직은 HeaderController에서 처리
+        await this._loadCategories();
+        await this._loadPosts();
+    }
+
+    /**
+     * 게시글 작성 버튼 이벤트를 설정합니다.
+     * @private
+     */
+    _setupWriteButton() {
         const writeBtn = document.getElementById('write-btn');
         if (writeBtn) {
             writeBtn.addEventListener('click', () => {
