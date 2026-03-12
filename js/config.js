@@ -6,17 +6,22 @@ import { HTML_PATHS } from './constants.js';
 
 // Environment detection
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const IS_K8S = window.location.hostname.includes('k8s.my-community.shop');
 
 // API Base URL
 // 같은 오리진 배포 시 (nginx 리버스 프록시): 빈 문자열 사용
 export const API_BASE_URL = IS_LOCAL
-    ? "http://127.0.0.1:8000"  // 로컬 개발: 백엔드 직접 연결
-    : "https://api.my-community.shop";  // 프로덕션: same-origin (nginx가 /v1/*를 백엔드로 프록시)
+    ? "http://127.0.0.1:8000"              // 로컬 개발: 백엔드 직접 연결
+    : IS_K8S
+        ? "https://api.k8s.my-community.shop"  // K8s: 별도 서브도메인
+        : "https://api.my-community.shop";      // Lambda 프로덕션
 
 // WebSocket URL
 export const WS_BASE_URL = IS_LOCAL
-    ? "ws://127.0.0.1:8000/ws"          // 로컬 개발: uvicorn WebSocket
-    : "wss://ws.my-community.shop";
+    ? "ws://127.0.0.1:8000/ws"             // 로컬 개발: uvicorn WebSocket
+    : IS_K8S
+        ? "wss://ws.k8s.my-community.shop/ws"  // K8s: 별도 서브도메인
+        : "wss://ws.my-community.shop";
 
 /**
  * 네비게이션 경로를 실제 HTML 파일 경로로 변환합니다.
