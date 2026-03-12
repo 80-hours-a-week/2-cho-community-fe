@@ -360,6 +360,27 @@ class PostDetailView {
             });
 
             container.appendChild(optionsList);
+
+            // 투표 완료 + 미만료: 변경/취소 버튼 표시
+            if (poll.my_vote !== null && poll.my_vote !== undefined && !poll.is_expired) {
+                const actionRow = createElement('div', { className: 'poll-vote-actions' });
+
+                const changeBtn = createElement('button', {
+                    className: 'poll-change-btn',
+                    id: 'poll-change-btn',
+                    dataset: { postId: String(postId) },
+                }, ['투표 변경']);
+                actionRow.appendChild(changeBtn);
+
+                const cancelBtn = createElement('button', {
+                    className: 'poll-cancel-btn',
+                    id: 'poll-cancel-btn',
+                    dataset: { postId: String(postId) },
+                }, ['투표 취소']);
+                actionRow.appendChild(cancelBtn);
+
+                container.appendChild(actionRow);
+            }
         } else {
             // 투표 모드 (라디오 버튼)
             const form = createElement('div', { className: 'poll-vote-form', id: 'poll-vote-form' });

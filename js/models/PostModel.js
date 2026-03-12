@@ -158,6 +158,25 @@ class PostModel {
     }
 
     /**
+     * 투표 취소
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async cancelPollVote(postId) {
+        return ApiService.delete(API_ENDPOINTS.POSTS.VOTE_POLL(postId));
+    }
+
+    /**
+     * 투표 변경
+     * @param {string|number} postId - 게시글 ID
+     * @param {number} optionId - 변경할 옵션 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async changePollVote(postId, optionId) {
+        return ApiService.put(API_ENDPOINTS.POSTS.VOTE_POLL(postId), { option_id: optionId });
+    }
+
+    /**
      * 연관 게시글 조회
      * @param {string|number} postId - 게시글 ID
      * @param {number} [limit=5] - 조회 개수

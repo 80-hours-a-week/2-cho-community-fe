@@ -346,6 +346,43 @@
     background: var(--color-primary-hover);
 }
 
+.poll-vote-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    justify-content: center;
+}
+
+.poll-change-btn,
+.poll-cancel-btn {
+    padding: var(--spacing-xs) var(--spacing-lg);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.poll-change-btn {
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: 1px solid var(--color-primary);
+}
+
+.poll-change-btn:hover {
+    background: var(--color-primary-hover);
+}
+
+.poll-cancel-btn {
+    background: var(--color-bg-secondary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.poll-cancel-btn:hover {
+    background: var(--color-bg-tertiary, var(--color-bg-secondary));
+}
+
 .poll-total {
     margin-top: var(--spacing-md);
     font-size: var(--font-size-sm);

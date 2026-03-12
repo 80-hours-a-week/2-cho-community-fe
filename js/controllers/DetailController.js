@@ -127,6 +127,9 @@ class DetailController {
             // 차단 버튼 (로그인 + 본인 게시글 아닌 경우)
             PostDetailView.toggleBlockButton(this.currentUserId && !isOwner, post.is_blocked);
 
+            // 투표 데이터 저장 (변경 시 사용)
+            this._currentPollData = post.poll || null;
+
             // 투표 버튼 이벤트 바인딩
             this._setupPollVoteListener();
 
@@ -546,9 +549,19 @@ class DetailController {
      */
     _setupPollVoteListener() {
         const voteBtn = document.getElementById('poll-vote-btn');
-        if (!voteBtn) return;
+        if (voteBtn) {
+            voteBtn.addEventListener('click', () => this._handlePollVote());
+        }
 
-        voteBtn.addEventListener('click', () => this._handlePollVote());
+        const changeBtn = document.getElementById('poll-change-btn');
+        if (changeBtn) {
+            changeBtn.addEventListener('click', () => this._handlePollChange());
+        }
+
+        const cancelBtn = document.getElementById('poll-cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => this._handlePollCancel());
+        }
     }
 
     /**
@@ -580,6 +593,77 @@ class DetailController {
         } catch (error) {
             logger.error('투표 처리 실패', error);
             showToast(UI_MESSAGES.POLL_VOTE_FAIL);
+        }
+    }
+
+    /**
+     * 투표 변경: 결과 뷰 → 투표 폼으로 전환
+     * @private
+     */
+    _handlePollChange() {
+        // 현재 게시글 데이터에서 poll 정보를 가져와 투표 모드로 다시 렌더링
+        const pollContainer = document.getElementById('poll-container');
+        if (!pollContainer || !this._currentPollData) return;
+
+        // my_vote를 null로 덮어써서 투표 모드로 전환
+        const pollCopy = { ...this._currentPollData, my_vote: null };
+        const newPoll = PostDetailView.renderPoll(pollCopy, this.currentPostId);
+        pollContainer.replaceWith(newPoll);
+
+        // 투표 폼의 이벤트 리스너를 재설정 (변경 전용)
+        const voteBtn = document.getElementById('poll-vote-btn');
+        if (voteBtn) {
+            voteBtn.textContent = '변경';
+            voteBtn.addEventListener('click', () => this._submitPollChange());
+        }
+    }
+
+    /**
+     * 투표 변경 제출
+     * @private
+     */
+    async _submitPollChange() {
+        const form = document.getElementById('poll-vote-form');
+        if (!form) return;
+
+        const selected = form.querySelector('input[name="poll-vote"]:checked');
+        if (!selected) {
+            showToast(UI_MESSAGES.POLL_SELECT_REQUIRED);
+            return;
+        }
+
+        const optionId = Number(selected.value);
+
+        try {
+            const result = await PostModel.changePollVote(this.currentPostId, optionId);
+            if (result.ok) {
+                showToast(UI_MESSAGES.POLL_VOTE_CHANGE_SUCCESS);
+                await this._loadPostDetail();
+            } else {
+                showToast(UI_MESSAGES.POLL_VOTE_CHANGE_FAIL);
+            }
+        } catch (error) {
+            logger.error('투표 변경 실패', error);
+            showToast(UI_MESSAGES.POLL_VOTE_CHANGE_FAIL);
+        }
+    }
+
+    /**
+     * 투표 취소 처리
+     * @private
+     */
+    async _handlePollCancel() {
+        try {
+            const result = await PostModel.cancelPollVote(this.currentPostId);
+            if (result.ok) {
+                showToast(UI_MESSAGES.POLL_VOTE_CANCEL_SUCCESS);
+                await this._loadPostDetail();
+            } else {
+                showToast(UI_MESSAGES.POLL_VOTE_CANCEL_FAIL);
+            }
+        } catch (error) {
+            logger.error('투표 취소 실패', error);
+            showToast(UI_MESSAGES.POLL_VOTE_CANCEL_FAIL);
         }
     }
 
