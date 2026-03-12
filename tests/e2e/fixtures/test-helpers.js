@@ -4,9 +4,7 @@ const API_BASE = 'http://127.0.0.1:8000';
 
 /**
  * API로 테스트 사용자 생성
- * 주의: E2E에서는 DB 직접 접근 불가. 이메일 인증이 필요한 경우
- * 백엔드 테스트 환경에서 자동 인증되도록 설정하거나,
- * 이미 시딩된 사용자를 사용해야 함.
+ * 기본적으로 이메일 인증까지 자동 처리 (overrides.verified = false로 비활성화 가능)
  */
 export async function createTestUser(request, overrides = {}) {
   const suffix = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -23,6 +21,11 @@ export async function createTestUser(request, overrides = {}) {
     const body = await res.json();
     userId = body?.data?.user_id;
   } catch {}
+
+  // 이메일 인증 자동 처리 (기본 true)
+  if (userId && overrides.verified !== false) {
+    await verifyEmail(request, userId);
+  }
 
   return { email, password, nickname, userId, statusCode: res.status() };
 }
@@ -78,6 +81,53 @@ export async function loginAndNavigate(page, url, email, password) {
     await page.goto(url);
     await page.waitForLoadState('networkidle');
   }
+}
+
+/**
+ * 테스트 API: 이메일 인증 바이패스
+ * @param {import('@playwright/test').APIRequestContext} request
+ * @param {number} userId
+ */
+export async function verifyEmail(request, userId) {
+  const res = await request.post(`${API_BASE}/v1/test/users/verify-email`, {
+    data: { user_id: userId },
+  });
+  return res;
+}
+
+/**
+ * 테스트 API: 관리자 역할 부여
+ * @param {import('@playwright/test').APIRequestContext} request
+ * @param {number} userId
+ */
+export async function setAdminRole(request, userId) {
+  const res = await request.post(`${API_BASE}/v1/test/users/set-role`, {
+    data: { user_id: userId, role: 'admin' },
+  });
+  return res;
+}
+
+/**
+ * 테스트 API: 사용자 정지
+ * @param {import('@playwright/test').APIRequestContext} request
+ * @param {number} userId
+ * @param {number} days
+ * @param {string} reason
+ */
+export async function suspendUser(request, userId, days = 7, reason = '테스트 정지') {
+  const res = await request.post(`${API_BASE}/v1/test/users/suspend`, {
+    data: { user_id: userId, duration_days: days, reason },
+  });
+  return res;
+}
+
+/**
+ * 테스트 API: DB 정리
+ * @param {import('@playwright/test').APIRequestContext} request
+ */
+export async function cleanupDatabase(request) {
+  const res = await request.post(`${API_BASE}/v1/test/cleanup`);
+  return res;
 }
 
 export { API_BASE };
