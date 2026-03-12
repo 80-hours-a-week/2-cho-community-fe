@@ -8,6 +8,7 @@ import Logger from '../utils/Logger.js';
 import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { getAccessToken } from '../services/ApiService.js';
+import { showToast } from '../views/helpers.js';
 
 const logger = Logger.createLogger('MainController');
 
@@ -308,6 +309,11 @@ class MainController {
 
             const posts = result.data?.data?.posts || [];
             const pagination = result.data?.data?.pagination;
+
+            // 추천 피드 폴백 안내 (첫 페이지만)
+            if (this.currentOffset === 0 && result.data?.data?.effective_sort) {
+                showToast('활동 데이터가 부족하여 최신순으로 표시됩니다. 게시글을 읽고 좋아요를 남겨보세요!');
+            }
 
             // 중복 게시물 필터링
             // 무한 스크롤 시 데이터 순서 변경으로 인해 이미 로드한 게시물이 다시 내려올 수 있음.
