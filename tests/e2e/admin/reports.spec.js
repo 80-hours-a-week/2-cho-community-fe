@@ -2,7 +2,7 @@
 // 관리자 신고 관리 E2E 테스트
 
 import { test, expect } from '@playwright/test';
-import { createTestUser, loginViaUI } from '../fixtures/test-helpers.js';
+import { createTestUser, loginViaUI, setAdminRole } from '../fixtures/test-helpers.js';
 
 test.describe('관리자 - 신고 관리', () => {
   test('비관리자 접근 시 메인 페이지로 리다이렉트', async ({ page, request }) => {
@@ -16,10 +16,11 @@ test.describe('관리자 - 신고 관리', () => {
     await expect(page).toHaveURL(/.*main/, { timeout: 10000 });
   });
 
-  // E2E에서는 DB 직접 접근으로 role=admin 설정이 불가하므로 fixme 처리
-  test.fixme('신고 목록 렌더링 (관리자)', async ({ page }) => {
-    // 관리자 계정이 필요하나 E2E에서 role=admin 설정 불가
-    // 사전 시딩된 관리자 계정 또는 백엔드 테스트 환경 설정 필요
+  test('신고 목록 렌더링 (관리자)', async ({ page, request }) => {
+    const admin = await createTestUser(request);
+    await setAdminRole(request, admin.userId);
+    await loginViaUI(page, admin.email, admin.password);
+
     await page.goto('/admin/reports');
 
     // 필터 탭 확인
@@ -34,9 +35,11 @@ test.describe('관리자 - 신고 관리', () => {
     await expect(reportList).toBeVisible();
   });
 
-  test.fixme('신고 처리/기각 모달 동작 (관리자)', async ({ page }) => {
-    // 관리자 계정이 필요하나 E2E에서 role=admin 설정 불가
-    // 사전 시딩된 관리자 계정 + 신고 데이터 필요
+  test('신고 처리/기각 모달 동작 (관리자)', async ({ page, request }) => {
+    const admin = await createTestUser(request);
+    await setAdminRole(request, admin.userId);
+    await loginViaUI(page, admin.email, admin.password);
+
     await page.goto('/admin/reports');
 
     // 처리 확인 모달의 DOM 요소 존재 확인
