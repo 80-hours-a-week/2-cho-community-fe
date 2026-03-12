@@ -131,16 +131,16 @@ class DMDetailView {
         });
         body.appendChild(time);
 
-        // 내 메시지 읽음 상태 체크마크
+        wrapper.appendChild(body);
+
+        // 내 메시지 읽음 상태 체크마크 (버블 오른쪽 대각선 아래에 위치)
         if (isMine) {
             const readStatus = createElement('span', {
                 className: `dm-msg__read-status${msg.is_read ? ' dm-msg__read-status--read' : ''}`,
                 textContent: msg.is_read ? '✓✓' : '✓',
             });
-            body.appendChild(readStatus);
+            wrapper.appendChild(readStatus);
         }
-
-        wrapper.appendChild(body);
         return wrapper;
     }
 
