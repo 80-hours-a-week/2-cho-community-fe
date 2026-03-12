@@ -41,6 +41,7 @@ class HeaderView {
      * @param {Function} handlers.onChangePassword - 비밀번호 수정 클릭 핸들러
      * @param {Function} handlers.onMyActivity - 내 활동 클릭 핸들러
      * @param {Function} handlers.onLogout - 로그아웃 클릭 핸들러
+     * @param {Function} [handlers.onAdminDashboard] - 관리자 대시보드 클릭 핸들러 (관리자만)
      * @param {Function} [handlers.onAdminReports] - 신고 관리 클릭 핸들러 (관리자만)
      * @returns {HTMLElement} - 드롭다운 요소
      */
@@ -59,6 +60,11 @@ class HeaderView {
             ];
 
             // 관리자 메뉴
+            if (handlers.onAdminDashboard) {
+                menuItems.push(
+                    createElement('li', { id: 'menu-admin-dashboard', className: 'menu-admin' }, ['관리자 대시보드'])
+                );
+            }
             if (handlers.onAdminReports) {
                 menuItems.push(
                     createElement('li', { id: 'menu-admin-reports', className: 'menu-admin' }, ['신고 관리'])
@@ -128,6 +134,9 @@ class HeaderView {
         bindMenuBtn('menu-edit-info', handlers.onEditInfo);
         bindMenuBtn('menu-change-pw', handlers.onChangePassword);
         bindMenuBtn('menu-my-activity', handlers.onMyActivity);
+        if (handlers.onAdminDashboard) {
+            bindMenuBtn('menu-admin-dashboard', handlers.onAdminDashboard);
+        }
         if (handlers.onAdminReports) {
             bindMenuBtn('menu-admin-reports', handlers.onAdminReports);
         }

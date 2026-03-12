@@ -51,6 +51,7 @@ class WriteController {
             PostFormView.createPollSection(fileSection.previousElementSibling || fileSection);
         }
 
+        this._restoreDraft();
         this._setupEventListeners();
     }
 

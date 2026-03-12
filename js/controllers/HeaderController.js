@@ -91,6 +91,7 @@ class HeaderController {
                     onLogout: () => this._handleLogout(),
                 };
                 if (this.currentUser.role === 'admin') {
+                    dropdownHandlers.onAdminDashboard = () => this._handleAdminDashboard();
                     dropdownHandlers.onAdminReports = () => this._handleAdminReports();
                 }
                 HeaderView.createDropdown(profileCircle, dropdownHandlers);
@@ -194,6 +195,14 @@ class HeaderController {
      */
     _handleMyActivity() {
         location.href = resolveNavPath(NAV_PATHS.MY_ACTIVITY);
+    }
+
+    /**
+     * 관리자 대시보드 이동 (관리자)
+     * @private
+     */
+    _handleAdminDashboard() {
+        location.href = resolveNavPath(NAV_PATHS.ADMIN_DASHBOARD);
     }
 
     /**
