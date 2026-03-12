@@ -194,6 +194,26 @@ class UserModel {
     static async getMyFollowers(offset = 0, limit = 10) {
         return ApiService.get(`${API_ENDPOINTS.FOLLOW.MY_FOLLOWERS}?offset=${offset}&limit=${limit}`);
     }
+
+    /**
+     * 특정 사용자의 팔로잉 목록 조회
+     * @param {number} userId
+     * @param {number} [offset=0]
+     * @param {number} [limit=20]
+     */
+    static async getUserFollowing(userId, offset = 0, limit = 20) {
+        return ApiService.get(`${API_ENDPOINTS.FOLLOW.FOLLOWING(userId)}?offset=${offset}&limit=${limit}`);
+    }
+
+    /**
+     * 특정 사용자의 팔로워 목록 조회
+     * @param {number} userId
+     * @param {number} [offset=0]
+     * @param {number} [limit=20]
+     */
+    static async getUserFollowers(userId, offset = 0, limit = 20) {
+        return ApiService.get(`${API_ENDPOINTS.FOLLOW.FOLLOWERS(userId)}?offset=${offset}&limit=${limit}`);
+    }
 }
 
 export default UserModel;

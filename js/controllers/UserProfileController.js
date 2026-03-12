@@ -57,6 +57,7 @@ class UserProfileController {
         this._setupFollowButton();
         this._setupBlockButton();
         this._setupSuspendButton();
+        this._setupStatClicks();
         this._setupInfiniteScroll();
         await this._loadPosts();
     }
@@ -361,6 +362,93 @@ class UserProfileController {
         if (!suspendBtn) return;
         const isSuspended = !!this.profileData?.suspended_until;
         suspendBtn.textContent = isSuspended ? '정지 해제' : '정지';
+    }
+
+    /**
+     * 통계 항목 클릭 이벤트 (팔로워/팔로잉)
+     * @private
+     */
+    _setupStatClicks() {
+        const container = document.getElementById('profile-stats');
+        if (!container) return;
+
+        container.addEventListener('click', (e) => {
+            const item = e.target.closest('.profile-stat-item[data-action]');
+            if (!item) return;
+
+            const action = item.dataset.action;
+            if (action === 'followers' || action === 'following') {
+                this._openFollowList(action);
+            }
+        });
+    }
+
+    /**
+     * 팔로워/팔로잉 모달 열기
+     * @param {'followers'|'following'} type
+     * @private
+     */
+    async _openFollowList(type) {
+        this._followListOffset = 0;
+        this._followListType = type;
+
+        const title = type === 'followers' ? '팔로워' : '팔로잉';
+        const onUserClick = (userId) => {
+            UserProfileView.closeFollowListModal();
+            location.href = resolveNavPath(NAV_PATHS.USER_PROFILE(userId));
+        };
+
+        try {
+            const result = type === 'followers'
+                ? await UserModel.getUserFollowers(this.userId, 0, 20)
+                : await UserModel.getUserFollowing(this.userId, 0, 20);
+
+            if (!result.ok) {
+                showToast('목록을 불러오지 못했습니다.');
+                return;
+            }
+
+            const data = result.data?.data;
+            const users = data?.[type] || [];
+            const hasMore = data?.pagination?.has_more || false;
+            this._followListOffset = users.length;
+
+            UserProfileView.showFollowListModal(
+                title, users, hasMore,
+                () => this._loadMoreFollowList(onUserClick),
+                onUserClick,
+            );
+        } catch (error) {
+            logger.error('팔로우 목록 로드 실패', error);
+            showToast('목록을 불러오지 못했습니다.');
+        }
+    }
+
+    /**
+     * 팔로워/팔로잉 목록 더보기
+     * @private
+     */
+    async _loadMoreFollowList(onUserClick) {
+        try {
+            const result = this._followListType === 'followers'
+                ? await UserModel.getUserFollowers(this.userId, this._followListOffset, 20)
+                : await UserModel.getUserFollowing(this.userId, this._followListOffset, 20);
+
+            if (!result.ok) return;
+
+            const data = result.data?.data;
+            const users = data?.[this._followListType] || [];
+            const hasMore = data?.pagination?.has_more || false;
+            this._followListOffset += users.length;
+
+            UserProfileView.appendToFollowListModal(
+                users, hasMore,
+                () => this._loadMoreFollowList(onUserClick),
+                onUserClick,
+            );
+        } catch (error) {
+            logger.error('팔로우 목록 추가 로드 실패', error);
+        }
     }
 
     /**
