@@ -15,7 +15,7 @@ export async function createTestUser(request, overrides = {}) {
   const nickname = overrides.nickname || `e2e${suffix.slice(-7)}`;
 
   const res = await request.post(`${API_BASE}/v1/users/`, {
-    multipart: { email, password, nickname },
+    multipart: { email, password, nickname, terms_agreed: 'true' },
   });
 
   let userId = null;

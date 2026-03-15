@@ -153,3 +153,33 @@
 .login-link:hover {
     text-decoration: underline;
 }
+
+/* 이용약관 동의 섹션 */
+.terms-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.terms-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+.terms-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+.terms-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.terms-link:hover {
+    color: var(--color-primary-hover);
+}
