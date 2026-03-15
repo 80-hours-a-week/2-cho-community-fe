@@ -93,12 +93,15 @@ class CommentController {
             onLike: (comment) => this._handleCommentLike(comment),
         }, this.isAdmin, this.commentSort);
 
-        // 정렬 버튼 이벤트 바인딩
-        this._bindSortEvents(listEl);
+        // 정렬 버튼 이벤트 바인딩 (최초 1회만)
+        if (!this._sortBound) {
+            this._bindSortEvents(listEl);
+            this._sortBound = true;
+        }
     }
 
     /**
-     * 정렬 버튼 클릭 이벤트 바인딩
+     * 정렬 버튼 클릭 이벤트 바인딩 (이벤트 위임, 1회만 호출)
      * @param {HTMLElement} container
      * @private
      */
@@ -113,6 +116,16 @@ class CommentController {
             this.commentSort = sort;
             this._notifyChange();
         });
+    }
+
+    /**
+     * 리소스 정리
+     */
+    destroy() {
+        if (this.mentionDropdown) {
+            this.mentionDropdown.destroy();
+            this.mentionDropdown = null;
+        }
     }
 
     /**

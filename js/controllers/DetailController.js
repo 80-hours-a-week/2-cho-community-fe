@@ -48,6 +48,11 @@ class DetailController {
         this._setCurrentUser(currentUser);
         await this._loadPostDetail();
         this._setupEventListeners();
+
+        // 페이지 이탈 시 댓글 컨트롤러 리소스 정리
+        window.addEventListener('pagehide', () => {
+            if (this.commentController) this.commentController.destroy();
+        });
     }
 
     /**

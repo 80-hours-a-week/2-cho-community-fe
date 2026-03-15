@@ -490,6 +490,16 @@ class PostFormView {
     }
 
     /**
+     * 리소스 정리 (페이지 이탈 시 호출)
+     */
+    destroy() {
+        if (this._mentionDropdown) {
+            this._mentionDropdown.destroy();
+            this._mentionDropdown = null;
+        }
+    }
+
+    /**
      * 투표 폼 데이터 읽기
      * @param {HTMLElement} container - 투표 섹션 컨테이너
      * @returns {{ question: string, options: string[], expires_at: string|null }|null}

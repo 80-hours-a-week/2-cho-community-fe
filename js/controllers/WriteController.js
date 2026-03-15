@@ -38,7 +38,7 @@ class WriteController {
         if (!this.view.initialize({
             onImageUpload: async (file) => {
                 const response = await PostModel.uploadImage(file);
-                return response.data.image_url;
+                return response.data?.data?.url;
             },
         })) return;
 
@@ -110,6 +110,9 @@ class WriteController {
                 history.back();
             });
         }
+
+        // 페이지 이탈 시 리소스 정리
+        window.addEventListener('pagehide', () => this.view.destroy());
     }
 
     /**
