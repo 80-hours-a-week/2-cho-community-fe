@@ -206,6 +206,10 @@ class CommentListView {
                 className: `comment-sort-btn${currentSort === 'latest' ? ' active' : ''}`,
                 dataset: { sort: 'latest' },
             }, ['최신순']),
+            createElement('button', {
+                className: `comment-sort-btn${currentSort === 'popular' ? ' active' : ''}`,
+                dataset: { sort: 'popular' },
+            }, ['인기순']),
         ]);
         fragment.appendChild(sortBar);
 
