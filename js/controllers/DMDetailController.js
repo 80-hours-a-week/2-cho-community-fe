@@ -221,6 +221,7 @@ export class DMDetailController {
             }
         } catch (error) {
             logger.error('이전 메시지 로드 실패', error);
+            showToast('이전 메시지를 불러오지 못했습니다.');
         } finally {
             _isLoadingMore = false;
         }

@@ -2,7 +2,7 @@
 // js/utils/mention.js
 // @멘션 하이라이트 유틸리티 — DOM 기반 텍스트 노드 순회
 
-const MENTION_RE = /@(\S+)/g;
+const MENTION_RE = /@([a-zA-Z0-9_]{3,10})/g;
 
 /**
  * 컨테이너 내부의 텍스트 노드를 순회하며 @멘션을 하이라이트 span으로 변환합니다.

@@ -3,6 +3,7 @@
 
 import { showError, hideError, showToast, updateButtonState as updateBtnState } from './helpers.js';
 import { resolveNavPath } from '../config.js';
+import { API_BASE_URL } from '../config.js';
 
 /**
  * 회원가입 페이지 View 클래스
@@ -24,6 +25,8 @@ class SignupView {
         this.passwordHelper = null;
         this.passwordConfirmHelper = null;
         this.nicknameHelper = null;
+        this.termsCheckbox = null;
+        this.termsHelper = null;
     }
 
     /**
@@ -45,6 +48,14 @@ class SignupView {
         this.passwordHelper = document.getElementById('password-helper');
         this.passwordConfirmHelper = document.getElementById('password-confirm-helper');
         this.nicknameHelper = document.getElementById('nickname-helper');
+        this.termsCheckbox = document.getElementById('terms-checkbox');
+        this.termsHelper = document.getElementById('terms-helper');
+
+        // 약관 링크에 API URL 설정
+        const termsLink = document.getElementById('terms-link');
+        if (termsLink) {
+            termsLink.href = `${API_BASE_URL}/v1/terms`;
+        }
 
         return !!this.form;
     }
@@ -90,6 +101,14 @@ class SignupView {
     }
 
     /**
+     * 약관 동의 여부 조회
+     * @returns {boolean}
+     */
+    getTermsAgreed() {
+        return this.termsCheckbox?.checked || false;
+    }
+
+    /**
      * 필드별 에러 표시 (통합 메서드)
      * @param {string} fieldName - 필드명 (helper 요소의 접두사)
      * @param {string} message - 에러 메시지
@@ -125,6 +144,9 @@ class SignupView {
 
     showNicknameError(message) { this.showFieldError('nickname', message); }
     hideNicknameError() { this.hideFieldError('nickname'); }
+
+    showTermsError(message) { this.showFieldError('terms', message); }
+    hideTermsError() { this.hideFieldError('terms'); }
 
     /**
      * 프로필 이미지 미리보기 표시
@@ -172,6 +194,7 @@ class SignupView {
         formData.append('email', this.getEmail());
         formData.append('password', this.getPassword());
         formData.append('nickname', this.getNickname());
+        formData.append('terms_agreed', String(this.getTermsAgreed()));
 
         const profileFile = this.getProfileFile();
         if (profileFile) {
@@ -204,6 +227,10 @@ class SignupView {
 
         if (this.nicknameInput && handlers.onNicknameInput) {
             this.nicknameInput.addEventListener('input', handlers.onNicknameInput);
+        }
+
+        if (this.termsCheckbox && handlers.onTermsChange) {
+            this.termsCheckbox.addEventListener('change', handlers.onTermsChange);
         }
 
         if (this.form && handlers.onSubmit) {

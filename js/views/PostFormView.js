@@ -52,6 +52,9 @@ class PostFormView {
             this.editor = new MarkdownEditor(this.contentInput, {
                 onImageUpload: options?.onImageUpload || null,
             });
+
+            // @멘션 자동완성 연결 — 에디터 wrapper를 컨테이너로 사용
+            this._initMentionDropdown();
         }
 
         // 태그 요소 참조
@@ -471,6 +474,19 @@ class PostFormView {
         }
 
         return row;
+    }
+
+    /**
+     * @멘션 자동완성 드롭다운 초기화 (동적 import)
+     * @private
+     */
+    async _initMentionDropdown() {
+        if (!this.contentInput) return;
+        const wrapper = this.contentInput.closest('.md-editor-wrapper');
+        if (!wrapper) return;
+
+        const { default: MentionDropdown } = await import('../components/MentionDropdown.js');
+        this._mentionDropdown = new MentionDropdown(this.contentInput, wrapper);
     }
 
     /**

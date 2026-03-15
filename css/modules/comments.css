@@ -131,6 +131,13 @@
     color: var(--color-text-tertiary);
 }
 
+.comment-edited-badge {
+    margin-left: var(--spacing-xs);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+    cursor: help;
+}
+
 .comment-actions {
     margin-left: auto;
     display: flex;

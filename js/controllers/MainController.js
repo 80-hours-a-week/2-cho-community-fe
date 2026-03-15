@@ -210,6 +210,7 @@ class MainController {
             this._renderCategoryTabs();
         } catch (error) {
             logger.error('카테고리 로드 실패', error);
+            showToast('카테고리를 불러오지 못했습니다.');
         }
     }
 

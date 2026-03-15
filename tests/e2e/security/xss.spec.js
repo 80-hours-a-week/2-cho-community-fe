@@ -127,6 +127,9 @@ test.describe('XSS 방어 테스트', () => {
         await page.fill('#nickname', 'xsstest');
         await page.dispatchEvent('#nickname', 'input');
 
+        // 이용약관 동의 체크
+        await page.check('#terms-checkbox');
+
         // 가입 버튼 활성화 대기 후 클릭
         const signupBtn = page.locator('.signup-btn');
         await expect(signupBtn).toBeEnabled({ timeout: 10000 });

@@ -206,11 +206,12 @@
 /* ============================= */
 
 .md-editor-wrapper {
+    position: relative;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow: visible;
     background-color: var(--color-bg-primary);
 }
 
@@ -234,6 +235,7 @@
     background-color: var(--color-bg-tertiary);
     border-bottom: 1px solid var(--color-border-light);
     flex-wrap: wrap;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .md-toolbar-btn {

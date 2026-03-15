@@ -41,6 +41,7 @@ class CommentListView {
         const nickname = comment.author.nickname;
         const content = comment.content;
         const dateStr = formatDate(new Date(comment.created_at));
+        const isEdited = comment.updated_at && comment.updated_at !== comment.created_at;
 
         const actionButtons = [];
 
@@ -122,7 +123,13 @@ class CommentListView {
                             },
                         } : {}),
                     }, [nickname]),
-                    createElement('span', { className: 'comment-date' }, [dateStr]),
+                    createElement('span', { className: 'comment-date' }, [
+                        dateStr,
+                        ...(isEdited ? [createElement('span', {
+                            className: 'comment-edited-badge',
+                            title: `수정일: ${formatDate(new Date(comment.updated_at))}`,
+                        }, ['(수정됨)'])] : []),
+                    ]),
                     ...(actionButtons.length > 0 ? [
                         createElement('div', { className: 'comment-actions' }, actionButtons)
                     ] : []),
@@ -199,6 +206,10 @@ class CommentListView {
                 className: `comment-sort-btn${currentSort === 'latest' ? ' active' : ''}`,
                 dataset: { sort: 'latest' },
             }, ['최신순']),
+            createElement('button', {
+                className: `comment-sort-btn${currentSort === 'popular' ? ' active' : ''}`,
+                dataset: { sort: 'popular' },
+            }, ['인기순']),
         ]);
         fragment.appendChild(sortBar);
 

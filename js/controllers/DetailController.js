@@ -187,6 +187,7 @@ class DetailController {
             this.commentController.render(comments);
         } catch (error) {
             logger.error('댓글 목록 새로고침 실패', error);
+            showToast('댓글을 불러오지 못했습니다.');
         }
     }
 

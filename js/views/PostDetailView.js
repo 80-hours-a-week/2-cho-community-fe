@@ -7,6 +7,7 @@ import { resolveNavPath } from '../config.js';
 import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { renderMarkdownTo } from '../utils/markdown.js';
 import { createElement } from '../utils/dom.js';
+import { highlightMentions } from '../utils/mention.js';
 
 /**
  * 게시글 상세 View 클래스
@@ -58,7 +59,10 @@ class PostDetailView {
 
         // 본문 (마크다운 렌더링 — DOMPurify sanitized)
         const contentEl = document.getElementById('post-content');
-        if (contentEl) renderMarkdownTo(contentEl, post.content);
+        if (contentEl) {
+            renderMarkdownTo(contentEl, post.content);
+            highlightMentions(contentEl);
+        }
 
         // 투표 렌더링 (기존 투표 UI 제거 후 재생성)
         const existingPoll = document.getElementById('poll-container');

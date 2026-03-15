@@ -49,6 +49,9 @@ async function fillSignupForm(page, { email, password, passwordConfirm, nickname
     await page.fill('#nickname', nickname);
     await page.dispatchEvent('#nickname', 'input');
   }
+
+  // 이용약관 동의 체크
+  await page.check('#terms-checkbox');
 }
 
 test.describe('회원가입', () => {

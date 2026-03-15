@@ -23,7 +23,8 @@ class SignupController {
             email: { valid: false, touched: false },
             password: { valid: false, touched: false },
             passwordConfirm: { valid: false, touched: false },
-            nickname: { valid: false, touched: false }
+            nickname: { valid: false, touched: false },
+            terms: { valid: false, touched: false }
         };
     }
 
@@ -50,6 +51,7 @@ class SignupController {
             onPasswordInput: () => this._handlePasswordInput(),
             onPasswordConfirmInput: () => this._handlePasswordConfirmInput(),
             onNicknameInput: debounce(() => this._handleNicknameInput(), 300),
+            onTermsChange: () => this._handleTermsChange(),
             onSubmit: (e) => this._handleSubmit(e)
         });
     }
@@ -96,6 +98,7 @@ class SignupController {
     _handlePasswordInput() { this._handleInput('password', this._validatePassword); }
     _handlePasswordConfirmInput() { this._handleInput('passwordConfirm', this._validatePasswordConfirm); }
     _handleNicknameInput() { this._handleInput('nickname', this._validateNickname); }
+    _handleTermsChange() { this._handleInput('terms', this._validateTerms); }
 
     /**
      * 프로필 유효성 검사
@@ -165,6 +168,22 @@ class SignupController {
     }
 
     /**
+     * 이용약관 동의 검증
+     * @private
+     */
+    _validateTerms() {
+        const agreed = this.view.getTermsAgreed();
+        this.state.terms.valid = agreed;
+        if (this.state.terms.touched) {
+            if (!agreed) {
+                this.view.showTermsError('* 이용약관에 동의해야 합니다');
+            } else {
+                this.view.hideTermsError();
+            }
+        }
+    }
+
+    /**
      * 버튼 상태 업데이트
      * @private
      */
@@ -174,7 +193,8 @@ class SignupController {
             this.state.email.valid &&
             this.state.password.valid &&
             this.state.passwordConfirm.valid &&
-            this.state.nickname.valid;
+            this.state.nickname.valid &&
+            this.state.terms.valid;
 
         this.view.updateButtonState(isValid);
     }
@@ -192,12 +212,14 @@ class SignupController {
         this.state.password.touched = true;
         this.state.passwordConfirm.touched = true;
         this.state.nickname.touched = true;
+        this.state.terms.touched = true;
 
         this._validateProfile();
         this._validateEmail();
         this._validatePassword();
         this._validatePasswordConfirm();
         this._validateNickname();
+        this._validateTerms();
         this._updateButtonState();
 
         const allValid =
@@ -205,7 +227,8 @@ class SignupController {
             this.state.email.valid &&
             this.state.password.valid &&
             this.state.passwordConfirm.valid &&
-            this.state.nickname.valid;
+            this.state.nickname.valid &&
+            this.state.terms.valid;
 
         if (!allValid) {
             return;
