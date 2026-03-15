@@ -181,4 +181,66 @@ test.describe('댓글', () => {
     const countAfter = await likeBtn.locator('.like-count').textContent();
     expect(parseInt(countAfter)).toBe(parseInt(countBefore) + 1);
   });
+
+  test('댓글 정렬 버튼 3개 표시 (오래된순, 최신순, 인기순)', async ({ page }) => {
+    await loginAndNavigate(page, `/detail?id=${testPost.postId}`, testUser.email, testUser.password);
+
+    const sortBar = page.locator('.comment-sort-bar');
+    await expect(sortBar).toBeVisible({ timeout: 10000 });
+
+    const sortBtns = sortBar.locator('.comment-sort-btn');
+    await expect(sortBtns).toHaveCount(3);
+
+    await expect(sortBtns.nth(0)).toContainText('오래된순');
+    await expect(sortBtns.nth(1)).toContainText('최신순');
+    await expect(sortBtns.nth(2)).toContainText('인기순');
+  });
+
+  test('정렬 버튼 클릭 시 active 클래스 전환', async ({ page }) => {
+    await loginAndNavigate(page, `/detail?id=${testPost.postId}`, testUser.email, testUser.password);
+
+    const sortBar = page.locator('.comment-sort-bar');
+    await expect(sortBar).toBeVisible({ timeout: 10000 });
+
+    // 최신순 클릭
+    const latestBtn = sortBar.locator('.comment-sort-btn[data-sort="latest"]');
+    await latestBtn.click();
+
+    // 댓글 목록 리로드 후 최신순 버튼이 active
+    await expect(sortBar.locator('.comment-sort-btn.active')).toContainText('최신순', { timeout: 10000 });
+
+    // 인기순 클릭
+    const popularBtn = sortBar.locator('.comment-sort-btn[data-sort="popular"]');
+    await popularBtn.click();
+
+    await expect(sortBar.locator('.comment-sort-btn.active')).toContainText('인기순', { timeout: 10000 });
+  });
+
+  test('수정된 댓글에 (수정됨) 배지 표시', async ({ page, request }) => {
+    // 댓글 생성
+    const { headers } = await loginViaApi(request, testUser.email, testUser.password);
+    const createRes = await request.post(`${API_BASE}/v1/posts/${testPost.postId}/comments`, {
+      headers,
+      data: { content: `수정전 ${Date.now()}` },
+    });
+    const createBody = await createRes.json();
+    const commentId = createBody?.data?.comment_id;
+
+    // 댓글 수정 (API) — 1초 대기 후 수정 (updated_at !== created_at 보장)
+    if (commentId) {
+      await new Promise(r => setTimeout(r, 1000));
+      const editRes = await request.put(`${API_BASE}/v1/posts/${testPost.postId}/comments/${commentId}`, {
+        headers,
+        data: { content: `수정됨 ${Date.now()}` },
+      });
+      expect(editRes.ok()).toBeTruthy();
+    }
+
+    await loginAndNavigate(page, `/detail?id=${testPost.postId}`, testUser.email, testUser.password);
+
+    // (수정됨) 배지 확인
+    const editedBadge = page.locator('.comment-edited-badge');
+    await expect(editedBadge.first()).toBeVisible({ timeout: 10000 });
+    await expect(editedBadge.first()).toContainText('수정됨');
+  });
 });

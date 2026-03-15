@@ -149,6 +149,37 @@ test.describe('회원가입', () => {
     await expect(signupBtn).toBeDisabled();
   });
 
+  test('이용약관 미체크 시 가입 버튼 비활성화', async ({ page }) => {
+    await page.goto('/signup');
+
+    // 모든 필드 입력 (약관 제외)
+    await page.setInputFiles('#profile-upload', {
+      name: 'profile.jpg',
+      mimeType: 'image/jpeg',
+      buffer: DUMMY_PROFILE_IMAGE,
+    });
+    await page.fill('#email', `terms_test_${Date.now()}@test.com`);
+    await page.dispatchEvent('#email', 'input');
+    await page.fill('#password', 'Test1234!@');
+    await page.dispatchEvent('#password', 'input');
+    await page.fill('#password-confirm', 'Test1234!@');
+    await page.dispatchEvent('#password-confirm', 'input');
+    await page.fill('#nickname', `tt${Date.now().toString(36).slice(-5)}`);
+    await page.dispatchEvent('#nickname', 'input');
+
+    // 약관 미체크 → 버튼 비활성화
+    const signupBtn = page.locator('.signup-btn');
+    await expect(signupBtn).toBeDisabled();
+
+    // 약관 체크 → 버튼 활성화
+    await page.check('#terms-checkbox');
+    await expect(signupBtn).toBeEnabled({ timeout: 5000 });
+
+    // 약관 해제 → 다시 비활성화
+    await page.uncheck('#terms-checkbox');
+    await expect(signupBtn).toBeDisabled();
+  });
+
   test('필수 필드 미입력 시 제출 차단', async ({ page }) => {
     await page.goto('/signup');
 
