@@ -2,8 +2,7 @@
 // 회원가입 페이지 View - DOM 조작 담당
 
 import { showError, hideError, showToast, updateButtonState as updateBtnState } from './helpers.js';
-import { resolveNavPath } from '../config.js';
-import { API_BASE_URL } from '../config.js';
+import { resolveNavPath, API_BASE_URL } from '../config.js';
 
 /**
  * 회원가입 페이지 View 클래스

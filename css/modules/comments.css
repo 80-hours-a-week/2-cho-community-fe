@@ -157,6 +157,11 @@
 .mention-highlight {
     color: var(--color-primary);
     font-weight: 600;
+    cursor: pointer;
+}
+
+.mention-highlight:hover {
+    text-decoration: underline;
 }
 
 /* ============================= */

@@ -233,8 +233,14 @@ html {
     }
 
     /* --- 로그인/회원가입 --- */
-    .login-container {
+    .login-container,
+    .signup-container {
         padding: var(--spacing-lg);
+    }
+
+    /* --- 댓글 정렬 바 --- */
+    .comment-sort-bar {
+        flex-wrap: wrap;
     }
 
     /* --- 마크다운 테이블 가로 스크롤 --- */
