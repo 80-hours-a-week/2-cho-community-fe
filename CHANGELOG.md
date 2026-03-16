@@ -2,6 +2,10 @@
 
 ## 2026-03 (Mar)
 
+- **03-16: 불필요 리소스 정리**
+  - 중복 `tests/e2e/setup/test-helpers.js` 삭제 (`fixtures/test-helpers.js`만 사용)
+  - `Dockerfile.fe.k8s` → `Dockerfile` 리네임, 기존 Lambda 시대 Dockerfile 삭제
+
 - **03-16: 소셜 로그인 (GitHub OAuth)**
   - 로그인/회원가입 페이지에 GitHub 소셜 로그인 버튼 추가
   - OAuth 콜백 처리: `access_token` 저장 + 에러 토스트
