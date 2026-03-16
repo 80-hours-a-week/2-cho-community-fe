@@ -38,8 +38,9 @@
 
         <section class="search-sort-section">
             <div class="search-bar">
-                <input type="text" id="search-input" placeholder="게시글 검색..." maxlength="100">
+                <input type="text" id="search-input" placeholder="게시글 검색..." maxlength="100" autocomplete="off">
                 <button id="search-btn" class="search-btn">검색</button>
+                <ul id="search-suggestions" class="search-suggestions" style="display:none"></ul>
             </div>
             <div class="feed-filters" id="feed-filters">
                 <button class="feed-filter-btn hidden" id="foryou-btn">추천</button>

@@ -103,8 +103,12 @@ class MainController {
         if (searchBtn) searchBtn.addEventListener('click', doSearch);
         if (searchInput) {
             searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') doSearch();
+                if (e.key === 'Enter') {
+                    this._hideSearchSuggestions();
+                    doSearch();
+                }
             });
+            this._setupSearchAutocomplete(searchInput);
         }
 
         const forYouBtn = document.getElementById('foryou-btn');
@@ -364,6 +368,98 @@ class MainController {
             PostListView.showSentinelError(sentinel, UI_MESSAGES.UNKNOWN_ERROR);
         } finally {
             this.isLoading = false;
+        }
+    }
+
+    /**
+     * 검색 자동완성 설정 (300ms 디바운스)
+     * @param {HTMLInputElement} input
+     * @private
+     */
+    _setupSearchAutocomplete(input) {
+        let timer = null;
+        const MIN_QUERY = 2;
+
+        input.addEventListener('input', () => {
+            clearTimeout(timer);
+            const query = input.value.trim();
+            if (query.length < MIN_QUERY) {
+                this._hideSearchSuggestions();
+                return;
+            }
+            timer = setTimeout(() => this._fetchSuggestions(query), 300);
+        });
+
+        input.addEventListener('blur', () => {
+            // 클릭 이벤트가 먼저 발생하도록 지연
+            setTimeout(() => this._hideSearchSuggestions(), 150);
+        });
+    }
+
+    /**
+     * 검색 제안 목록 조회 및 렌더링
+     * @param {string} query
+     * @private
+     */
+    async _fetchSuggestions(query) {
+        try {
+            const result = await PostModel.getPosts({ search: query, limit: 5, offset: 0 });
+            if (!result.ok) return;
+
+            const posts = result.data?.data?.posts || [];
+            this._renderSuggestions(posts, query);
+        } catch {
+            this._hideSearchSuggestions();
+        }
+    }
+
+    /**
+     * 검색 제안 드롭다운 렌더링
+     * @param {Array} posts
+     * @param {string} query - 하이라이트용 검색어
+     * @private
+     */
+    _renderSuggestions(posts, query) {
+        const container = document.getElementById('search-suggestions');
+        if (!container) return;
+
+        container.textContent = '';
+
+        if (posts.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        posts.forEach(post => {
+            const li = document.createElement('li');
+            li.className = 'search-suggestion-item';
+
+            const title = document.createElement('span');
+            title.className = 'suggestion-title';
+            title.textContent = post.title;
+
+            const author = document.createElement('span');
+            author.className = 'suggestion-author';
+            author.textContent = post.author?.nickname || '';
+
+            li.appendChild(title);
+            li.appendChild(author);
+            li.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                location.href = resolveNavPath(NAV_PATHS.DETAIL(post.post_id));
+            });
+            container.appendChild(li);
+        });
+
+        container.style.display = '';
+    }
+
+    /** @private */
+    _hideSearchSuggestions() {
+        const container = document.getElementById('search-suggestions');
+        if (container) {
+            container.style.display = 'none';
+            container.textContent = '';
         }
     }
 }
