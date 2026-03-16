@@ -79,9 +79,57 @@
 }
 
 .search-bar {
+    position: relative;
     display: flex;
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-md);
+}
+
+/* 검색 자동완성 드롭다운 */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    list-style: none;
+    margin: var(--spacing-xs) 0 0 0;
+    padding: var(--spacing-xs) 0;
+    z-index: var(--z-dropdown);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.search-suggestion-item:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.suggestion-title {
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: var(--spacing-sm);
+}
+
+.suggestion-author {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
 }
 
 .search-bar input {
