@@ -6,6 +6,7 @@ import { getImageUrl } from './helpers.js';
 import { createElement } from '../utils/dom.js';
 import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
+import { createDistroBadge } from '../utils/distro.js';
 
 /**
  * 게시글 목록 View 클래스
@@ -80,25 +81,30 @@ class PostListView {
             // Divider
             createElement('div', { className: 'post-divider' }),
             
-            // Author: Profile Img & Nickname
-            createElement('div', { className: 'post-author' }, [
-                createElement('div', {
-                    className: 'author-profile-img',
-                    style: {
-                        backgroundImage: `url('${escapeCssUrl(profileImgUrl)}')`,
-                        backgroundSize: 'cover'
-                    }
-                }),
-                createElement('span', {
-                    className: `author-nickname${post.author?.user_id ? ' clickable-nickname' : ''}`,
-                    ...(post.author?.user_id ? {
-                        onClick: (e) => {
-                            e.stopPropagation();  // 카드 전체 클릭 방지
-                            location.href = resolveNavPath(NAV_PATHS.USER_PROFILE(post.author.user_id));
-                        },
-                    } : {}),
-                }, [nickname])
-            ])
+            // Author: Profile Img & Nickname + 배포판 뱃지
+            (() => {
+                const authorChildren = [
+                    createElement('div', {
+                        className: 'author-profile-img',
+                        style: {
+                            backgroundImage: `url('${escapeCssUrl(profileImgUrl)}')`,
+                            backgroundSize: 'cover'
+                        }
+                    }),
+                    createElement('span', {
+                        className: `author-nickname${post.author?.user_id ? ' clickable-nickname' : ''}`,
+                        ...(post.author?.user_id ? {
+                            onClick: (e) => {
+                                e.stopPropagation();  // 카드 전체 클릭 방지
+                                location.href = resolveNavPath(NAV_PATHS.USER_PROFILE(post.author.user_id));
+                            },
+                        } : {}),
+                    }, [nickname]),
+                ];
+                const distroBadge = createDistroBadge(post.author?.distro, 'small');
+                if (distroBadge) authorChildren.push(distroBadge);
+                return createElement('div', { className: 'post-author' }, authorChildren);
+            })()
         ]);
 
         if (onClick) {

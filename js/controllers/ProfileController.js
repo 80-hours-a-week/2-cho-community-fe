@@ -8,6 +8,7 @@ import ModalView from '../views/ModalView.js';
 import { extractUploadedImageUrl, readFileAsDataURL } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
 import { resolveNavPath } from '../config.js';
+import { DISTRO_MAP } from '../utils/distro.js';
 
 const logger = Logger.createLogger('ProfileController');
 
@@ -47,6 +48,9 @@ class ProfileController {
                 this.view.setEmail(user.email);
                 this.view.setNickname(user.nickname);
                 this.view.setProfileImage(user.profileImageUrl);
+
+                // 배포판 드롭다운 초기화
+                this._populateDistroSelect(user.distro);
 
                 this.originalNickname = user.nickname;
                 this._validateNickname();
@@ -126,6 +130,28 @@ class ProfileController {
     }
 
     /**
+     * 배포판 선택 드롭다운 옵션 채우기
+     * @param {string|null|undefined} currentDistro - 현재 설정된 배포판 키
+     * @private
+     */
+    _populateDistroSelect(currentDistro) {
+        const select = document.getElementById('distro-select');
+        if (!select) return;
+
+        Object.entries(DISTRO_MAP).forEach(([key, { name }]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = name;
+            select.appendChild(option);
+        });
+
+        // 현재 값 설정
+        if (currentDistro) {
+            select.value = currentDistro;
+        }
+    }
+
+    /**
      * 폼 유효성 확인
      * @private
      */
@@ -162,9 +188,12 @@ class ProfileController {
             }
         }
 
+        const distro = document.getElementById('distro-select')?.value ?? '';
+
         const payload = {};
         if (nickname !== this.originalNickname) payload.nickname = nickname;
         if (newImageUrl) payload.profileImageUrl = newImageUrl;
+        payload.distro = distro;
 
         if (Object.keys(payload).length === 0) {
             this.view.showToast('수정할 내용이 없습니다.');

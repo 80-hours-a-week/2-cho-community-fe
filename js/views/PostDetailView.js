@@ -8,6 +8,7 @@ import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { renderMarkdownTo } from '../utils/markdown.js';
 import { createElement } from '../utils/dom.js';
 import { highlightMentions } from '../utils/mention.js';
+import { createDistroBadge } from '../utils/distro.js';
 
 /**
  * 게시글 상세 View 클래스
@@ -79,6 +80,14 @@ class PostDetailView {
         // 작성자
         const authorNickname = document.getElementById('post-author-nickname');
         if (authorNickname) authorNickname.innerText = post.author.nickname;
+
+        // 배포판 뱃지 표시
+        const distroBadge = createDistroBadge(post.author?.distro, 'normal');
+        if (distroBadge && authorNickname?.parentElement) {
+            // 기존 뱃지 제거 (중복 방지)
+            authorNickname.parentElement.querySelectorAll('.distro-badge').forEach(el => el.remove());
+            authorNickname.parentElement.insertBefore(distroBadge, authorNickname.nextSibling);
+        }
 
         // 닉네임 클릭 시 사용자 프로필로 이동
         if (authorNickname && post.author?.user_id) {

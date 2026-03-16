@@ -8,6 +8,7 @@ import { resolveNavPath } from '../config.js';
 import { NAV_PATHS } from '../constants.js';
 import { renderMarkdown } from '../utils/markdown.js';
 import { highlightMentions } from '../utils/mention.js';
+import { createDistroBadge } from '../utils/distro.js';
 
 /**
  * 댓글 목록 View 클래스
@@ -113,27 +114,36 @@ class CommentListView {
                 },
             }),
             createElement('div', { className: 'comment-content-wrapper' }, [
-                createElement('div', { className: 'comment-header' }, [
-                    createElement('span', {
-                        className: `comment-author-name${comment.author?.user_id ? ' clickable-nickname' : ''}`,
-                        ...(comment.author?.user_id ? {
-                            onClick: (e) => {
-                                e.stopPropagation();
-                                location.href = resolveNavPath(NAV_PATHS.USER_PROFILE(comment.author.user_id));
-                            },
-                        } : {}),
-                    }, [nickname]),
-                    createElement('span', { className: 'comment-date' }, [
-                        dateStr,
-                        ...(isEdited ? [createElement('span', {
-                            className: 'comment-edited-badge',
-                            title: `수정일: ${formatDate(new Date(comment.updated_at))}`,
-                        }, ['(수정됨)'])] : []),
-                    ]),
-                    ...(actionButtons.length > 0 ? [
-                        createElement('div', { className: 'comment-actions' }, actionButtons)
-                    ] : []),
-                ]),
+                (() => {
+                    const headerChildren = [
+                        createElement('span', {
+                            className: `comment-author-name${comment.author?.user_id ? ' clickable-nickname' : ''}`,
+                            ...(comment.author?.user_id ? {
+                                onClick: (e) => {
+                                    e.stopPropagation();
+                                    location.href = resolveNavPath(NAV_PATHS.USER_PROFILE(comment.author.user_id));
+                                },
+                            } : {}),
+                        }, [nickname]),
+                    ];
+                    const commentDistroBadge = createDistroBadge(comment.author?.distro, 'small');
+                    if (commentDistroBadge) headerChildren.push(commentDistroBadge);
+                    headerChildren.push(
+                        createElement('span', { className: 'comment-date' }, [
+                            dateStr,
+                            ...(isEdited ? [createElement('span', {
+                                className: 'comment-edited-badge',
+                                title: `수정일: ${formatDate(new Date(comment.updated_at))}`,
+                            }, ['(수정됨)'])] : []),
+                        ]),
+                    );
+                    if (actionButtons.length > 0) {
+                        headerChildren.push(
+                            createElement('div', { className: 'comment-actions' }, actionButtons)
+                        );
+                    }
+                    return createElement('div', { className: 'comment-header' }, headerChildren);
+                })(),
                 CommentListView._createCommentText(content),
                 ...(likeBtn ? [likeBtn] : []),
             ]),

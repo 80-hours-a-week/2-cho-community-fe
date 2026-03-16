@@ -1,0 +1,29 @@
+/* css/modules/distro.css */
+/* 배포판 플레어 뱃지 */
+
+.distro-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.distro-badge__dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.distro-badge--normal .distro-badge__dot {
+    width: 12px;
+    height: 12px;
+}
+
+.distro-badge__label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+}
