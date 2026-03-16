@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <script>(function(){var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)})()</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Camp Linux - 패키지</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages/packages.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+KR:wght@100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="header-title-wrapper">
+            <a href="/main" class="header-home-link"><h2>Camp Linux</h2></a>
+            <div id="auth-section" class="header-auth"></div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="welcome-section">
+            <h3>패키지 리뷰</h3>
+            <div class="action-wrapper">
+                <a href="/main" class="nav-link-btn">게시판</a>
+                <button id="write-btn" class="write-btn">패키지 등록</button>
+            </div>
+        </section>
+
+        <section class="category-tabs" id="category-filters">
+            <!-- 카테고리 필터 버튼이 JS로 주입됨 -->
+        </section>
+
+        <section class="search-sort-section">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="패키지 검색..." maxlength="100" autocomplete="off">
+                <button id="search-btn" class="search-btn">검색</button>
+            </div>
+            <div class="sort-buttons" id="sort-buttons">
+                <button class="sort-btn active" data-sort="latest">최신순</button>
+                <button class="sort-btn" data-sort="rating">평점순</button>
+                <button class="sort-btn" data-sort="reviews">리뷰순</button>
+                <button class="sort-btn" data-sort="name">이름순</button>
+            </div>
+        </section>
+
+        <section class="post-feed">
+            <ul id="package-list" class="package-list">
+            </ul>
+            <div id="loading-sentinel">loading...</div>
+        </section>
+    </main>
+
+    <div id="toast"></div>
+
+    <script type="module" src="/js/app/packageList.js"></script>
+</body>
+
+</html>

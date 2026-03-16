@@ -1,0 +1,497 @@
+/* css/pages/packages.css */
+/* 패키지 목록/상세/등록 페이지 전용 스타일 */
+
+/* ============================= */
+/* 패키지 목록 (Package List)     */
+/* ============================= */
+.package-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+}
+
+.package-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    cursor: pointer;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+    box-shadow: var(--card-shadow);
+}
+
+.package-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.package-card-badges {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.package-category-badge {
+    display: inline-block;
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--badge-radius);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    background: var(--color-badge-category-bg);
+    color: var(--color-badge-category-text);
+}
+
+.package-manager-badge {
+    display: inline-block;
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--badge-radius);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    background: var(--color-bg-tertiary);
+    color: var(--text-caption);
+    border: 1px solid var(--border-subtle);
+}
+
+.package-card-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-sm);
+    line-height: var(--line-height-tight);
+}
+
+.package-card-desc {
+    font-size: var(--font-size-base);
+    color: var(--text-body);
+    margin: 0 0 var(--spacing-md);
+    line-height: var(--line-height-relaxed);
+}
+
+.package-card-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+.package-rating {
+    color: var(--color-primary-accent);
+    letter-spacing: 1px;
+}
+
+.package-rating-large {
+    font-size: var(--font-size-lg);
+}
+
+.package-rating-value {
+    color: var(--text-body);
+    font-weight: var(--font-weight-semibold);
+}
+
+.package-reviews-count {
+    color: var(--text-caption);
+}
+
+/* ============================= */
+/* 카테고리 필터 (Category Filter) */
+/* ============================= */
+.category-filter-btn {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--badge-radius);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-body);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.category-filter-btn.active {
+    background: var(--color-primary);
+    color: var(--text-on-primary);
+    border-color: var(--color-primary);
+}
+
+.category-filter-btn:hover:not(.active) {
+    background: var(--surface-hover);
+}
+
+/* ============================= */
+/* 네비게이션 링크 버튼            */
+/* ============================= */
+.nav-link-btn {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--btn-radius);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-body);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.nav-link-btn:hover {
+    background: var(--surface-hover);
+}
+
+/* ============================= */
+/* 패키지 상세 (Package Detail)   */
+/* ============================= */
+.package-detail-container {
+    max-width: 800px;
+}
+
+.package-info-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.package-detail-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-sm);
+}
+
+.package-detail-name {
+    font-size: var(--font-size-base);
+    color: var(--text-caption);
+    margin: 0 0 var(--spacing-md);
+    font-family: monospace;
+}
+
+.package-meta {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.package-detail-desc {
+    font-size: var(--font-size-base);
+    color: var(--text-body);
+    line-height: var(--line-height-relaxed);
+    margin: 0 0 var(--spacing-lg);
+}
+
+.package-homepage {
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-base);
+}
+
+.package-homepage-label {
+    color: var(--text-caption);
+}
+
+.package-homepage-link {
+    color: var(--color-info);
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.package-homepage-link:hover {
+    text-decoration: underline;
+}
+
+.package-stats-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.package-creator {
+    font-size: var(--font-size-sm);
+    color: var(--text-caption);
+}
+
+.package-creator-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-body);
+}
+
+/* ============================= */
+/* 리뷰 섹션 (Reviews Section)   */
+/* ============================= */
+.reviews-section {
+    margin-top: var(--spacing-2xl);
+}
+
+.reviews-section-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-lg);
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.reviews-empty {
+    color: var(--text-caption);
+    font-size: var(--font-size-base);
+    text-align: center;
+    padding: var(--spacing-3xl) 0;
+}
+
+.review-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--spacing-lg);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.review-author {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-heading);
+    font-size: var(--font-size-base);
+}
+
+.review-date {
+    color: var(--text-caption);
+    font-size: var(--font-size-sm);
+    margin-left: auto;
+}
+
+.review-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.review-rating {
+    color: var(--color-primary-accent);
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: 1px;
+}
+
+.review-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-xs);
+}
+
+.review-content {
+    font-size: var(--font-size-base);
+    color: var(--text-body);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+}
+
+/* ============================= */
+/* 리뷰 폼 (Review Form)         */
+/* ============================= */
+.review-form-section {
+    margin: var(--spacing-2xl) 0;
+}
+
+.review-form-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-lg);
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-heading);
+}
+
+.rating-selector {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.rating-star {
+    font-size: var(--font-size-xl);
+    cursor: pointer;
+    color: var(--color-gray-300);
+    transition: color var(--transition-fast);
+    user-select: none;
+}
+
+.rating-star.active {
+    color: var(--color-primary-accent);
+}
+
+.rating-star:hover {
+    color: var(--color-primary-accent);
+}
+
+.review-title-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
+    color: var(--text-heading);
+    font-size: 16px; /* iOS 줌 방지 */
+    box-sizing: border-box;
+}
+
+.review-title-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
+}
+
+.review-content-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
+    color: var(--text-heading);
+    font-size: 16px; /* iOS 줌 방지 */
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.review-content-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
+}
+
+.review-form-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.review-submit-btn {
+    padding: var(--btn-padding-md);
+    background: var(--color-primary);
+    color: var(--text-on-primary);
+    border: none;
+    border-radius: var(--btn-radius);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.review-submit-btn:hover {
+    background: var(--color-primary-hover);
+}
+
+.review-cancel-btn {
+    padding: var(--btn-padding-md);
+    background: transparent;
+    color: var(--text-body);
+    border: 1px solid var(--border-default);
+    border-radius: var(--btn-radius);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.review-cancel-btn:hover {
+    background: var(--surface-hover);
+}
+
+/* ============================= */
+/* 패키지 등록 폼 (Package Form) */
+/* ============================= */
+.package-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.package-form .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
+    color: var(--text-heading);
+    font-size: 16px; /* iOS 줌 방지 */
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
+}
+
+.form-textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
+    color: var(--text-heading);
+    font-size: 16px; /* iOS 줌 방지 */
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
+}
+
+.form-select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
+    color: var(--text-heading);
+    font-size: 16px; /* iOS 줌 방지 */
+    box-sizing: border-box;
+    appearance: auto;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
+}
+
+/* ============================= */
+/* 빈 상태 (Empty State)         */
+/* ============================= */
+.package-list .empty-state {
+    text-align: center;
+    padding: var(--spacing-4xl) 0;
+    color: var(--text-caption);
+    font-size: var(--font-size-base);
+}

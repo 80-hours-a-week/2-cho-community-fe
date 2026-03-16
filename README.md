@@ -43,7 +43,7 @@ flowchart TD
 
 ```
 2-cho-community-fe/
-├── html/                      # 19개 HTML 페이지
+├── html/                      # 22개 HTML 페이지
 ├── vite.config.js             # Vite MPA 설정 + 클린 URL 리라이트
 ├── Dockerfile                 # 멀티 스테이지 빌드 (node → nginx)
 ├── nginx.conf                 # 프로덕션 서빙 설정
@@ -55,7 +55,7 @@ flowchart TD
 │   │   ├── write.js           # 게시글 작성
 │   │   ├── dm_list.js         # DM 대화 목록
 │   │   ├── dm.js              # DM 데스크톱 통합 (좌우 분할)
-│   │   └── ...                # 총 19개
+│   │   └── ...                # 총 22개
 │   │
 │   ├── controllers/           # 비즈니스 로직 (21개)
 │   │   ├── MainController.js
@@ -136,6 +136,9 @@ flowchart TD
 | `/admin/reports` | `admin_reports.html` | 관리자 신고 관리 — 상태 필터, 처리/기각, 정지 연동 |
 | `/admin/dashboard` | `admin_dashboard.html` | 관리자 대시보드 — 통계 카드, 일별 추이, 사용자 관리 |
 | `/social-signup` | `social_signup.html` | 소셜 가입 완료 — 닉네임 설정 (OAuth 콜백 후 리다이렉트) |
+| `/packages` | `package_list.html` | 패키지 목록 — 카테고리 필터, 검색, 정렬(최신/평점/리뷰수/이름), 무한 스크롤 |
+| `/packages/detail?id=` | `package_detail.html` | 패키지 상세 — 패키지 정보 + 리뷰 목록 + 리뷰 작성/수정/삭제 |
+| `/packages/write` | `package_write.html` | 패키지 등록 — 카테고리, 패키지 매니저 선택 |
 
 ---
 
@@ -231,7 +234,7 @@ DOM CustomEvent로 컴포넌트 간 느슨한 결합을 구현합니다.
 
 ### 다크 모드
 
-`ThemeService`가 `[data-theme="dark"]` 속성을 토글하면, `variables.css`의 다크 테마 토큰이 활성화되어 22개 CSS 파일이 자동 전환됩니다. FOUC(Flash of Unstyled Content) 방지를 위해 19개 HTML에 인라인 스크립트로 초기 테마를 즉시 적용합니다.
+`ThemeService`가 `[data-theme="dark"]` 속성을 토글하면, `variables.css`의 다크 테마 토큰이 활성화되어 22개 CSS 파일이 자동 전환됩니다. FOUC(Flash of Unstyled Content) 방지를 위해 22개 HTML에 인라인 스크립트로 초기 테마를 즉시 적용합니다.
 
 ### CSS 로딩 순서
 
@@ -281,9 +284,9 @@ style.css (@import 진입점)
 
 ### Vite 설정
 
-19개 HTML을 개별 엔트리포인트로 등록하는 MPA(Multi-Page Application) 구성입니다.
+22개 HTML을 개별 엔트리포인트로 등록하는 MPA(Multi-Page Application) 구성입니다.
 
-- **클린 URL 리라이트 플러그인**: `/main` → `/post_list.html`, `/detail` → `/post_detail.html` 등 19개 경로 매핑. 개발(configureServer)과 프리뷰(configurePreviewServer) 모두 지원
+- **클린 URL 리라이트 플러그인**: `/main` → `/post_list.html`, `/detail` → `/post_detail.html` 등 22개 경로 매핑. 개발(configureServer)과 프리뷰(configurePreviewServer) 모두 지원
 - **프로덕션 빌드**: `npm run build` → `dist/` (HTML + `assets/` 해시된 JS/CSS 번들)
 - **HMR**: 개발 서버에서 CSS/JS 변경 즉시 반영
 
