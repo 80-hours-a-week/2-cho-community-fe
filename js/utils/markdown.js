@@ -17,6 +17,15 @@ import css from 'highlight.js/lib/languages/css';
 import json from 'highlight.js/lib/languages/json';
 import java from 'highlight.js/lib/languages/java';
 import typescript from 'highlight.js/lib/languages/typescript';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+import go from 'highlight.js/lib/languages/go';
+import rust from 'highlight.js/lib/languages/rust';
+import yaml from 'highlight.js/lib/languages/yaml';
+import dockerfile from 'highlight.js/lib/languages/dockerfile';
+import nginx from 'highlight.js/lib/languages/nginx';
+import ini from 'highlight.js/lib/languages/ini';
+import diff from 'highlight.js/lib/languages/diff';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('js', javascript);
@@ -32,6 +41,19 @@ hljs.registerLanguage('json', json);
 hljs.registerLanguage('java', java);
 hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('ts', typescript);
+hljs.registerLanguage('c', c);
+hljs.registerLanguage('cpp', cpp);
+hljs.registerLanguage('go', go);
+hljs.registerLanguage('rust', rust);
+hljs.registerLanguage('yaml', yaml);
+hljs.registerLanguage('yml', yaml);
+hljs.registerLanguage('dockerfile', dockerfile);
+hljs.registerLanguage('docker', dockerfile);
+hljs.registerLanguage('nginx', nginx);
+hljs.registerLanguage('ini', ini);
+hljs.registerLanguage('conf', ini);
+hljs.registerLanguage('diff', diff);
+hljs.registerLanguage('patch', diff);
 
 // marked 인스턴스 설정
 const marked = new Marked({
@@ -40,7 +62,7 @@ const marked = new Marked({
     pedantic: false,
 });
 
-// 코드 하이라이팅 커스텀 렌더러
+// 코드 하이라이팅 커스텀 렌더러 — 언어 라벨 + 복사 버튼 포함
 marked.use({
     renderer: {
         code({ text, lang }) {
@@ -49,7 +71,11 @@ marked.use({
                 ? hljs.highlight(text, { language }).value
                 : escapeHtml(text);
             const langClass = language ? ` class="language-${language}"` : '';
-            return `<pre class="hljs"><code${langClass}>${highlighted}</code></pre>`;
+            const langLabel = language
+                ? `<span class="code-lang-label">${escapeHtml(language)}</span>`
+                : '';
+            const copyBtn = '<button class="code-copy-btn" title="복사">Copy</button>';
+            return `<div class="code-block-wrapper">${langLabel}${copyBtn}<pre class="hljs"><code${langClass}>${highlighted}</code></pre></div>`;
         },
     },
 });
@@ -66,6 +92,7 @@ const PURIFY_CONFIG = {
         'img',
         'table', 'thead', 'tbody', 'tr', 'th', 'td',
         'span', 'div',
+        'button',
         'input', // GFM task list checkbox
     ],
     ALLOWED_ATTR: [
@@ -108,6 +135,18 @@ export function renderMarkdownTo(element, markdown) {
     // DOMPurify로 sanitize된 안전한 HTML — XSS safe
     const sanitizedHtml = renderMarkdown(markdown);
     element.innerHTML = sanitizedHtml; // eslint-disable-line no-unsanitized/property
+
+    // 코드 복사 버튼 이벤트 바인딩 (sanitize 후 안전한 DOM에서 바인딩)
+    element.querySelectorAll('.code-copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const code = btn.closest('.code-block-wrapper')?.querySelector('code');
+            if (code) {
+                navigator.clipboard.writeText(code.textContent || '');
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+            }
+        });
+    });
 }
 
 /**

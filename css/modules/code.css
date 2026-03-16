@@ -1,0 +1,70 @@
+/* css/modules/code.css */
+/* 코드 블록 — 터미널 스타일 */
+
+.code-block-wrapper {
+    position: relative;
+    margin: var(--spacing-md) 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.code-block-wrapper pre.hljs {
+    background: #0D1117;
+    color: #C9D1D9;
+    padding: var(--spacing-lg);
+    padding-top: var(--spacing-xl);
+    margin: 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    border-radius: var(--radius-md);
+}
+
+.code-lang-label {
+    position: absolute;
+    top: var(--spacing-xs);
+    left: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: #8B949E;
+    font-family: var(--font-family);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 1;
+}
+
+.code-copy-btn {
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-sm);
+    background: transparent;
+    border: 1px solid #30363D;
+    border-radius: var(--radius-sm);
+    color: #8B949E;
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: var(--font-size-xs);
+    z-index: 1;
+    transition: var(--transition-fast);
+}
+
+.code-copy-btn:hover {
+    background: #30363D;
+    color: #C9D1D9;
+    transform: none;
+}
+
+/* highlight.js 구문 컬러 — 터미널 감성 */
+.hljs-keyword { color: #FF7B72; }
+.hljs-string { color: #A5D6FF; }
+.hljs-comment { color: #8B949E; font-style: italic; }
+.hljs-function .hljs-title,
+.hljs-title.function_ { color: #D2A8FF; }
+.hljs-number { color: #79C0FF; }
+.hljs-built_in { color: #FFA657; }
+.hljs-type { color: #7EE787; }
+.hljs-variable { color: #FFA657; }
+.hljs-attr { color: #79C0FF; }
+.hljs-meta { color: #8B949E; }
+.hljs-addition { color: #7EE787; background: #0D2818; }
+.hljs-deletion { color: #FF7B72; background: #3D1117; }
