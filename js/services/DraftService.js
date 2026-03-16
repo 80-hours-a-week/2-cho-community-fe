@@ -95,6 +95,61 @@ class DraftService {
     }
 
     /**
+     * 서버에서 임시저장 로드 (로그인 시 localStorage보다 우선).
+     * @returns {Promise<DraftData|null>}
+     */
+    static async loadFromServer() {
+        try {
+            const { default: ApiService } = await import('./ApiService.js');
+            const result = await ApiService.get('/v1/drafts/');
+            if (!result.ok) return null;
+            const draft = result.data?.data?.draft;
+            if (!draft) return null;
+            return {
+                title: draft.title ?? '',
+                content: draft.content ?? '',
+                categoryId: draft.category_id ?? null,
+                savedAt: draft.updated_at,
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * 서버에 임시저장 (로그인 상태에서 호출).
+     * @param {{title: string, content: string, categoryId: number|null}} fields
+     * @returns {Promise<boolean>}
+     */
+    static async saveToServer({ title, content, categoryId }) {
+        try {
+            const { default: ApiService } = await import('./ApiService.js');
+            const result = await ApiService.put('/v1/drafts/', {
+                title: title || null,
+                content: content || null,
+                category_id: categoryId || null,
+            });
+            return result.ok;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * 서버의 임시저장 삭제.
+     * @returns {Promise<boolean>}
+     */
+    static async clearFromServer() {
+        try {
+            const { default: ApiService } = await import('./ApiService.js');
+            const result = await ApiService.delete('/v1/drafts/');
+            return result.ok;
+        } catch {
+            return false;
+        }
+    }
+
+    /**
      * ISO 문자열을 "3월 5일 12:34" 형식으로 변환.
      * 유효하지 않은 입력 시 빈 문자열 반환.
      * @param {string} isoString - ISO 8601 날짜 문자열

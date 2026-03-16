@@ -230,6 +230,7 @@ class WriteController {
 
             if (result.ok) {
                 DraftService.clear(DRAFT_KEY);
+                DraftService.clearFromServer();
                 showToastAndRedirect(UI_MESSAGES.POST_CREATE_SUCCESS, NAV_PATHS.MAIN);
             } else {
                 this.view.showToast(UI_MESSAGES.POST_CREATE_FAIL);
@@ -245,8 +246,14 @@ class WriteController {
      * 임시 저장된 초안 복원
      * @private
      */
-    _restoreDraft() {
-        const draft = DraftService.load(DRAFT_KEY);
+    async _restoreDraft() {
+        // 서버 임시저장 우선, 없으면 localStorage 폴백
+        let draft = await DraftService.loadFromServer();
+        let source = 'server';
+        if (!draft) {
+            draft = DraftService.load(DRAFT_KEY);
+            source = 'local';
+        }
         if (!draft) return;
 
         const timeStr = DraftService.formatSavedAt(draft.savedAt);
@@ -262,6 +269,7 @@ class WriteController {
             this._validateForm();
         } else {
             DraftService.clear(DRAFT_KEY);
+            if (source === 'server') DraftService.clearFromServer();
         }
     }
 
@@ -279,6 +287,7 @@ class WriteController {
             const categorySelect = document.getElementById('category-select');
             const categoryId = categorySelect ? Number(categorySelect.value) : 1;
             DraftService.save(DRAFT_KEY, { title, content, categoryId });
+            DraftService.saveToServer({ title, content, categoryId });
         }, DRAFT_SAVE_DELAY);
     }
 }
