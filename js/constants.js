@@ -111,6 +111,9 @@ export const API_ENDPOINTS = {
     TAGS: {
         ROOT: '/v1/tags',
     },
+    PACKAGES: {
+        ROOT: '/v1/packages',
+    },
     DMS: {
         ROOT: '/v1/dms',
         UNREAD_COUNT: '/v1/dms/unread-count',
@@ -218,6 +221,10 @@ export const NAV_PATHS = {
     /** @param {string|number} id */
     DM_DETAIL: (id) => `/messages/detail?id=${id}`,
     SOCIAL_SIGNUP: '/social-signup',
+    PACKAGES: '/packages',
+    /** @param {string|number} id */
+    PACKAGE_DETAIL: (id) => `/packages/detail?id=${id}`,
+    PACKAGE_WRITE: '/packages/write',
 };
 
 export const SORT_OPTIONS = {
@@ -261,6 +268,9 @@ export const HTML_PATHS = {
     '/messages/inbox': '/html/dm.html',
     '/messages/detail': '/html/dm_detail.html',
     '/social-signup': '/html/social_signup.html',
+    '/packages': '/html/package_list.html',
+    '/packages/detail': '/html/package_detail.html',
+    '/packages/write': '/html/package_write.html',
 };
 
 /** @type {Record<number, string>} */
