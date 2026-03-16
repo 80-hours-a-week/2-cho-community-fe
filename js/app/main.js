@@ -3,6 +3,20 @@
 
 import MainController from '../controllers/MainController.js';
 import HeaderController from '../controllers/HeaderController.js';
+import { setAccessToken } from '../services/ApiService.js';
+
+// 소셜 로그인 콜백에서 전달된 access_token 처리
+const _urlParams = new URLSearchParams(window.location.search);
+const _socialToken = _urlParams.get('access_token');
+if (_socialToken) {
+    setAccessToken(_socialToken);
+    // URL에서 토큰 제거 (보안)
+    _urlParams.delete('access_token');
+    const cleanUrl = _urlParams.toString()
+        ? `${window.location.pathname}?${_urlParams.toString()}`
+        : window.location.pathname;
+    window.history.replaceState({}, '', cleanUrl);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // 헤더 초기화 (인증 체크 및 프로필 렌더링) — await하지 않음

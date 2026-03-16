@@ -5,9 +5,9 @@ import HeaderController from '../controllers/HeaderController.js';
 import MyActivityController from '../controllers/MyActivityController.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 비동기 초기화가 페이지 컨트롤러를 차단하지 않도록 await하지 않음
+    // 인증 필요 페이지: headerController 초기화 완료 후 페이지 컨트롤러 실행
     const headerController = new HeaderController();
-    headerController.init();
+    await headerController.init();
 
     document.getElementById('back-btn')?.addEventListener('click', () => history.back());
 

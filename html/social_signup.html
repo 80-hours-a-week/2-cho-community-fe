@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <script>(function(){var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)})()</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>아무 말 대잔치 - 닉네임 설정</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages/social-signup.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-title-wrapper">
+            <a href="/main" class="header-home-link"><h2>아무 말 대잔치</h2></a>
+        </div>
+    </header>
+
+    <div class="social-signup-container">
+        <h2 class="social-signup-title">닉네임 설정</h2>
+        <p class="social-signup-desc">커뮤니티에서 사용할 닉네임을 설정해주세요.</p>
+
+        <form id="social-signup-form">
+            <div class="input-group">
+                <label for="nickname" class="input-label">닉네임*</label>
+                <input type="text" id="nickname" name="nickname" class="input-field" required
+                    placeholder="영문, 숫자, 언더바 (3~10자)" autocomplete="username">
+                <span id="nickname-helper" class="error-msg">* helper text</span>
+            </div>
+
+            <button type="submit" class="social-signup-btn" disabled>시작하기</button>
+        </form>
+    </div>
+
+    <div id="toast"></div>
+    <script type="module" src="/js/app/socialSignup.js"></script>
+</body>
+</html>

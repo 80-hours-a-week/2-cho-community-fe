@@ -1,0 +1,56 @@
+/* css/modules/social-login.css */
+/* 소셜 로그인 버튼 스타일 */
+
+.social-login-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-xl) 0;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+}
+
+.social-login-divider::before,
+.social-login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.social-login-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.social-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+}
+
+.social-login-btn:hover {
+    opacity: 0.9;
+}
+
+.social-login-btn--github {
+    background-color: #24292e;
+    color: #FFFFFF;
+}
+
+.social-login-btn svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}

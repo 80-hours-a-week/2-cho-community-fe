@@ -217,6 +217,7 @@ export const NAV_PATHS = {
     DM_INBOX: '/messages/inbox',
     /** @param {string|number} id */
     DM_DETAIL: (id) => `/messages/detail?id=${id}`,
+    SOCIAL_SIGNUP: '/social-signup',
 };
 
 export const SORT_OPTIONS = {
@@ -259,6 +260,7 @@ export const HTML_PATHS = {
     '/messages': '/html/dm_list.html',
     '/messages/inbox': '/html/dm.html',
     '/messages/detail': '/html/dm_detail.html',
+    '/social-signup': '/html/social_signup.html',
 };
 
 /** @type {Record<number, string>} */

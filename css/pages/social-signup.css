@@ -1,0 +1,45 @@
+/* css/pages/social-signup.css */
+.social-signup-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.social-signup-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-sm);
+}
+
+.social-signup-desc {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+}
+
+.social-signup-container form {
+    width: 100%;
+}
+
+.social-signup-btn {
+    width: 100%;
+    padding: var(--btn-padding-md);
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    margin-top: var(--spacing-lg);
+}
+
+.social-signup-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

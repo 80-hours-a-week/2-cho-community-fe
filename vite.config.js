@@ -23,6 +23,7 @@ function mpaRewritePlugin() {
     '/messages': '/html/dm_list.html',
     '/messages/inbox': '/html/dm.html',
     '/messages/detail': '/html/dm_detail.html',
+    '/social-signup': '/html/social_signup.html',
   };
 
   function rewriteMiddleware(req, _res, next) {
@@ -66,6 +67,7 @@ export default defineConfig({
         dm_list: resolve(__dirname, 'html/dm_list.html'),
         dm_detail: resolve(__dirname, 'html/dm_detail.html'),
         dm: resolve(__dirname, 'html/dm.html'),
+        social_signup: resolve(__dirname, 'html/social_signup.html'),
       },
     },
   },
