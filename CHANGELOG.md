@@ -2,6 +2,13 @@
 
 ## 2026-03 (Mar)
 
+- **03-16: Camp Linux 리브랜딩**
+  - 사이트 이름 "아무 말 대잔치" → "Camp Linux" 전환
+  - 카테고리 4개 → 6개 (배포판, Q&A, 뉴스/소식, 프로젝트/쇼케이스, 팁/가이드, 공지사항)
+  - 터미널 감성 테마 (차콜 + 오렌지/골드)
+  - 코드 하이라이팅 강화 (14개 언어, 터미널 스타일)
+  - 배포판 플레어/뱃지 시스템
+
 - **03-16: 불필요 리소스 정리**
   - 중복 `tests/e2e/setup/test-helpers.js` 삭제 (`fixtures/test-helpers.js`만 사용)
   - `Dockerfile.fe.k8s` → `Dockerfile` 리네임, 기존 Lambda 시대 Dockerfile 삭제

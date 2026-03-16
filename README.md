@@ -1,4 +1,4 @@
-# 아무 말 대잔치 — Frontend
+# Camp Linux — Frontend
 
 Vanilla JavaScript MPA로 구축한 커뮤니티 포럼 프론트엔드. 프레임워크 없이 MVC 패턴, 실시간 WebSocket 통신, 마크다운 에디터, 디자인 토큰 시스템을 직접 설계하고 구현했습니다.
 
