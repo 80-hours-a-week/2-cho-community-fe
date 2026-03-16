@@ -60,6 +60,23 @@ class NotificationModel {
     static async deleteNotification(id) {
         return ApiService.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id));
     }
+
+    /**
+     * 알림 설정 조회
+     * @returns {Promise<ApiResponse<{settings: NotificationSettings}>>}
+     */
+    static async getSettings() {
+        return ApiService.get(`${API_ENDPOINTS.NOTIFICATIONS.ROOT}/settings`);
+    }
+
+    /**
+     * 알림 설정 변경
+     * @param {Partial<NotificationSettings>} settings
+     * @returns {Promise<ApiResponse<{settings: NotificationSettings}>>}
+     */
+    static async updateSettings(settings) {
+        return ApiService.patch(`${API_ENDPOINTS.NOTIFICATIONS.ROOT}/settings`, settings);
+    }
 }
 
 export default NotificationModel;

@@ -140,3 +140,55 @@
 .notification-badge.hidden {
     display: none;
 }
+
+/* 알림 헤더 액션 버튼 그룹 */
+.notification-header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+/* 알림 설정 버튼 */
+.notification-settings-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
+/* 알림 설정 패널 */
+.notification-settings-panel {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+}
+
+.notification-settings-panel h3 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-md);
+}
+
+.notification-setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    cursor: pointer;
+}
+
+.notification-setting-row span {
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+}
+
+.notification-setting-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}

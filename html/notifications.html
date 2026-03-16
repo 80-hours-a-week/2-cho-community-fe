@@ -32,7 +32,33 @@
     <main class="main-container">
         <div class="notification-header">
             <h1>알림</h1>
-            <button id="mark-all-read-btn" class="mark-all-read-btn">모두 읽음</button>
+            <div class="notification-header-actions">
+                <button type="button" id="notification-settings-btn" class="notification-settings-btn" title="알림 설정">설정</button>
+                <button type="button" id="mark-all-read-btn" class="mark-all-read-btn">모두 읽음</button>
+            </div>
+        </div>
+        <div id="notification-settings-panel" class="notification-settings-panel hidden">
+            <h3>알림 수신 설정</h3>
+            <label class="notification-setting-row">
+                <span>댓글</span>
+                <input type="checkbox" id="setting-comment" checked>
+            </label>
+            <label class="notification-setting-row">
+                <span>좋아요</span>
+                <input type="checkbox" id="setting-like" checked>
+            </label>
+            <label class="notification-setting-row">
+                <span>멘션</span>
+                <input type="checkbox" id="setting-mention" checked>
+            </label>
+            <label class="notification-setting-row">
+                <span>팔로우</span>
+                <input type="checkbox" id="setting-follow" checked>
+            </label>
+            <label class="notification-setting-row">
+                <span>북마크</span>
+                <input type="checkbox" id="setting-bookmark" checked>
+            </label>
         </div>
         <ul id="notification-list" class="notification-list">
             <!-- 알림 항목이 여기에 주입됩니다 -->

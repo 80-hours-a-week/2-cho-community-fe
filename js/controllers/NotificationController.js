@@ -41,6 +41,25 @@ class NotificationController {
         // 모두 읽음 버튼
         this.markAllBtn?.addEventListener('click', () => this._handleMarkAllRead());
 
+        // 알림 설정 패널 토글
+        const settingsBtn = document.getElementById('notification-settings-btn');
+        const settingsPanel = document.getElementById('notification-settings-panel');
+        if (settingsBtn && settingsPanel) {
+            settingsBtn.addEventListener('click', () => {
+                settingsPanel.classList.toggle('hidden');
+                if (!settingsPanel.classList.contains('hidden')) {
+                    this._loadSettings();
+                }
+            });
+            // 체크박스 변경 시 즉시 저장
+            settingsPanel.addEventListener('change', (e) => {
+                const checkbox = e.target.closest('input[type="checkbox"]');
+                if (!checkbox) return;
+                const type = checkbox.id.replace('setting-', '');
+                this._updateSetting(type, checkbox.checked);
+            });
+        }
+
         // 이벤트 위임: 알림 클릭 + 삭제
         this.listEl?.addEventListener('click', (e) => {
             const deleteBtn = e.target.closest('.notification-delete-btn');
@@ -216,6 +235,47 @@ class NotificationController {
                 el.classList.remove('unread');
             });
             showToast('모든 알림을 읽음 처리했습니다.');
+        }
+    }
+
+    /**
+     * 알림 설정 로드 → 체크박스 반영
+     * @private
+     */
+    async _loadSettings() {
+        try {
+            const result = await NotificationModel.getSettings();
+            if (!result.ok) return;
+            const settings = result.data?.data?.settings;
+            if (!settings) return;
+
+            for (const [type, enabled] of Object.entries(settings)) {
+                const checkbox = document.getElementById(`setting-${type}`);
+                if (checkbox) checkbox.checked = enabled;
+            }
+        } catch (error) {
+            logger.error('알림 설정 로드 실패', error);
+        }
+    }
+
+    /**
+     * 개별 알림 설정 변경
+     * @param {string} type - 알림 유형
+     * @param {boolean} enabled - 활성화 여부
+     * @private
+     */
+    async _updateSetting(type, enabled) {
+        try {
+            const result = await NotificationModel.updateSettings({ [type]: enabled });
+            if (result.ok) {
+                showToast(`${type} 알림이 ${enabled ? '활성화' : '비활성화'}되었습니다.`);
+            }
+        } catch (error) {
+            logger.error('알림 설정 변경 실패', error);
+            showToast('알림 설정 변경에 실패했습니다.');
+            // 실패 시 체크박스 롤백
+            const checkbox = document.getElementById(`setting-${type}`);
+            if (checkbox) checkbox.checked = !enabled;
         }
     }
 }
