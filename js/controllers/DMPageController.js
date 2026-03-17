@@ -72,7 +72,7 @@ export class DMPageController {
             location.href = resolveNavPath(NAV_PATHS.LOGIN);
             return;
         }
-        _currentUserId = authResult.user.id;
+        _currentUserId = authResult.user.user_id;
 
         // 리사이즈 핸들러 (모바일 전환 감지)
         DMPageController._setupResizeHandler();

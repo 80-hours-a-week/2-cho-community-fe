@@ -101,12 +101,12 @@ class WikiEditController {
      */
     async _handleSubmit(data) {
         // 유효성 검사
-        if (!data.title) {
-            showToast('제목을 입력해주세요.');
+        if (!data.title || data.title.length < 2) {
+            showToast('제목을 2자 이상 입력해주세요.');
             return;
         }
-        if (!data.content) {
-            showToast('내용을 입력해주세요.');
+        if (!data.content || data.content.length < 10) {
+            showToast('내용을 10자 이상 입력해주세요.');
             return;
         }
 
@@ -123,7 +123,13 @@ class WikiEditController {
                     location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(this.slug));
                 }, 500);
             } else {
-                showToast(result.data?.detail || '위키 페이지 수정에 실패했습니다.');
+                const detail = result.data?.detail;
+                if (Array.isArray(detail)) {
+                    const msg = detail.map(e => e.msg).join(', ');
+                    showToast(msg || '입력값을 확인해주세요.');
+                } else {
+                    showToast(detail || '위키 페이지 수정에 실패했습니다.');
+                }
             }
         } catch (error) {
             logger.error('위키 페이지 수정 실패', error);
