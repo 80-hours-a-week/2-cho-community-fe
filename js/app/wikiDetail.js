@@ -9,5 +9,5 @@ document.addEventListener('DOMContentLoaded', () => {
     headerController.init();
 
     const controller = new WikiDetailController();
-    controller.init();
+    controller.init(headerController.getCurrentUser());
 });

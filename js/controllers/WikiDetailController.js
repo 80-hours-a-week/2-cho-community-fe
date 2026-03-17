@@ -7,7 +7,7 @@ import WikiDetailView from '../views/WikiDetailView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
-import { getCurrentUser } from '../services/ApiService.js';
+import { getAccessToken } from '../services/ApiService.js';
 import { showToast } from '../views/helpers.js';
 
 const logger = Logger.createLogger('WikiDetailController');
@@ -22,8 +22,11 @@ class WikiDetailController {
 
     /**
      * 컨트롤러 초기화
+     * @param {Promise<object|null>|null} [currentUserPromise]
      */
-    async init() {
+    async init(currentUserPromise = null) {
+        /** @type {object|null} */
+        this.currentUser = currentUserPromise ? await currentUserPromise : null;
         // URL에서 slug 추출 (/wiki/slug-name)
         const rawSlug = window.location.pathname.replace(/^\/wiki\//, '');
         this.slug = decodeURIComponent(rawSlug);
@@ -71,8 +74,7 @@ class WikiDetailController {
             this.pageData = result.data?.data;
 
             // 현재 사용자 확인
-            const currentUser = getCurrentUser();
-            const currentUserId = currentUser?.user_id || null;
+            const currentUserId = this.currentUser?.user_id || null;
 
             WikiDetailView.renderWikiPage(container, this.pageData, currentUserId);
 
