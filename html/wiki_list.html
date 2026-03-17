@@ -5,9 +5,9 @@
     <script>(function(){var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)})()</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Camp Linux</title>
+    <title>Camp Linux - 위키</title>
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/modules/search.css">
+    <link rel="stylesheet" href="/css/pages/wiki.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -19,46 +19,38 @@
     <header>
         <div class="header-title-wrapper">
             <a href="/main" class="header-home-link"><h2>Camp Linux</h2></a>
-            <!-- 헤더의 인증 관련 로직은 HeaderController에서 처리 -->
             <div id="auth-section" class="header-auth"></div>
         </div>
     </header>
 
     <main class="main-container">
         <section class="welcome-section">
-            <h3 id="welcome-message">Camp Linux에 오신 것을 환영합니다.</h3>
+            <h3>위키</h3>
             <div class="action-wrapper">
-                <a href="/wiki" class="nav-link-btn">위키</a>
+                <a href="/main" class="nav-link-btn">게시판</a>
                 <a href="/packages" class="nav-link-btn">패키지</a>
-                <button id="write-btn" class="write-btn">게시글 작성</button>
+                <button id="write-btn" class="write-btn">페이지 작성</button>
             </div>
-        </section>
-
-        <section class="category-tabs" id="category-tabs">
-            <!-- 카테고리 탭이 JS로 주입됨 -->
         </section>
 
         <section class="search-sort-section">
             <div class="search-bar">
-                <input type="text" id="search-input" placeholder="게시글 검색..." maxlength="100" autocomplete="off">
+                <input type="text" id="search-input" placeholder="위키 검색..." maxlength="100" autocomplete="off">
                 <button id="search-btn" class="search-btn">검색</button>
-                <ul id="search-suggestions" class="search-suggestions" style="display:none"></ul>
             </div>
-            <div class="feed-filters" id="feed-filters">
-                <button class="feed-filter-btn hidden" id="foryou-btn">추천</button>
-                <button class="feed-filter-btn hidden" id="following-btn">팔로잉</button>
-                <div class="filter-divider hidden" id="filter-divider"></div>
-                <div class="sort-buttons" id="sort-buttons">
-                    <button class="sort-btn active" data-sort="latest">최신순</button>
-                    <button class="sort-btn" data-sort="likes">인기순</button>
-                    <button class="sort-btn" data-sort="views">조회순</button>
-                    <button class="sort-btn" data-sort="comments">댓글순</button>
-                </div>
+            <div class="sort-buttons" id="sort-buttons">
+                <button class="sort-btn active" data-sort="latest">최신순</button>
+                <button class="sort-btn" data-sort="views">조회순</button>
+                <button class="sort-btn" data-sort="updated">편집순</button>
             </div>
         </section>
 
+        <section class="category-tabs" id="tag-filters">
+            <!-- 태그 필터 버튼이 JS로 주입됨 -->
+        </section>
+
         <section class="post-feed">
-            <ul id="post-list">
+            <ul id="wiki-list" class="wiki-list">
             </ul>
             <div id="loading-sentinel">loading...</div>
         </section>
@@ -66,7 +58,7 @@
 
     <div id="toast"></div>
 
-    <script type="module" src="/js/app/main.js"></script>
+    <script type="module" src="/js/app/wikiList.js"></script>
 </body>
 
 </html>

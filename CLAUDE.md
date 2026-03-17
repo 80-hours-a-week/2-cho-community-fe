@@ -59,7 +59,7 @@ npx playwright test --headed                  # 브라우저 표시
 - **터치 디바이스 hover**: `@media (hover: none) and (pointer: coarse)`로 hover 잔상 제거 + `:active`에 `scale()` 피드백
 
 ### Vite & 빌드
-- **Vite 빌드**: 22개 HTML MPA 엔트리포인트 + 클린 URL 리라이트. FOUC 인라인 스크립트는 Vite가 변환하지 않음
+- **Vite 빌드**: 26개 HTML MPA 엔트리포인트 + 클린 URL 리라이트. FOUC 인라인 스크립트는 Vite가 변환하지 않음
 - **Vite IPv6 바인딩 (macOS)**: `localhost`가 IPv6(`::1`)로만 바인딩 가능. `vite.config.js`에 `host: '127.0.0.1'` 명시
 
 ### 초기화 & WebSocket

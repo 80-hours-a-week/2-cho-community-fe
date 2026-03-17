@@ -27,12 +27,19 @@ function mpaRewritePlugin() {
     '/packages': '/html/package_list.html',
     '/packages/detail': '/html/package_detail.html',
     '/packages/write': '/html/package_write.html',
+    '/wiki': '/html/wiki_list.html',
+    '/wiki/write': '/html/wiki_write.html',
+    '/wiki/edit': '/html/wiki_edit.html',
   };
 
   function rewriteMiddleware(req, _res, next) {
     const urlPath = req.url.split('?')[0];
     if (rewrites[urlPath]) {
       req.url = req.url.replace(urlPath, rewrites[urlPath]);
+    }
+    // 위키 상세 페이지: /wiki/{slug} 동적 라우팅
+    if (!rewrites[urlPath] && urlPath.startsWith('/wiki/') && urlPath !== '/wiki/write' && urlPath !== '/wiki/edit') {
+      req.url = req.url.replace(urlPath, '/html/wiki_detail.html');
     }
     next();
   }
@@ -74,6 +81,10 @@ export default defineConfig({
         package_list: resolve(__dirname, 'html/package_list.html'),
         package_detail: resolve(__dirname, 'html/package_detail.html'),
         package_write: resolve(__dirname, 'html/package_write.html'),
+        wiki_list: resolve(__dirname, 'html/wiki_list.html'),
+        wiki_detail: resolve(__dirname, 'html/wiki_detail.html'),
+        wiki_write: resolve(__dirname, 'html/wiki_write.html'),
+        wiki_edit: resolve(__dirname, 'html/wiki_edit.html'),
       },
     },
   },

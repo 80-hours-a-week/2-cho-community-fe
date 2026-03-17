@@ -1,0 +1,150 @@
+/* css/pages/wiki.css */
+/* 위키 목록/상세/작성 페이지 전용 스타일 */
+
+/* ============================= */
+/* 위키 목록 (Wiki List)          */
+/* ============================= */
+.wiki-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+}
+
+.wiki-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    cursor: pointer;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+    box-shadow: var(--card-shadow);
+}
+
+.wiki-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.wiki-card-tags {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.wiki-tag-badge {
+    display: inline-block;
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--badge-radius);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    background: var(--color-badge-category-bg);
+    color: var(--color-badge-category-text);
+}
+
+.wiki-card-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-sm);
+    line-height: var(--line-height-tight);
+}
+
+.wiki-card-meta {
+    font-size: var(--font-size-sm);
+    color: var(--text-caption);
+}
+
+/* ============================= */
+/* 위키 상세 (Wiki Detail)        */
+/* ============================= */
+.wiki-detail-container {
+    max-width: 800px;
+}
+
+.wiki-detail-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+    margin: 0 0 var(--spacing-md);
+}
+
+.wiki-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+    font-size: var(--font-size-sm);
+    color: var(--text-caption);
+}
+
+.wiki-detail-author {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-heading);
+}
+
+.wiki-detail-editor-info {
+    font-size: var(--font-size-sm);
+    color: var(--text-caption);
+    margin-bottom: var(--spacing-md);
+}
+
+.wiki-detail-tags {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.wiki-detail-content {
+    margin-bottom: var(--spacing-2xl);
+    line-height: var(--line-height-relaxed);
+}
+
+.wiki-detail-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.wiki-delete-btn {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+.wiki-delete-btn:hover {
+    background: var(--color-danger-bg);
+}
+
+/* ============================= */
+/* 위키 폼 (Wiki Form)           */
+/* ============================= */
+.wiki-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.wiki-form .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.slug-helper {
+    font-size: var(--font-size-xs);
+    color: var(--text-caption);
+}
+
+/* ============================= */
+/* 빈 상태 (Empty State)         */
+/* ============================= */
+.wiki-list .empty-state {
+    text-align: center;
+    padding: var(--spacing-4xl) 0;
+    color: var(--text-caption);
+    font-size: var(--font-size-base);
+}
