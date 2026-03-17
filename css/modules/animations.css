@@ -155,17 +155,17 @@ button,
     transition: all var(--transition-fast);
 }
 
-/* Hover 효과 */
-.btn:hover:not(:disabled),
-button:hover:not(:disabled),
+/* Hover 효과 — position: absolute 버튼은 제외 */
+.btn:hover:not(:disabled):not(.back-button):not(.sidebar-toggle):not(.sidebar__close),
+button:hover:not(:disabled):not(.back-button):not(.sidebar-toggle):not(.sidebar__close),
 [type="submit"]:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: var(--shadow-primary);
 }
 
-/* Active 효과 */
-.btn:active:not(:disabled),
-button:active:not(:disabled),
+/* Active 효과 — position: absolute 버튼은 제외 */
+.btn:active:not(:disabled):not(.back-button):not(.sidebar-toggle):not(.sidebar__close),
+button:active:not(:disabled):not(.back-button):not(.sidebar-toggle):not(.sidebar__close),
 [type="submit"]:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: var(--shadow-primary-active);
