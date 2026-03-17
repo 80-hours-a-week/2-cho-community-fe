@@ -1,5 +1,6 @@
 /* css/modules/responsive.css */
-/* 모바일 반응형 스타일 */
+/* 반응형 — Terminal Editorial 디자인 시스템 */
+/* 브레이크포인트: 480(모바일) / 768(태블릿) / 1024(데스크톱) / 1200(와이드) */
 
 /* ============================= */
 /* Safe Area (노치 폰 대응)       */
@@ -64,7 +65,7 @@ html {
 
     /* --- 터치 타겟 최소 44px --- */
     .action-btn {
-        padding: var(--spacing-md) var(--spacing-md);
+        padding: var(--spacing-md);
         font-size: var(--font-size-base);
         min-height: 44px;
     }
@@ -85,16 +86,8 @@ html {
         min-height: 36px;
     }
 
-    .write-btn {
-        padding: var(--spacing-md) var(--spacing-xl);
-        min-height: 44px;
-    }
-
-    .comment-submit-btn {
-        padding: var(--spacing-md) var(--spacing-xl);
-        min-height: 44px;
-    }
-
+    .write-btn,
+    .comment-submit-btn,
     .search-btn {
         padding: var(--spacing-md) var(--spacing-xl);
         min-height: 44px;
@@ -114,13 +107,12 @@ html {
         height: 32px;
     }
 
-    /* --- 대댓글 들여쓰기 축소 --- */
+    /* --- 댓글 --- */
     .comment-reply {
         margin-left: var(--spacing-xl);
         padding-left: var(--spacing-md);
     }
 
-    /* --- 댓글 헤더 줄바꿈 --- */
     .comment-header {
         flex-wrap: wrap;
         gap: var(--spacing-xs);
@@ -241,6 +233,10 @@ html {
 
     .dm-msg {
         max-width: 85%;
+    }
+
+    .dm-input-area {
+        padding: var(--spacing-sm) var(--spacing-md);
     }
 
     /* --- 환영 섹션 --- */
@@ -389,6 +385,32 @@ html {
     .user-profile-posts {
         padding: 0 var(--spacing-lg) var(--spacing-4xl);
     }
+
+    /* --- 위키 --- */
+    .wiki-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .wiki-meta {
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+    }
+
+    /* --- 패키지 --- */
+    .package-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .package-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .review-card {
+        padding: var(--spacing-lg);
+    }
 }
 
 /* ============================= */
@@ -410,6 +432,32 @@ html {
         display: block;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+    }
+
+    /* --- 태블릿 카드 레이아웃 --- */
+    .post-card {
+        padding: var(--spacing-xl);
+    }
+
+    /* --- 태블릿 DM --- */
+    .dm-detail-container {
+        height: calc(100vh - var(--header-height));
+        height: calc(100dvh - var(--header-height));
+    }
+
+    /* --- 태블릿 관리자 --- */
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* --- 태블릿 패키지 2열 --- */
+    .package-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* --- 태블릿 프로필 --- */
+    .profile-action-buttons {
+        flex-wrap: wrap;
     }
 }
 
@@ -437,6 +485,19 @@ html {
         opacity: 1;
     }
 
+    .dm-card:hover {
+        background: transparent;
+    }
+
+    .dm-card.unread:hover {
+        background: var(--color-notification-unread);
+    }
+
+    .sidebar__link:hover {
+        background: transparent;
+        border-left-color: transparent;
+    }
+
     /* active 효과 강화 (터치 피드백) */
     .btn:active:not(:disabled),
     button:active:not(:disabled),
@@ -458,9 +519,17 @@ html {
         opacity: 0.7;
     }
 
+    .dm-card:active {
+        background: var(--surface-hover);
+    }
+
+    .sidebar__link:active {
+        background: var(--color-overlay-light);
+    }
+
     /* 헤더 드롭다운 터치 타겟 확대 */
     .header-dropdown li {
-        padding: var(--spacing-md) var(--spacing-md);
+        padding: var(--spacing-md);
         min-height: 44px;
     }
 }
@@ -472,6 +541,11 @@ html {
     /* 사이드바가 있을 때 콘텐츠 max-width를 약간 넓힘 */
     body.has-sidebar .main-container {
         max-width: 760px;
+    }
+
+    /* 와이드 패키지 3열 */
+    .package-grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -491,6 +565,13 @@ html {
     .dm-detail-container {
         height: calc(100vh - var(--header-height));
         height: calc(100dvh - var(--header-height));
+    }
+
+    /* 사이드바 compact */
+    .sidebar__link {
+        padding-top: var(--spacing-xs);
+        padding-bottom: var(--spacing-xs);
+        font-size: var(--font-size-sm);
     }
 }
 
