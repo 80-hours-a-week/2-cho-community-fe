@@ -114,6 +114,9 @@ export const API_ENDPOINTS = {
     PACKAGES: {
         ROOT: '/v1/packages',
     },
+    WIKI: {
+        ROOT: '/v1/wiki',
+    },
     DMS: {
         ROOT: '/v1/dms',
         UNREAD_COUNT: '/v1/dms/unread-count',
@@ -225,6 +228,12 @@ export const NAV_PATHS = {
     /** @param {string|number} id */
     PACKAGE_DETAIL: (id) => `/packages/detail?id=${id}`,
     PACKAGE_WRITE: '/packages/write',
+    WIKI: '/wiki',
+    /** @param {string} slug */
+    WIKI_DETAIL: (slug) => `/wiki/${slug}`,
+    WIKI_WRITE: '/wiki/write',
+    /** @param {string} slug */
+    WIKI_EDIT: (slug) => `/wiki/edit?slug=${slug}`,
 };
 
 export const SORT_OPTIONS = {
@@ -271,6 +280,9 @@ export const HTML_PATHS = {
     '/packages': '/html/package_list.html',
     '/packages/detail': '/html/package_detail.html',
     '/packages/write': '/html/package_write.html',
+    '/wiki': '/html/wiki_list.html',
+    '/wiki/write': '/html/wiki_write.html',
+    '/wiki/edit': '/html/wiki_edit.html',
 };
 
 /** @type {Record<number, string>} */
