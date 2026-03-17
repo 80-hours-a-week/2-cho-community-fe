@@ -1,5 +1,5 @@
 /* css/modules/comments.css */
-/* 댓글 관련 스타일 */
+/* 댓글 — Terminal Editorial 디자인 시스템 */
 
 /* ============================= */
 /* Comment Section               */
@@ -22,13 +22,24 @@
 #comment-input {
     width: 100%;
     height: 80px;
-    border: 1px solid var(--color-border-dark);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    border-radius: var(--input-radius);
     padding: var(--spacing-md);
     box-sizing: border-box;
     font-family: inherit;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
     resize: none;
     margin-bottom: var(--spacing-md);
+    background: var(--input-bg);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#comment-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
 }
 
 /* comment-submit-btn은 buttons.css 공통 Primary 규칙에서 처리 */
@@ -45,10 +56,10 @@
 /* comment-sort-btn — 필터 공통 스타일 패턴 */
 .comment-sort-btn {
     padding: 6px var(--spacing-md);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--border-default);
     border-radius: var(--btn-radius);
     background: transparent;
-    color: var(--color-text-secondary);
+    color: var(--text-caption);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     cursor: pointer;
@@ -59,7 +70,7 @@
 
 .comment-sort-btn.active {
     background: var(--color-primary);
-    color: var(--color-text-white);
+    color: var(--text-on-primary);
     border-color: var(--color-primary);
 }
 
@@ -78,33 +89,41 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: 0;
 }
 
 /* ============================= */
-/* Comment Item                  */
+/* Comment Item — 카드 시스템 통일  */
 /* ============================= */
 .comment-item {
     display: flex;
     gap: var(--spacing-md);
-    padding-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border-light);
+    padding: var(--spacing-xl) 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.comment-item:first-of-type {
+    padding-top: 0;
 }
 
 .comment-item:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
+/* 프로필 이미지 — 카드 아바타와 동일한 스퀘어 스타일 */
 .comment-author-img {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     background-color: var(--color-border);
     flex-shrink: 0;
+    border: 1px solid var(--border-subtle);
 }
 
 .comment-content-wrapper {
     flex: 1;
+    min-width: 0;
 }
 
 /* ============================= */
@@ -113,33 +132,36 @@
 .comment-header {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    flex-wrap: wrap;
 }
 
 .comment-author-name {
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-base);
+    color: var(--text-heading);
 }
 
 .comment-date {
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
+    color: var(--text-caption);
     letter-spacing: var(--tracking-wide);
 }
 
 .comment-edited-badge {
-    margin-left: var(--spacing-xs);
-    color: var(--color-text-tertiary);
-    font-size: var(--font-size-sm);
+    margin-left: var(--spacing-2xs);
+    color: var(--text-caption);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
     cursor: help;
 }
 
 .comment-actions {
     margin-left: auto;
     display: flex;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
 }
 
 /* ============================= */
@@ -148,13 +170,13 @@
 .comment-text {
     margin: 0;
     font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
-    color: var(--color-text-primary);
+    line-height: var(--line-height-relaxed);
+    color: var(--text-body);
 }
 
 .mention-highlight {
-    color: var(--color-primary);
-    font-weight: 600;
+    color: var(--interactive-primary);
+    font-weight: var(--font-weight-semibold);
     cursor: pointer;
 }
 
@@ -163,7 +185,42 @@
 }
 
 /* ============================= */
-/* Reply (대댓글) Styles         */
+/* Comment Like Button           */
+/* ============================= */
+.comment-like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+    padding: 3px var(--spacing-sm);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--btn-radius);
+    background: transparent;
+    color: var(--text-caption);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    letter-spacing: var(--tracking-wide);
+}
+
+.comment-like-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: var(--color-primary-subtle);
+}
+
+.comment-like-btn.active {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.comment-like-btn.active .like-icon {
+    color: var(--color-primary-accent);
+}
+
+/* ============================= */
+/* Reply (대댓글) — 왼쪽 accent   */
 /* ============================= */
 .comment-reply {
     margin-left: var(--spacing-4xl);
@@ -171,17 +228,23 @@
     padding-left: var(--spacing-lg);
 }
 
+.comment-reply .comment-author-img {
+    width: 28px;
+    height: 28px;
+}
+
 /* ============================= */
 /* Deleted Comment               */
 /* ============================= */
 .comment-deleted {
-    padding: var(--spacing-md) 0;
+    padding: var(--spacing-sm) 0;
 }
 
 .comment-deleted-text {
-    color: var(--color-text-placeholder);
-    font-style: italic;
-    font-size: var(--font-size-base);
+    color: var(--text-placeholder);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
 }
 
 /* ============================= */
@@ -193,10 +256,12 @@
     justify-content: space-between;
     align-self: stretch;
     padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--color-reply-indicator-bg);
-    border-radius: var(--radius-md) var(--radius-md) 0 0;
-    font-size: var(--font-size-caption);
-    color: var(--color-primary-accent);
+    background: var(--color-primary-subtle);
+    border-left: 2px solid var(--color-primary);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    letter-spacing: var(--tracking-wide);
 }
 
 .reply-indicator.hidden {
@@ -206,13 +271,16 @@
 .reply-cancel-btn {
     background: none;
     border: none;
-    color: var(--color-text-placeholder);
+    color: var(--text-placeholder);
     cursor: pointer;
-    font-size: var(--font-size-caption);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wide);
+    transition: color var(--transition-fast);
 }
 
 .reply-cancel-btn:hover {
-    color: var(--color-text-secondary);
+    color: var(--text-body);
 }
 
 /* ============================= */

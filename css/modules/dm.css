@@ -1,5 +1,5 @@
 /* css/modules/dm.css */
-/* DM(쪽지) 페이지 스타일 */
+/* DM(쪽지) — Terminal Editorial 디자인 시스템 */
 
 /* ============================= */
 /* DM 목록 페이지               */
@@ -11,10 +11,11 @@
 }
 
 .dm-container .page-title {
+    font-family: var(--font-family-display);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--spacing-xl);
-    color: var(--color-text-primary);
+    color: var(--text-heading);
 }
 
 .dm-list {
@@ -22,13 +23,13 @@
     flex-direction: column;
 }
 
-/* 대화 카드 */
+/* 대화 카드 — 카드 시스템 통일 */
 .dm-card {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--dm-divider-color);
+    border-bottom: 1px solid var(--border-subtle);
     cursor: pointer;
     transition: background-color var(--transition-fast);
     text-decoration: none;
@@ -36,7 +37,7 @@
 }
 
 .dm-card:hover {
-    background: var(--color-bg-input);
+    background: var(--surface-hover);
 }
 
 .dm-card.unread {
@@ -57,13 +58,15 @@
     background: var(--dm-sidebar-active);
 }
 
+/* 아바타 — 스퀘어 스타일 (카드 시스템 통일) */
 .dm-card__avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
     object-fit: cover;
     flex-shrink: 0;
     background: var(--color-bg-tertiary);
+    border: 1px solid var(--border-subtle);
 }
 
 .dm-card__content {
@@ -74,13 +77,13 @@
 .dm-card__name {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: var(--text-heading);
     margin-bottom: var(--spacing-2xs);
 }
 
 .dm-card__preview {
     font-size: var(--font-size-sm);
-    color: var(--color-text-tertiary);
+    color: var(--text-caption);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -88,7 +91,9 @@
 }
 
 .dm-card__preview--deleted {
-    font-style: italic;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wide);
 }
 
 .dm-card__meta {
@@ -102,7 +107,7 @@
 .dm-card__time {
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
+    color: var(--text-caption);
     white-space: nowrap;
     letter-spacing: var(--tracking-wide);
 }
@@ -110,7 +115,8 @@
 /* 읽지 않은 메시지 뱃지 */
 .dm-unread-badge {
     background: var(--color-notification-badge);
-    color: var(--color-text-white);
+    color: var(--text-on-primary);
+    font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-bold);
     min-width: 18px;
@@ -120,14 +126,17 @@
     align-items: center;
     justify-content: center;
     padding: 0 var(--spacing-xs);
+    letter-spacing: var(--tracking-wide);
 }
 
 /* 빈 상태 */
 .dm-empty {
     text-align: center;
     padding: var(--spacing-6xl) var(--spacing-xl);
-    color: var(--color-text-placeholder);
-    font-size: var(--font-size-md);
+    color: var(--text-placeholder);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
 }
 
 /* 더보기 버튼 */
@@ -139,10 +148,10 @@
 
 .btn-load-more {
     padding: var(--spacing-sm) var(--spacing-xl);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--border-default);
     border-radius: var(--btn-radius);
     background: transparent;
-    color: var(--color-text-secondary);
+    color: var(--text-caption);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-sm);
     letter-spacing: var(--tracking-wide);
@@ -162,13 +171,13 @@
 
 .dm-desktop-layout {
     display: flex;
-    height: calc(100vh - 60px);
+    height: calc(100vh - var(--header-height));
     background: var(--dm-panel-bg);
 }
 
 .dm-sidebar {
     width: 340px;
-    border-right: 1px solid var(--dm-divider-color);
+    border-right: 1px solid var(--border-subtle);
     background: var(--dm-sidebar-bg);
     display: flex;
     flex-direction: column;
@@ -177,13 +186,14 @@
 
 .dm-sidebar-header {
     padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--dm-divider-color);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .dm-sidebar-header .page-title {
-    font-size: var(--font-size-xl);
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
-    color: var(--color-text-primary);
+    color: var(--text-heading);
     margin: 0;
 }
 
@@ -204,8 +214,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-text-placeholder);
-    font-size: var(--font-size-lg);
+    color: var(--text-placeholder);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
 }
 
 .dm-chat-area {
@@ -220,28 +232,29 @@
 
 .dm-search-bar {
     padding: var(--spacing-sm) var(--spacing-lg);
-    border-bottom: 1px solid var(--dm-divider-color);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .dm-search-input {
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--input-radius);
+    background: var(--input-bg);
     color: var(--color-text-primary);
     /* iOS Safari 자동 확대 방지: 모바일에서 16px 미만이면 포커스 시 확대됨 */
     font-size: 16px;
     outline: none;
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .dm-search-input:focus {
-    border-color: var(--color-primary);
+    border-color: var(--input-focus-border);
+    box-shadow: var(--input-focus-ring);
 }
 
 .dm-search-input::placeholder {
-    color: var(--color-text-placeholder);
+    color: var(--text-placeholder);
 }
 
 /* ============================= */
@@ -253,16 +266,16 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 60px);
+    height: calc(100vh - var(--header-height));
 }
 
-/* 대화 헤더 */
+/* 대화 헤더 — 상단 accent 보더 */
 .dm-detail-header {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 1px solid var(--dm-divider-color);
+    border-bottom: 2px solid var(--color-primary);
     background: var(--dm-panel-bg);
     position: sticky;
     top: 0;
@@ -278,14 +291,14 @@
 }
 
 .dm-other-user-info .dm-card__avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
 }
 
 .dm-other-user-info .dm-card__name {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: var(--text-heading);
     margin-bottom: 0;
 }
 
@@ -305,13 +318,13 @@
     word-break: break-word;
 }
 
-/* 내 메시지 (오른쪽) */
+/* 내 메시지 (오른쪽) — primary teal */
 .dm-msg--mine {
     align-self: flex-end;
     background: var(--dm-bubble-mine);
     color: var(--dm-bubble-mine-text);
     padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     border-bottom-right-radius: var(--radius-sm);
     position: relative;
     margin-bottom: var(--spacing-xs);
@@ -324,18 +337,29 @@
     gap: var(--spacing-xs);
 }
 
+/* 상대방 아바타 — 스퀘어 */
+.dm-msg .dm-card__avatar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    align-self: flex-end;
+    border-radius: var(--radius-sm);
+}
+
 /* 상대방 메시지 버블 (아바타 제외) */
 .dm-msg--other .dm-msg__body {
     background: var(--dm-bubble-other);
     color: var(--dm-bubble-other-text);
     padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     border-bottom-left-radius: var(--radius-sm);
 }
 
 /* 삭제된 메시지 */
 .dm-msg--deleted .dm-msg__content {
-    font-style: italic;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wide);
     color: var(--dm-bubble-deleted-text);
 }
 
@@ -351,15 +375,10 @@
 .dm-messages-empty {
     text-align: center;
     padding: var(--spacing-6xl) var(--spacing-xl);
-    color: var(--color-text-placeholder);
-    font-size: var(--font-size-md);
-}
-
-.dm-msg .dm-card__avatar {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    align-self: flex-end;
+    color: var(--text-placeholder);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
 }
 
 .dm-msg__body {
@@ -382,8 +401,10 @@
 }
 
 .dm-msg__time {
+    font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     margin-top: var(--spacing-2xs);
+    letter-spacing: var(--tracking-wide);
     opacity: 0.7;
 }
 
@@ -394,7 +415,7 @@
 
 .dm-msg--other .dm-msg__time {
     text-align: left;
-    color: var(--color-text-placeholder);
+    color: var(--text-placeholder);
 }
 
 /* 읽음 체크마크 (버블 오른쪽 대각선 아래) */
@@ -402,8 +423,9 @@
     position: absolute;
     bottom: -14px;
     right: -2px;
+    font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    color: var(--color-text-placeholder);
+    color: var(--text-placeholder);
     opacity: 0.7;
 }
 
@@ -412,11 +434,13 @@
     opacity: 1;
 }
 
-/* 날짜 구분선 */
+/* 날짜 구분선 — 모노 타이포 */
 .dm-date-divider {
     text-align: center;
+    font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    color: var(--color-text-placeholder);
+    color: var(--text-placeholder);
+    letter-spacing: var(--tracking-wide);
     padding: var(--spacing-md) 0;
     position: relative;
 }
@@ -428,7 +452,7 @@
     top: 50%;
     width: 30%;
     height: 1px;
-    background: var(--dm-divider-color);
+    background: var(--border-subtle);
 }
 
 .dm-date-divider::before {
@@ -448,8 +472,10 @@
     align-items: center;
     gap: var(--spacing-xs);
     padding: var(--spacing-xs) var(--spacing-lg);
-    color: var(--color-text-placeholder);
-    font-size: var(--font-size-sm);
+    color: var(--text-placeholder);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wide);
     min-height: 24px;
 }
 
@@ -463,9 +489,9 @@
 }
 
 .dm-typing-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-sm);
     background: var(--dm-typing-dot);
     animation: dm-typing-bounce 1.4s infinite ease-in-out;
 }
@@ -476,7 +502,7 @@
 
 @keyframes dm-typing-bounce {
     0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-4px); }
+    30% { transform: translateY(-3px); }
 }
 
 /* ============================= */
@@ -488,7 +514,7 @@
     align-items: flex-end;
     gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid var(--dm-divider-color);
+    border-top: 1px solid var(--border-subtle);
     background: var(--dm-panel-bg);
     position: sticky;
     bottom: 0;
@@ -515,8 +541,8 @@
 
 .dm-context-menu {
     position: fixed;
-    background: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     z-index: var(--z-modal);
@@ -531,13 +557,16 @@
     border: none;
     background: none;
     color: var(--color-danger);
+    font-family: var(--font-family-mono);
     font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
     cursor: pointer;
     text-align: left;
+    transition: background-color var(--transition-fast);
 }
 
 .dm-context-menu__item:hover {
-    background: var(--color-bg-input);
+    background: var(--color-danger-bg);
 }
 
 /* ============================= */
@@ -551,7 +580,7 @@
     padding: var(--spacing-xs);
     border: none;
     background: transparent;
-    color: var(--color-text-tertiary);
+    color: var(--text-caption);
     cursor: pointer;
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
