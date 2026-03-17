@@ -26,7 +26,7 @@ class WikiDetailView {
         const content = page.content || '';
         const tags = page.tags || [];
         const lastEditedBy = page.last_edited_by || null;
-        const editorNickname = page.editor?.nickname || '';
+        const editorNickname = page.editor_nickname || '';
         const updatedAt = page.updated_at ? formatDate(new Date(page.updated_at)) : '';
 
         // 제목
@@ -57,7 +57,7 @@ class WikiDetailView {
         // 태그
         if (tags.length > 0) {
             container.appendChild(createElement('div', { className: 'wiki-detail-tags' },
-                tags.map(tag => createElement('span', { className: 'wiki-tag-badge' }, [tag]))
+                tags.map(tag => createElement('span', { className: 'wiki-tag-badge' }, [tag.name]))
             ));
         }
 

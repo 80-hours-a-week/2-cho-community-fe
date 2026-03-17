@@ -7,7 +7,6 @@ import WikiDetailView from '../views/WikiDetailView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
-import { getAccessToken } from '../services/ApiService.js';
 import { showToast } from '../views/helpers.js';
 
 const logger = Logger.createLogger('WikiDetailController');
