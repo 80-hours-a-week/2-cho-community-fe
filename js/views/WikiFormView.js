@@ -67,7 +67,7 @@ class WikiFormView {
             placeholder: '태그1, 태그2, 태그3',
         });
         if (existingPage?.tags && Array.isArray(existingPage.tags)) {
-            /** @type {HTMLInputElement} */ (tagsInput).value = existingPage.tags.join(', ');
+            /** @type {HTMLInputElement} */ (tagsInput).value = existingPage.tags.map(t => t.name).join(', ');
         }
 
         formChildren.push(

@@ -79,7 +79,7 @@ class WikiEditController {
                 return;
             }
 
-            const existingPage = result.data?.data;
+            const existingPage = result.data?.data?.wiki_page;
 
             WikiFormView.renderForm(container, {
                 existingPage,

@@ -4,9 +4,9 @@
 import HeaderController from '../controllers/HeaderController.js';
 import WikiDetailController from '../controllers/WikiDetailController.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const headerController = new HeaderController();
-    headerController.init();
+    await headerController.init();
 
     const controller = new WikiDetailController();
     controller.init(headerController.getCurrentUser());

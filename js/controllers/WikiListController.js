@@ -203,12 +203,15 @@ class WikiListController {
 
             const wikiPages = result.data?.data?.wiki_pages || [];
             const pagination = result.data?.data?.pagination;
-            const tags = result.data?.data?.tags;
 
-            // 태그 필터 렌더링 (첫 로드 시)
-            if (tags && tags.length > 0 && this.currentOffset === 0) {
-                this._availableTags = tags;
-                this._renderTagFilters(tags);
+            // 페이지들의 태그를 수집하여 태그 필터 렌더링 (첫 로드 시)
+            if (this.currentOffset === 0 && wikiPages.length > 0) {
+                const tagSet = new Set();
+                wikiPages.forEach(p => (p.tags || []).forEach(t => tagSet.add(t.name)));
+                const tagNames = [...tagSet].sort();
+                if (tagNames.length > 0) {
+                    this._renderTagFilters(tagNames);
+                }
             }
 
             if (wikiPages.length < this.LIMIT ||

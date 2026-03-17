@@ -22,7 +22,7 @@ class WikiListView {
         const card = createElement('li', { className: 'wiki-card', onClick: () => onClick(page.slug) }, [
             // 태그 뱃지
             createElement('div', { className: 'wiki-card-tags' },
-                tags.map(tag => createElement('span', { className: 'wiki-tag-badge' }, [tag]))
+                tags.map(tag => createElement('span', { className: 'wiki-tag-badge' }, [tag.name]))
             ),
             // 제목
             createElement('h3', { className: 'wiki-card-title' }, [title]),
