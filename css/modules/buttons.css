@@ -214,3 +214,23 @@
 .withdraw-btn:hover {
     color: var(--color-text-primary);
 }
+
+/* ============================= */
+/* 네비게이션 링크 버튼            */
+/* ============================= */
+.nav-link-btn {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--btn-radius);
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-body);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.nav-link-btn:hover {
+    background: var(--surface-hover);
+}
