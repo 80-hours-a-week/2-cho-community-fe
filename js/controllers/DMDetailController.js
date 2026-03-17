@@ -54,7 +54,7 @@ export class DMDetailController {
             location.href = resolveNavPath(NAV_PATHS.LOGIN);
             return;
         }
-        _currentUserId = authResult.user.id;
+        _currentUserId = authResult.user.user_id;
 
         // 에디터 설정
         DMDetailController._setupEditor();
