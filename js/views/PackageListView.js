@@ -4,18 +4,7 @@
 
 import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
-
-/** @type {Record<string, string>} */
-const PACKAGE_CATEGORY_LABELS = {
-    editor: '에디터',
-    terminal: '터미널',
-    devtool: '개발도구',
-    system: '시스템',
-    desktop: '데스크톱',
-    utility: '유틸리티',
-    multimedia: '멀티미디어',
-    security: '보안',
-};
+import { PACKAGE_CATEGORY_LABELS } from '../constants.js';
 
 /**
  * 별점 텍스트 생성
@@ -134,5 +123,5 @@ class PackageListView {
     }
 }
 
-export { PACKAGE_CATEGORY_LABELS, renderStars };
+export { renderStars };
 export default PackageListView;

@@ -5,7 +5,8 @@
 import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
 import { createDistroBadge } from '../utils/distro.js';
-import { renderStars, PACKAGE_CATEGORY_LABELS } from './PackageListView.js';
+import { PACKAGE_CATEGORY_LABELS } from '../constants.js';
+import { renderStars } from './PackageListView.js';
 
 class PackageDetailView {
     /**

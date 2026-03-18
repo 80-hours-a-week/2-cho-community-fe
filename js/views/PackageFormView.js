@@ -3,29 +3,7 @@
 // 패키지 등록 폼 렌더링
 
 import { createElement } from '../utils/dom.js';
-
-/** @type {Record<string, string>} */
-const PACKAGE_CATEGORY_LABELS = {
-    editor: '에디터',
-    terminal: '터미널',
-    devtool: '개발도구',
-    system: '시스템',
-    desktop: '데스크톱',
-    utility: '유틸리티',
-    multimedia: '멀티미디어',
-    security: '보안',
-};
-
-/** @type {Record<string, string>} */
-const PACKAGE_MANAGER_LABELS = {
-    apt: 'apt',
-    dnf: 'dnf',
-    pacman: 'pacman',
-    snap: 'snap',
-    flatpak: 'flatpak',
-    brew: 'brew',
-    other: '기타',
-};
+import { PACKAGE_CATEGORY_LABELS, PACKAGE_MANAGER_LABELS } from '../constants.js';
 
 class PackageFormView {
     /**
