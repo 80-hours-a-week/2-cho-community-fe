@@ -5,17 +5,27 @@
 import { HTML_PATHS } from './constants.js';
 
 // Environment detection
+// - Vite dev server: hostname이 127.0.0.1, port가 8080이 아닌 경우 (Vite 기본 포트)
+// - Docker Compose: nginx가 :8080에서 API를 /v1/로 프록시 → 같은 origin 사용
+// - K8s/프로덕션: 전용 API 도메인 사용
+// Vite dev server: 8080도 3000도 아닌 포트 (Vite 기본 5173 등)
+const IS_VITE_DEV = window.location.hostname === '127.0.0.1'
+    && window.location.port !== '8080' && window.location.port !== '3000';
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 // API Base URL
-export const API_BASE_URL = IS_LOCAL
-    ? "http://127.0.0.1:8000"              // 로컬 개발: 백엔드 직접 연결
-    : "https://api.my-community.shop";      // 프로덕션 (K8s)
+export const API_BASE_URL = IS_VITE_DEV
+    ? "http://127.0.0.1:8000"              // Vite dev server: BE 직접 연결
+    : IS_LOCAL
+        ? ""                                // Docker Compose: nginx 프록시 (같은 origin)
+        : "https://api.my-community.shop";  // K8s 프로덕션
 
-// WebSocket URL — K8s ws_app.py는 /ws 경로에서 WebSocket 핸들러 제공
-export const WS_BASE_URL = IS_LOCAL
-    ? "ws://127.0.0.1:8000/ws"             // 로컬 개발: uvicorn WebSocket
-    : "wss://ws.my-community.shop/ws";
+// WebSocket URL
+export const WS_BASE_URL = IS_VITE_DEV
+    ? "ws://127.0.0.1:8000/ws"             // Vite dev server: uvicorn 직접
+    : IS_LOCAL
+        ? `ws://${window.location.host}/ws` // Docker Compose: nginx 프록시
+        : "wss://ws.my-community.shop/ws";  // K8s 프로덕션
 
 /**
  * 네비게이션 경로를 실제 HTML 파일 경로로 변환합니다.
