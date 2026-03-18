@@ -61,7 +61,15 @@ jobs:
       - name: Install & Build
         run: npm ci && npm run build
 
-      # dist/는 빌드 출력만 포함하므로 allowlist 필터 불필요
+      - name: Validate build output
+        run: |
+          HTML_COUNT=$(find dist/ -name "*.html" | wc -l)
+          if [ "$HTML_COUNT" -lt 10 ]; then
+            echo "::error::빌드 출력 검증 실패: HTML 파일 ${HTML_COUNT}개 (최소 10개 필요)"
+            exit 1
+          fi
+          echo "빌드 검증 통과: HTML ${HTML_COUNT}개"
+
       - name: Sync to S3
         run: |
           aws s3 sync dist/ "s3://$S3_BUCKET" \
