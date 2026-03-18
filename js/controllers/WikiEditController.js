@@ -4,17 +4,14 @@
 
 import WikiModel from '../models/WikiModel.js';
 import WikiFormView from '../views/WikiFormView.js';
-import Logger from '../utils/Logger.js';
+import BaseWikiController from './BaseWikiController.js';
 import { NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { showToast } from '../views/helpers.js';
 
-const logger = Logger.createLogger('WikiEditController');
-
-class WikiEditController {
+class WikiEditController extends BaseWikiController {
     constructor() {
-        /** @type {object|null} */
-        this.currentUser = null;
+        super('WikiEditController');
         /** @type {string|null} */
         this.slug = null;
     }
@@ -24,16 +21,8 @@ class WikiEditController {
      * @param {object|null} currentUser
      */
     async init(currentUser) {
-        this.currentUser = currentUser;
+        if (!this._requireAuth(currentUser)) return;
 
-        // 인증 체크
-        if (!currentUser) {
-            showToast('로그인이 필요합니다.');
-            location.href = resolveNavPath(NAV_PATHS.LOGIN);
-            return;
-        }
-
-        // URL에서 slug 추출
         const urlParams = new URLSearchParams(window.location.search);
         this.slug = urlParams.get('slug');
 
@@ -43,25 +32,8 @@ class WikiEditController {
             return;
         }
 
-        this._setupBackButton();
+        this._setupBackButton(NAV_PATHS.WIKI_DETAIL(this.slug));
         await this._loadAndSetupForm();
-    }
-
-    /**
-     * 뒤로가기 버튼 설정
-     * @private
-     */
-    _setupBackButton() {
-        const backBtn = document.getElementById('back-btn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                if (window.history.length > 1) {
-                    window.history.back();
-                } else {
-                    location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(this.slug));
-                }
-            });
-        }
     }
 
     /**
@@ -89,7 +61,7 @@ class WikiEditController {
                 },
             });
         } catch (error) {
-            logger.error('위키 페이지 로드 실패', error);
+            this._logger.error('위키 페이지 로드 실패', error);
             showToast('위키 페이지를 불러오지 못했습니다.');
         }
     }
@@ -100,15 +72,7 @@ class WikiEditController {
      * @private
      */
     async _handleSubmit(data) {
-        // 유효성 검사
-        if (!data.title || data.title.length < 2) {
-            showToast('제목을 2자 이상 입력해주세요.');
-            return;
-        }
-        if (!data.content || data.content.length < 10) {
-            showToast('내용을 10자 이상 입력해주세요.');
-            return;
-        }
+        if (!this._validateWikiData(data)) return;
 
         try {
             const result = await WikiModel.updateWikiPage(this.slug, {
@@ -123,16 +87,10 @@ class WikiEditController {
                     location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(this.slug));
                 }, 500);
             } else {
-                const detail = result.data?.detail;
-                if (Array.isArray(detail)) {
-                    const msg = detail.map(e => e.msg).join(', ');
-                    showToast(msg || '입력값을 확인해주세요.');
-                } else {
-                    showToast(detail || '위키 페이지 수정에 실패했습니다.');
-                }
+                this._handleApiError(result, '위키 페이지 수정에 실패했습니다.');
             }
         } catch (error) {
-            logger.error('위키 페이지 수정 실패', error);
+            this._logger.error('위키 페이지 수정 실패', error);
             showToast('위키 페이지 수정에 실패했습니다.');
         }
     }
