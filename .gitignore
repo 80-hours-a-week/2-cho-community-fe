@@ -66,6 +66,7 @@ temp/
 .claude/
 .gemini/
 .serena/
+.worktrees/
 CLAUDE.md
 GEMINI.md
 docs/*
