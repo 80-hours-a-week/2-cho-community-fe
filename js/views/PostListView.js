@@ -7,11 +7,12 @@ import { createElement } from '../utils/dom.js';
 import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { createDistroBadge } from '../utils/distro.js';
+import BaseListView from './BaseListView.js';
 
 /**
  * 게시글 목록 View 클래스
  */
-class PostListView {
+class PostListView extends BaseListView {
     /**
      * 게시글 카드 요소 생성
      * 구조: 작성자 메타 → 제목(+배지) → 통계+태그
@@ -160,20 +161,6 @@ class PostListView {
     }
 
     /**
-     * 빈 목록 메시지 표시
-     * @param {HTMLElement} container - 목록 컨테이너
-     * @param {string} message - 표시할 메시지
-     */
-    static showEmptyState(container, message) {
-        container.textContent = '';
-        container.appendChild(
-            createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, [message]),
-            ])
-        );
-    }
-
-    /**
      * 카테고리 탭 렌더링
      * @param {HTMLElement} container - 탭 컨테이너
      * @param {Array} categories - 카테고리 목록
@@ -181,20 +168,11 @@ class PostListView {
      * @param {Function} onSelect - 카테고리 선택 핸들러
      */
     static renderCategoryTabs(container, categories, activeCategoryId, onSelect) {
-        container.textContent = '';
-
-        const allTab = createElement('button', {
-            className: `category-tab${activeCategoryId === null ? ' active' : ''}`,
-            onClick: () => onSelect(null),
-        }, ['전체']);
-        container.appendChild(allTab);
-
-        categories.forEach(cat => {
-            const tab = createElement('button', {
-                className: `category-tab${activeCategoryId === cat.category_id ? ' active' : ''}`,
-                onClick: () => onSelect(cat.category_id),
-            }, [cat.name]);
-            container.appendChild(tab);
+        BaseListView.renderFilterButtons(container, categories, activeCategoryId, onSelect, {
+            className: 'category-tab',
+            allLabel: '전체',
+            getKey: (cat) => cat.category_id,
+            getLabel: (cat) => cat.name,
         });
     }
 }

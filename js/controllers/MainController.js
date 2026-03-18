@@ -345,13 +345,13 @@ class MainController {
 
             if (this.currentOffset === 0 && newPosts.length === 0) {
                 if (this.filters.forYou) {
-                    PostListView.showEmptyState(listElement, '추천 게시글을 준비 중입니다. 게시글을 읽고, 좋아요와 북마크를 남겨보세요!');
+                    PostListView.renderEmptyState(listElement, '추천 게시글을 준비 중입니다. 게시글을 읽고, 좋아요와 북마크를 남겨보세요!');
                 } else if (this.filters.following) {
-                    PostListView.showEmptyState(listElement, '팔로우한 사용자의 게시글이 여기에 표시됩니다.');
+                    PostListView.renderEmptyState(listElement, '팔로우한 사용자의 게시글이 여기에 표시됩니다.');
                 } else if (this.filters.search) {
-                    PostListView.showEmptyState(listElement, `'${this.filters.search}' — ${UI_MESSAGES.SEARCH_NO_RESULTS}`);
+                    PostListView.renderEmptyState(listElement, `'${this.filters.search}' — ${UI_MESSAGES.SEARCH_NO_RESULTS}`);
                 } else {
-                    PostListView.showEmptyState(listElement, '등록된 게시글이 없습니다.');
+                    PostListView.renderEmptyState(listElement, '등록된 게시글이 없습니다.');
                 }
                 this.hasMore = false;
                 PostListView.toggleLoadingSentinel(sentinel, false);
