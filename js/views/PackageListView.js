@@ -5,6 +5,7 @@
 import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
 import { PACKAGE_CATEGORY_LABELS } from '../constants.js';
+import BaseListView from './BaseListView.js';
 
 /**
  * 별점 텍스트 생성
@@ -16,7 +17,7 @@ function renderStars(rating) {
     return '\u2605'.repeat(rounded) + '\u2606'.repeat(5 - rounded);
 }
 
-class PackageListView {
+class PackageListView extends BaseListView {
     /**
      * 패키지 카드 요소 생성
      * @param {object} pkg - 패키지 데이터
@@ -72,55 +73,20 @@ class PackageListView {
     }
 
     /**
-     * 빈 상태 렌더링
-     * @param {HTMLElement} container
-     * @param {string} [message]
-     */
-    static renderEmptyState(container, message = '등록된 패키지가 없습니다.') {
-        if (!container) return;
-        const empty = createElement('li', { className: 'empty-state' }, [message]);
-        container.appendChild(empty);
-    }
-
-    /**
      * 카테고리 필터 버튼 렌더링
      * @param {HTMLElement} container
      * @param {string|null} activeCategory
      * @param {Function} onCategoryClick
      */
     static renderCategoryFilters(container, activeCategory, onCategoryClick) {
-        if (!container) return;
-        container.textContent = '';
-
-        // 전체 버튼
-        const allBtn = createElement('button', {
-            className: `category-filter-btn${!activeCategory ? ' active' : ''}`,
-            textContent: '전체',
-            onClick: () => onCategoryClick(null),
-        });
-        container.appendChild(allBtn);
-
-        // 각 카테고리 버튼
-        Object.entries(PACKAGE_CATEGORY_LABELS).forEach(([key, label]) => {
-            const btn = createElement('button', {
-                className: `category-filter-btn${activeCategory === key ? ' active' : ''}`,
-                textContent: label,
-                dataset: { category: key },
-                onClick: () => onCategoryClick(key),
-            });
-            container.appendChild(btn);
+        const items = Object.entries(PACKAGE_CATEGORY_LABELS);
+        BaseListView.renderFilterButtons(container, items, activeCategory, onCategoryClick, {
+            className: 'category-filter-btn',
+            getKey: ([key]) => key,
+            getLabel: ([, label]) => label,
         });
     }
 
-    /**
-     * 로딩 센티넬 토글
-     * @param {HTMLElement|null} sentinel
-     * @param {boolean} show
-     */
-    static toggleLoadingSentinel(sentinel, show) {
-        if (!sentinel) return;
-        sentinel.style.display = show ? '' : 'none';
-    }
 }
 
 export { renderStars };
