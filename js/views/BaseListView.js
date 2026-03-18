@@ -14,7 +14,7 @@ class BaseListView {
      * @param {HTMLElement} container
      * @param {string} message
      */
-    static renderEmptyState(container, message) {
+    static renderEmptyState(container, message = '결과가 없습니다.') {
         if (!container) return;
         container.textContent = '';
         container.appendChild(

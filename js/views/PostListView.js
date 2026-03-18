@@ -1,3 +1,4 @@
+// @ts-check
 // js/views/PostListView.js
 // 게시글 목록 렌더링 — Terminal Editorial 카드 구조
 
