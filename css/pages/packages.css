@@ -49,6 +49,14 @@
     background: var(--color-badge-category-bg);
     color: var(--color-badge-category-text);
     line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.package-category-badge:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
 }
 
 .package-manager-badge {

@@ -6,6 +6,8 @@ import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
 import { createDistroBadge } from '../utils/distro.js';
 import { renderMarkdownTo } from '../utils/markdown.js';
+import { resolveNavPath } from '../config.js';
+import { NAV_PATHS } from '../constants.js';
 
 class WikiDetailView {
     /**
@@ -57,7 +59,10 @@ class WikiDetailView {
         // 태그
         if (tags.length > 0) {
             container.appendChild(createElement('div', { className: 'wiki-detail-tags' },
-                tags.map(tag => createElement('span', { className: 'wiki-tag-badge' }, [tag.name]))
+                tags.map(tag => createElement('a', {
+                    className: 'wiki-tag-badge',
+                    href: resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag.name)}`),
+                }, [tag.name]))
             ));
         }
 

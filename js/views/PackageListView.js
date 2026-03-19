@@ -4,7 +4,8 @@
 
 import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
-import { PACKAGE_CATEGORY_LABELS } from '../constants.js';
+import { PACKAGE_CATEGORY_LABELS, NAV_PATHS } from '../constants.js';
+import { resolveNavPath } from '../config.js';
 import BaseListView from './BaseListView.js';
 
 /**
@@ -37,7 +38,11 @@ class PackageListView extends BaseListView {
             // 카테고리 뱃지 + 패키지 매니저
             createElement('div', { className: 'package-card-badges' }, [
                 ...(category && PACKAGE_CATEGORY_LABELS[category]
-                    ? [createElement('span', { className: 'package-category-badge' }, [PACKAGE_CATEGORY_LABELS[category]])]
+                    ? [createElement('a', {
+                        className: 'package-category-badge',
+                        href: resolveNavPath(`${NAV_PATHS.PACKAGES}?category=${category}`),
+                        onClick: (e) => e.stopPropagation(),
+                    }, [PACKAGE_CATEGORY_LABELS[category]])]
                     : []),
                 ...(packageManager
                     ? [createElement('span', { className: 'package-manager-badge' }, [packageManager])]

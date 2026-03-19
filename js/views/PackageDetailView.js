@@ -5,7 +5,8 @@
 import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
 import { createDistroBadge } from '../utils/distro.js';
-import { PACKAGE_CATEGORY_LABELS } from '../constants.js';
+import { PACKAGE_CATEGORY_LABELS, NAV_PATHS } from '../constants.js';
+import { resolveNavPath } from '../config.js';
 import { renderStars } from './PackageListView.js';
 
 class PackageDetailView {
@@ -39,7 +40,10 @@ class PackageDetailView {
         const metaRow = createElement('div', { className: 'package-meta' });
 
         if (category && PACKAGE_CATEGORY_LABELS[category]) {
-            metaRow.appendChild(createElement('span', { className: 'package-category-badge' }, [PACKAGE_CATEGORY_LABELS[category]]));
+            metaRow.appendChild(createElement('a', {
+                className: 'package-category-badge',
+                href: resolveNavPath(`${NAV_PATHS.PACKAGES}?category=${category}`),
+            }, [PACKAGE_CATEGORY_LABELS[category]]));
         }
         if (packageManager) {
             metaRow.appendChild(createElement('span', { className: 'package-manager-badge' }, [packageManager]));
