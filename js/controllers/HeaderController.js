@@ -5,6 +5,7 @@ import AuthModel from '../models/AuthModel.js';
 import HeaderView from '../views/HeaderView.js';
 import SidebarView from '../views/SidebarView.js';
 import BottomTabComponent from '../components/BottomTabComponent.js';
+import WikiModel from '../models/WikiModel.js';
 import { ThemeService } from '../services/ThemeService.js';
 import NotificationService from '../services/NotificationService.js';
 import { showToast } from '../views/helpers.js';
@@ -174,8 +175,29 @@ class HeaderController {
             });
             SidebarView.inject(sidebar);
 
+            // 위키 페이지: 인기 태그를 사이드바에 로드
+            if (location.pathname.startsWith('/wiki')) {
+                this._loadWikiSidebarTags();
+            }
+
             // 하단 탭 바 (CSS가 데스크톱에서 숨김)
             BottomTabComponent.init();
+        }
+    }
+
+    /**
+     * 위키 사이드바 인기 태그 로드
+     * @private
+     */
+    async _loadWikiSidebarTags() {
+        try {
+            const result = await WikiModel.getPopularTags(10);
+            if (result.ok) {
+                const tags = (result.data?.data?.tags || []).map(t => t.name);
+                if (tags.length > 0) SidebarView.updateWikiTags(tags);
+            }
+        } catch {
+            // 태그 로드 실패 시 무시
         }
     }
 

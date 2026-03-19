@@ -118,6 +118,10 @@ class PackageListController {
         const container = document.getElementById('category-filters');
         if (!container) return;
 
+        // URL에서 ?category= 파라미터 읽기 (MPA 네비게이션)
+        const urlCategory = new URLSearchParams(location.search).get('category');
+        if (urlCategory) this.filters.category = urlCategory;
+
         PackageListView.renderCategoryFilters(container, this.filters.category, (category) => {
             if (category === this.filters.category) return;
             this.filters.category = category;

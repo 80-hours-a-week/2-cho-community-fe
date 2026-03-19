@@ -2,7 +2,7 @@
 // 사이드바 내비게이션 — Terminal Editorial 레이아웃
 
 import { createElement } from '../utils/dom.js';
-import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
+import { NAV_PATHS, CATEGORY_LABELS, PACKAGE_CATEGORY_LABELS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { Icons } from '../utils/icons.js';
 
@@ -48,6 +48,17 @@ class SidebarView {
             // ── wiki (위키 페이지만 — 태그 필터는 WikiListController가 동적 주입) ──
             ...(currentPath.startsWith('/wiki') ? [
                 SidebarView._createSection('wiki', [], 'sidebar-wiki-tags', resolveNavPath(NAV_PATHS.WIKI)),
+            ] : []),
+
+            // ── packages (패키지 페이지만 — 고정 카테고리) ──
+            ...(currentPath.startsWith('/packages') ? [
+                SidebarView._createSection('packages',
+                    Object.entries(PACKAGE_CATEGORY_LABELS).map(([key, label]) =>
+                        SidebarView._createPackageCategoryItem(label, key)
+                    ),
+                    null,
+                    resolveNavPath(NAV_PATHS.PACKAGES)
+                ),
             ] : []),
 
             // ── social ──
@@ -131,6 +142,23 @@ class SidebarView {
             createElement('a', {
                 className: `sidebar__link sidebar__link--category${isActive ? ' active' : ''}`,
                 href: resolveNavPath(`${NAV_PATHS.MAIN}?category=${categoryId}`),
+            }, [label]),
+        ]);
+    }
+
+    /**
+     * 패키지 카테고리 아이템 생성 — URL 네비게이션 (MPA 구조)
+     * @private
+     */
+    static _createPackageCategoryItem(label, categoryKey) {
+        const params = new URLSearchParams(location.search);
+        const currentCat = params.get('category');
+        const isActive = currentCat === categoryKey;
+
+        return createElement('li', { className: 'sidebar__item' }, [
+            createElement('a', {
+                className: `sidebar__link sidebar__link--category${isActive ? ' active' : ''}`,
+                href: resolveNavPath(`${NAV_PATHS.PACKAGES}?category=${categoryKey}`),
             }, [label]),
         ]);
     }
