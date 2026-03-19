@@ -113,8 +113,20 @@ class AdminReportView {
     static showEmptyState(container) {
         container.textContent = '';
         container.appendChild(
-            createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, ['신고 내역이 없습니다.'])
+            createElement('div', { className: 'terminal-state' }, [
+                createElement('div', { className: 'terminal-state__bar' }, [
+                    createElement('span', { className: 'terminal-state__dot terminal-state__dot--red' }),
+                    createElement('span', { className: 'terminal-state__dot terminal-state__dot--yellow' }),
+                    createElement('span', { className: 'terminal-state__dot terminal-state__dot--green' }),
+                ]),
+                createElement('div', { className: 'terminal-state__body' }, [
+                    createElement('p', {}, [
+                        createElement('span', { className: 'terminal-state__prompt' }, ['$']),
+                        'ls reports/',
+                    ]),
+                    createElement('span', { className: 'terminal-state__output' }, ['처리할 신고가 없습니다.']),
+                    createElement('span', { className: 'terminal-state__cursor' }, ['_']),
+                ]),
             ])
         );
     }

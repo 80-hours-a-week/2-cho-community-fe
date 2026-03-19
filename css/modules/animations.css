@@ -39,8 +39,97 @@ body {
 }
 
 /* ============================= */
-/* 에러 바운더리 (Error Boundary) */
+/* 터미널 상태 (빈 목록 / 에러)   */
 /* ============================= */
+.terminal-state {
+    max-width: 420px;
+    margin: var(--spacing-4xl) auto;
+    background: var(--color-code-bg);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.terminal-state__bar {
+    display: flex;
+    gap: 6px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.terminal-state__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+}
+
+.terminal-state__dot--red { background: #FF5F56; }
+.terminal-state__dot--yellow { background: #FFBD2E; }
+.terminal-state__dot--green { background: #27C93F; }
+
+.terminal-state__body {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-caption);
+    line-height: 1.8;
+    color: var(--color-code-text);
+}
+
+.terminal-state__prompt {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    margin-right: var(--spacing-sm);
+}
+
+.terminal-state__output {
+    color: var(--color-text-tertiary);
+    display: block;
+    padding-left: var(--spacing-xl);
+}
+
+.terminal-state__error {
+    color: var(--color-error);
+    display: block;
+    padding-left: var(--spacing-xl);
+}
+
+.terminal-state__cursor {
+    color: var(--color-primary);
+    animation: blink 1s step-end infinite;
+    display: block;
+    margin-top: var(--spacing-xs);
+}
+
+.terminal-state__retry {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.terminal-state__retry-btn {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-primary);
+    color: var(--color-code-bg);
+    border: none;
+    border-radius: var(--btn-radius);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.terminal-state__retry-btn:hover {
+    background: var(--color-primary-hover);
+}
+
+/* 하위 호환: 기존 클래스 유지 */
 .error-boundary {
     display: flex;
     flex-direction: column;
@@ -64,6 +153,23 @@ body {
 
 .error-retry-btn {
     padding: var(--btn-padding-md);
+}
+
+/* 로딩 센티널 — 터미널 프롬프트 스타일 */
+#loading-sentinel {
+    font-family: var(--font-family-mono);
+    color: var(--color-text-tertiary);
+    letter-spacing: var(--tracking-wide);
+}
+
+#loading-sentinel .terminal-state__prompt {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+#loading-sentinel .terminal-state__cursor {
+    display: inline;
+    margin-top: 0;
 }
 
 /* ============================= */

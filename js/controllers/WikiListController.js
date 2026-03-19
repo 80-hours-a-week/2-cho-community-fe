@@ -226,9 +226,9 @@ class WikiListController {
 
             if (this.currentOffset === 0 && wikiPages.length === 0) {
                 if (this.filters.search) {
-                    WikiListView.renderEmptyState(listElement, `'${this.filters.search}' 검색 결과가 없습니다.`);
+                    WikiListView.renderEmptyState(listElement, `'${this.filters.search}' 검색 결과가 없습니다.`, `grep "${this.filters.search}" wiki/`);
                 } else {
-                    WikiListView.renderEmptyState(listElement);
+                    WikiListView.renderEmptyState(listElement, '등록된 위키 페이지가 없습니다.', 'ls wiki/');
                 }
                 this.hasMore = false;
                 WikiListView.toggleLoadingSentinel(sentinel, false);

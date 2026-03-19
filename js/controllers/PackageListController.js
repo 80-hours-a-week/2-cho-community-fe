@@ -220,9 +220,9 @@ class PackageListController {
 
             if (this.currentOffset === 0 && packages.length === 0) {
                 if (this.filters.search) {
-                    PackageListView.renderEmptyState(listElement, `'${this.filters.search}' 검색 결과가 없습니다.`);
+                    PackageListView.renderEmptyState(listElement, `'${this.filters.search}' 검색 결과가 없습니다.`, `apt search "${this.filters.search}"`);
                 } else {
-                    PackageListView.renderEmptyState(listElement);
+                    PackageListView.renderEmptyState(listElement, '등록된 패키지가 없습니다.', 'apt list --installed');
                 }
                 this.hasMore = false;
                 PackageListView.toggleLoadingSentinel(sentinel, false);

@@ -71,18 +71,64 @@ class ErrorBoundary {
      */
     static showError(container, message, retryFn = null) {
         container.textContent = '';
-        const msgEl = document.createElement('div');
-        msgEl.className = 'error-message';
-        msgEl.textContent = message;
-        container.appendChild(msgEl);
+
+        const bodyChildren = [
+            (() => {
+                const p = document.createElement('p');
+                const prompt = document.createElement('span');
+                prompt.className = 'terminal-state__prompt';
+                prompt.textContent = '$';
+                p.appendChild(prompt);
+                p.appendChild(document.createTextNode(' cat resource'));
+                return p;
+            })(),
+            (() => {
+                const span = document.createElement('span');
+                span.className = 'terminal-state__error';
+                span.textContent = `Error: ${message}`;
+                return span;
+            })(),
+        ];
 
         if (retryFn) {
+            const retryRow = document.createElement('div');
+            retryRow.className = 'terminal-state__retry';
+            const retryPrompt = document.createElement('span');
+            retryPrompt.className = 'terminal-state__prompt';
+            retryPrompt.textContent = '$';
+            retryRow.appendChild(retryPrompt);
+            retryRow.appendChild(document.createTextNode(' retry --verbose '));
             const btn = document.createElement('button');
-            btn.className = 'error-retry-btn';
-            btn.textContent = '다시 시도';
+            btn.className = 'terminal-state__retry-btn';
+            btn.textContent = '실행';
             btn.addEventListener('click', retryFn);
-            container.appendChild(btn);
+            retryRow.appendChild(btn);
+            bodyChildren.push(retryRow);
+        } else {
+            const cursor = document.createElement('span');
+            cursor.className = 'terminal-state__cursor';
+            cursor.textContent = '_';
+            bodyChildren.push(cursor);
         }
+
+        const terminal = document.createElement('div');
+        terminal.className = 'terminal-state';
+
+        const bar = document.createElement('div');
+        bar.className = 'terminal-state__bar';
+        ['red', 'yellow', 'green'].forEach(color => {
+            const dot = document.createElement('span');
+            dot.className = `terminal-state__dot terminal-state__dot--${color}`;
+            bar.appendChild(dot);
+        });
+        terminal.appendChild(bar);
+
+        const body = document.createElement('div');
+        body.className = 'terminal-state__body';
+        bodyChildren.forEach(child => body.appendChild(child));
+        terminal.appendChild(body);
+
+        container.appendChild(terminal);
     }
 
     /**

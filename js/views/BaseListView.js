@@ -10,16 +10,29 @@ import { createElement } from '../utils/dom.js';
  */
 class BaseListView {
     /**
-     * 빈 목록 메시지 표시
+     * 빈 목록 메시지 표시 — 터미널 윈도우 스타일
      * @param {HTMLElement} container
      * @param {string} message
+     * @param {string} command - 터미널 명령어 (예: 'ls posts/')
      */
-    static renderEmptyState(container, message = '결과가 없습니다.') {
+    static renderEmptyState(container, message = '결과가 없습니다.', command = 'ls') {
         if (!container) return;
         container.textContent = '';
         container.appendChild(
-            createElement('div', { className: 'empty-state' }, [
-                createElement('p', {}, [message]),
+            createElement('div', { className: 'terminal-state' }, [
+                createElement('div', { className: 'terminal-state__bar' }, [
+                    createElement('span', { className: 'terminal-state__dot terminal-state__dot--red' }),
+                    createElement('span', { className: 'terminal-state__dot terminal-state__dot--yellow' }),
+                    createElement('span', { className: 'terminal-state__dot terminal-state__dot--green' }),
+                ]),
+                createElement('div', { className: 'terminal-state__body' }, [
+                    createElement('p', {}, [
+                        createElement('span', { className: 'terminal-state__prompt' }, ['$']),
+                        command,
+                    ]),
+                    createElement('span', { className: 'terminal-state__output' }, [message]),
+                    createElement('span', { className: 'terminal-state__cursor' }, ['_']),
+                ]),
             ])
         );
     }
