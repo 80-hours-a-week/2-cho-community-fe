@@ -4,7 +4,6 @@
 
 import WikiModel from '../models/WikiModel.js';
 import WikiListView from '../views/WikiListView.js';
-import SidebarView from '../views/SidebarView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
@@ -143,21 +142,13 @@ class WikiListController {
         if (!tags || tags.length === 0) return;
 
         // 인라인 태그 필터 (모바일에서 표시 — URL 링크)
+        // 사이드바 태그는 HeaderController._loadWikiSidebarTags()에서 처리
         if (this._tagContainer) {
             WikiListView.renderTagFilters(this._tagContainer, tags, this.filters.tag, (tag) => {
                 location.href = tag
                     ? resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag)}`)
                     : resolveNavPath(NAV_PATHS.WIKI);
             });
-        }
-
-        // 사이드바 위키 태그 (데스크톱에서 표시)
-        // HeaderController.init()가 비동기라 사이드바가 아직 없을 수 있음 → 감시
-        if (!SidebarView.updateWikiTags(tags)) {
-            const observer = new MutationObserver(() => {
-                if (SidebarView.updateWikiTags(tags)) observer.disconnect();
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
         }
     }
 

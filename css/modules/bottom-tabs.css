@@ -16,6 +16,7 @@
         left: 0;
         right: 0;
         height: 52px;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
         background-color: var(--header-bg);
         border-top: 1px solid var(--color-border);
         display: flex;
