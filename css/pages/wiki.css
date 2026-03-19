@@ -49,6 +49,14 @@
     background: var(--color-badge-category-bg);
     color: var(--color-badge-category-text);
     line-height: 1.4;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.wiki-tag-badge:hover {
+    background: var(--color-primary);
+    color: var(--color-text-white);
 }
 
 /* 제목 — 세리프 디스플레이 */

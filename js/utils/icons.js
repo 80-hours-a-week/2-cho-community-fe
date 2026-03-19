@@ -128,6 +128,34 @@ export const Icons = {
         ]);
     },
 
+    /** 피드 (2×2 그리드) — Lucide layout-grid */
+    layoutGrid(size = 20) {
+        return svg(size, [
+            rect(3, 3, 7, 7, 1),
+            rect(14, 3, 7, 7, 1),
+            rect(3, 14, 7, 7, 1),
+            rect(14, 14, 7, 7, 1),
+        ]);
+    },
+
+    /** 위키 (펼친 책) — Lucide book-open */
+    bookOpen(size = 20) {
+        return svg(size, [
+            path('M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'),
+            path('M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 0 3-3h7z'),
+        ]);
+    },
+
+    /** 패키지 (상자) — Lucide package */
+    package(size = 20) {
+        return svg(size, [
+            path('M16.5 9.4 7.55 4.24'),
+            path('M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z'),
+            polyline('3.27 6.96 12 12.01 20.73 6.96'),
+            line(12, 22.08, 12, 12),
+        ]);
+    },
+
     /** 뒤로가기 (chevron left) */
     chevronLeft(size = 24) {
         return svg(size, [

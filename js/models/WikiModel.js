@@ -22,6 +22,14 @@ class WikiModel {
     }
 
     /**
+     * 위키 인기 태그 조회 (상위 N개)
+     * @param {number} limit
+     */
+    static async getPopularTags(limit = 10) {
+        return ApiService.get(`${API_ENDPOINTS.WIKI.ROOT}/tags/popular?limit=${limit}`);
+    }
+
+    /**
      * 위키 페이지 상세 조회
      * @param {string} slug
      */

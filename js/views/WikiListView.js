@@ -4,6 +4,8 @@
 
 import { createElement } from '../utils/dom.js';
 import { formatDate } from '../utils/formatters.js';
+import { resolveNavPath } from '../config.js';
+import { NAV_PATHS } from '../constants.js';
 import BaseListView from './BaseListView.js';
 
 class WikiListView extends BaseListView {
@@ -23,7 +25,11 @@ class WikiListView extends BaseListView {
         const card = createElement('li', { className: 'wiki-card', onClick: () => onClick(page.slug) }, [
             // 태그 뱃지
             createElement('div', { className: 'wiki-card-tags' },
-                tags.map(tag => createElement('span', { className: 'wiki-tag-badge' }, [tag.name]))
+                tags.map(tag => createElement('a', {
+                    className: 'wiki-tag-badge',
+                    href: resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag.name)}`),
+                    onClick: (e) => e.stopPropagation(),
+                }, [tag.name]))
             ),
             // 제목
             createElement('h3', { className: 'wiki-card-title' }, [title]),

@@ -1,0 +1,96 @@
+/* css/modules/bottom-tabs.css */
+/* 모바일 하단 탭 바 — Terminal Editorial */
+
+/* 데스크톱: 숨김 */
+.bottom-tab-bar {
+    display: none;
+}
+
+/* ============================= */
+/* 모바일 (768px 이하)            */
+/* ============================= */
+@media (max-width: 768px) {
+    .bottom-tab-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 52px;
+        background-color: var(--header-bg);
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: var(--z-header);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+    }
+
+    /* 탭 바 높이만큼 body 하단 패딩 (safe-area는 html에서 처리) */
+    body.has-bottom-tabs {
+        padding-bottom: 52px;
+    }
+
+    /* ============================= */
+    /* 탭 아이템                      */
+    /* ============================= */
+    .bottom-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: var(--spacing-xs) 0;
+        min-width: 48px;
+        min-height: 44px;
+        justify-content: center;
+        text-decoration: none;
+        color: var(--color-text-tertiary);
+        border-top: 2px solid transparent;
+        transition: color var(--transition-fast), border-color var(--transition-fast);
+        position: relative;
+    }
+
+    .bottom-tab.active {
+        color: var(--color-primary);
+        border-top-color: var(--color-primary);
+    }
+
+    .bottom-tab__label {
+        font-family: var(--font-family-mono);
+        font-size: 9px;
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: var(--tracking-wide);
+        text-transform: uppercase;
+    }
+
+    .bottom-tab__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+    }
+
+    /* ============================= */
+    /* 뱃지                          */
+    /* ============================= */
+    .bottom-tab__badge {
+        position: absolute;
+        top: 2px;
+        right: -4px;
+        background-color: var(--color-notification-badge);
+        color: var(--color-text-white);
+        font-family: var(--font-family-mono);
+        font-size: 9px;
+        font-weight: var(--font-weight-bold);
+        padding: 0 4px;
+        border-radius: var(--radius-pill);
+        min-width: 14px;
+        text-align: center;
+        line-height: 14px;
+    }
+
+    .bottom-tab__badge.hidden {
+        display: none;
+    }
+}

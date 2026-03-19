@@ -4,6 +4,7 @@
 
 import WikiModel from '../models/WikiModel.js';
 import WikiListView from '../views/WikiListView.js';
+import SidebarView from '../views/SidebarView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
@@ -111,32 +112,53 @@ class WikiListController {
     }
 
     /**
-     * 태그 필터 설정
+     * 태그 필터 설정 — URL 파라미터에서 초기 태그 읽기 + 인기 태그 API 로드
      * @private
      */
-    _setupTagFilter() {
-        const container = document.getElementById('tag-filters');
-        if (!container) return;
-        this._tagContainer = container;
+    async _setupTagFilter() {
+        this._tagContainer = document.getElementById('tag-filters');
 
-        // 태그 목록은 첫 로드 후 API 응답에서 추출하거나, 별도 엔드포인트에서 로드
-        // 현재는 API 응답에 tags 목록이 포함될 때 렌더링
+        // URL에서 ?tag= 파라미터 읽기 (MPA 네비게이션)
+        const urlTag = new URLSearchParams(location.search).get('tag');
+        if (urlTag) this.filters.tag = urlTag;
+
+        // 인기 태그 API에서 상위 10개 로드
+        try {
+            const result = await WikiModel.getPopularTags(10);
+            if (result.ok) {
+                const tags = (result.data?.data?.tags || []).map(t => t.name);
+                if (tags.length > 0) this._renderTagFilters(tags);
+            }
+        } catch {
+            // 태그 로드 실패 시 무시
+        }
     }
 
     /**
-     * 태그 필터 렌더링
+     * 태그 필터 렌더링 — URL 네비게이션 (MPA 구조, 피드 카테고리와 동일)
      * @param {Array<string>} tags
      * @private
      */
     _renderTagFilters(tags) {
-        if (!this._tagContainer || !tags || tags.length === 0) return;
+        if (!tags || tags.length === 0) return;
 
-        WikiListView.renderTagFilters(this._tagContainer, tags, this.filters.tag, (tag) => {
-            if (tag === this.filters.tag) return;
-            this.filters.tag = tag;
-            this._renderTagFilters(this._availableTags || []);
-            this._resetAndReload();
-        });
+        // 인라인 태그 필터 (모바일에서 표시 — URL 링크)
+        if (this._tagContainer) {
+            WikiListView.renderTagFilters(this._tagContainer, tags, this.filters.tag, (tag) => {
+                location.href = tag
+                    ? resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag)}`)
+                    : resolveNavPath(NAV_PATHS.WIKI);
+            });
+        }
+
+        // 사이드바 위키 태그 (데스크톱에서 표시)
+        // HeaderController.init()가 비동기라 사이드바가 아직 없을 수 있음 → 감시
+        if (!SidebarView.updateWikiTags(tags)) {
+            const observer = new MutationObserver(() => {
+                if (SidebarView.updateWikiTags(tags)) observer.disconnect();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
     }
 
     /**
@@ -203,16 +225,6 @@ class WikiListController {
 
             const wikiPages = result.data?.data?.wiki_pages || [];
             const pagination = result.data?.data?.pagination;
-
-            // 페이지들의 태그를 수집하여 태그 필터 렌더링 (첫 로드 시)
-            if (this.currentOffset === 0 && wikiPages.length > 0) {
-                const tagSet = new Set();
-                wikiPages.forEach(p => (p.tags || []).forEach(t => tagSet.add(t.name)));
-                const tagNames = [...tagSet].sort();
-                if (tagNames.length > 0) {
-                    this._renderTagFilters(tagNames);
-                }
-            }
 
             if (wikiPages.length < this.LIMIT ||
                 (pagination && !pagination.has_more) ||

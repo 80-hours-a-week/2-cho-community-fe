@@ -29,22 +29,29 @@ class SidebarView {
                 onClick: () => SidebarView.close(),
             }, ['✕']),
 
-            // ── content — 피드 + 위키 + 패키지를 통합 콘텐츠로 ──
-            SidebarView._createSection('content', [
+            // ── navigate — 피드 + 위키 + 패키지 ──
+            SidebarView._createSection('navigate', [
                 SidebarView._createNavItem('피드', resolveNavPath(NAV_PATHS.MAIN), currentPath === '/main'),
                 SidebarView._createNavItem('위키', resolveNavPath(NAV_PATHS.WIKI), currentPath.startsWith('/wiki')),
                 SidebarView._createNavItem('패키지', resolveNavPath(NAV_PATHS.PACKAGES), currentPath.startsWith('/packages')),
             ]),
 
-            // ── categories ──
-            SidebarView._createSection('categories',
-                Object.entries(CATEGORY_LABELS).map(([id, label]) =>
-                    SidebarView._createCategoryItem(label, Number(id))
-                )
-            ),
+            // ── categories (피드 페이지만) ──
+            ...(currentPath === '/main' ? [
+                SidebarView._createSection('categories',
+                    Object.entries(CATEGORY_LABELS).map(([id, label]) =>
+                        SidebarView._createCategoryItem(label, Number(id))
+                    )
+                ),
+            ] : []),
 
-            // ── account ──
-            SidebarView._createSection('account', [
+            // ── wiki (위키 페이지만 — 태그 필터는 WikiListController가 동적 주입) ──
+            ...(currentPath.startsWith('/wiki') ? [
+                SidebarView._createSection('wiki', [], 'sidebar-wiki-tags', resolveNavPath(NAV_PATHS.WIKI)),
+            ] : []),
+
+            // ── social ──
+            SidebarView._createSection('social', [
                 SidebarView._createNavItem('알림', resolveNavPath(NAV_PATHS.NOTIFICATIONS), currentPath === '/notifications', 'sidebar-notif-badge'),
                 SidebarView._createNavItem('메시지', resolveNavPath(NAV_PATHS.DM_LIST), currentPath.startsWith('/messages'), 'sidebar-dm-badge'),
                 SidebarView._createNavItem('내 활동', resolveNavPath(NAV_PATHS.MY_ACTIVITY), currentPath === '/my-activity'),
@@ -66,13 +73,20 @@ class SidebarView {
      * 섹션 생성 (터미널 프롬프트 스타일 헤더)
      * @private
      */
-    static _createSection(title, children) {
+    static _createSection(title, children, listId, href) {
+        const listAttrs = { className: 'sidebar__list' };
+        if (listId) listAttrs.id = listId;
+
+        const titleEl = href
+            ? createElement('a', { href, className: 'sidebar__section-link' }, [title])
+            : createElement('span', {}, [title]);
+
         return createElement('div', { className: 'sidebar__section' }, [
             createElement('div', { className: 'sidebar__section-header' }, [
                 createElement('span', { className: 'sidebar__prompt' }, ['$']),
-                createElement('span', {}, [title]),
+                titleEl,
             ]),
-            createElement('ul', { className: 'sidebar__list' }, children),
+            createElement('ul', listAttrs, children),
         ]);
     }
 
@@ -128,17 +142,6 @@ class SidebarView {
     static inject(sidebarEl) {
         document.body.insertBefore(sidebarEl, document.body.firstChild);
         document.body.classList.add('has-sidebar');
-
-        // 모바일 햄버거 버튼 추가
-        SidebarView._injectToggleButton();
-
-        // 모바일 오버레이
-        const overlay = createElement('div', {
-            className: 'sidebar-overlay',
-            id: 'sidebar-overlay',
-            onClick: () => SidebarView.close(),
-        });
-        document.body.appendChild(overlay);
     }
 
     /**
@@ -183,6 +186,29 @@ class SidebarView {
         const overlay = document.getElementById('sidebar-overlay');
         sidebar?.classList.remove('open');
         overlay?.classList.remove('open');
+    }
+
+    /**
+     * 위키 태그 필터를 사이드바에 주입 — URL 네비게이션 (MPA 구조, 피드 카테고리와 동일)
+     * @param {Array<string>} tags - 태그 이름 목록
+     * @returns {boolean} 사이드바에 주입 성공 여부
+     */
+    static updateWikiTags(tags) {
+        const list = document.getElementById('sidebar-wiki-tags');
+        if (!list) return false;
+
+        const activeTag = new URLSearchParams(location.search).get('tag');
+        list.textContent = '';
+
+        tags.forEach(tag => {
+            list.appendChild(createElement('li', { className: 'sidebar__item' }, [
+                createElement('a', {
+                    className: `sidebar__link sidebar__link--category${activeTag === tag ? ' active' : ''}`,
+                    href: resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag)}`),
+                }, [tag]),
+            ]));
+        });
+        return true;
     }
 
     /**
