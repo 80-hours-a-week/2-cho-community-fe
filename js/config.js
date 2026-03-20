@@ -13,19 +13,42 @@ const IS_VITE_DEV = window.location.hostname === '127.0.0.1'
     && window.location.port !== '8080' && window.location.port !== '3000';
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
+// K8s 환경: hostname에서 API/WS 도메인 도출
+// - staging.my-community.shop → api-staging.my-community.shop
+// - my-community.shop → api.my-community.shop
+// - k8s.my-community.shop → api.k8s.my-community.shop
+function deriveApiDomain() {
+    const host = window.location.hostname;
+    if (host === 'my-community.shop') return 'api.my-community.shop';
+    // staging.xxx, k8s.xxx 등 서브도메인 → api-{subdomain}.xxx
+    const parts = host.split('.');
+    const subdomain = parts[0];
+    const baseDomain = parts.slice(1).join('.');
+    return `api-${subdomain}.${baseDomain}`;
+}
+
+function deriveWsDomain() {
+    const host = window.location.hostname;
+    if (host === 'my-community.shop') return 'ws.my-community.shop';
+    const parts = host.split('.');
+    const subdomain = parts[0];
+    const baseDomain = parts.slice(1).join('.');
+    return `ws-${subdomain}.${baseDomain}`;
+}
+
 // API Base URL
 export const API_BASE_URL = IS_VITE_DEV
     ? "http://127.0.0.1:8000"              // Vite dev server: BE 직접 연결
     : IS_LOCAL
         ? ""                                // Docker Compose: nginx 프록시 (같은 origin)
-        : "https://api.my-community.shop";  // K8s 프로덕션
+        : `https://${deriveApiDomain()}`;   // K8s: hostname에서 자동 도출
 
 // WebSocket URL
 export const WS_BASE_URL = IS_VITE_DEV
     ? "ws://127.0.0.1:8000/ws"             // Vite dev server: uvicorn 직접
     : IS_LOCAL
         ? `ws://${window.location.host}/ws` // Docker Compose: nginx 프록시
-        : "wss://ws.my-community.shop/ws";  // K8s 프로덕션
+        : `wss://${deriveWsDomain()}/ws`;   // K8s: hostname에서 자동 도출
 
 /**
  * 네비게이션 경로를 실제 HTML 파일 경로로 변환합니다.
