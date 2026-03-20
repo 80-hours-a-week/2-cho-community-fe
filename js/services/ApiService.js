@@ -8,6 +8,14 @@ import ErrorBoundary from '../utils/ErrorBoundary.js';
 
 const logger = Logger.createLogger('ApiService');
 
+// FastAPI는 trailing slash 없는 요청을 307 리다이렉트하므로
+// POST/PUT/PATCH/DELETE 시 body가 유실됨. 모든 엔드포인트에 trailing slash 보장.
+function ensureTrailingSlash(endpoint) {
+    const [path, query] = endpoint.split('?');
+    const normalized = path.endsWith('/') ? path : path + '/';
+    return query ? `${normalized}?${query}` : normalized;
+}
+
 // ─── In-memory Access Token Store ───────────────────────────────────────────
 // 모듈 스코프 변수 — window/localStorage 사용하지 않아 XSS 노출 방지
 /** @type {string|null} */
@@ -123,7 +131,7 @@ class ApiService {
                 };
                 if (signal) fetchOptions.signal = signal;
 
-                const response = await fetch(`${API_BASE_URL}${endpoint}`, fetchOptions);
+                const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, fetchOptions);
 
                 // 5xx 서버 에러나 429 Too Many Requests는 재시도 대상
                 if (response.status >= 500 || response.status === 429) {
@@ -162,7 +170,7 @@ class ApiService {
     static async post(endpoint, data, _isRetry = false) {
         logger.debug(`POST 요청: ${endpoint}`);
         try {
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, {
                 method: 'POST',
                 headers: ApiService._buildHeaders(),
                 body: JSON.stringify(data),
@@ -194,7 +202,7 @@ class ApiService {
                 headers['Authorization'] = `Bearer ${_accessToken}`;
             }
 
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, {
                 method: 'POST',
                 headers: headers,
                 body: formData,
@@ -219,7 +227,7 @@ class ApiService {
     static async patch(endpoint, data = {}, _isRetry = false) {
         logger.debug(`PATCH 요청: ${endpoint}`);
         try {
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, {
                 method: 'PATCH',
                 headers: ApiService._buildHeaders(),
                 body: JSON.stringify(data),
@@ -244,7 +252,7 @@ class ApiService {
     static async put(endpoint, data, _isRetry = false) {
         logger.debug(`PUT 요청: ${endpoint}`);
         try {
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, {
                 method: 'PUT',
                 headers: ApiService._buildHeaders(),
                 body: JSON.stringify(data),
@@ -278,7 +286,7 @@ class ApiService {
             if (data) {
                 options.body = JSON.stringify(data);
             }
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+            const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, options);
             return ApiService._handleResponse(response, 'DELETE', endpoint, {
                 retryFn: () => ApiService.delete(endpoint, data, true),
                 _isRetry
