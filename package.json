@@ -7,10 +7,14 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint js/ && tsc --noEmit"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.41.1",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   },
