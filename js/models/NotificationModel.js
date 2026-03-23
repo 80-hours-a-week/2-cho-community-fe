@@ -6,6 +6,10 @@ import ApiService from '../services/ApiService.js';
 import { API_ENDPOINTS } from '../constants.js';
 
 /**
+ * @typedef {{ likes: boolean, comments: boolean, mentions: boolean, follows: boolean, bookmarks: boolean }} NotificationSettings
+ */
+
+/**
  * 알림 관련 Model
  */
 class NotificationModel {
@@ -43,7 +47,6 @@ class NotificationModel {
     static async markAsRead(id) {
         return ApiService.patch(API_ENDPOINTS.NOTIFICATIONS.READ(id), {});
     }
-
     /**
      * 모든 알림 읽음 처리
      * @returns {Promise<ApiResponse<void>>}
@@ -60,7 +63,6 @@ class NotificationModel {
     static async deleteNotification(id) {
         return ApiService.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id));
     }
-
     /**
      * 알림 설정 조회
      * @returns {Promise<ApiResponse<{settings: NotificationSettings}>>}

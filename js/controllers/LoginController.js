@@ -35,7 +35,7 @@ class LoginController {
                 window.location.href = resolveNavPath('/main');
                 return;
             }
-        } catch (error) {
+        } catch (_error) {
             // 인증 확인 실패 시 로그인 페이지 유지
             logger.debug('인증 확인 실패, 로그인 페이지 유지');
         }

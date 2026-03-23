@@ -13,7 +13,7 @@ class PackageDetailView {
     /**
      * 패키지 정보 렌더링
      * @param {HTMLElement} container
-     * @param {object} pkg
+     * @param {Record<string, any>} pkg
      */
     static renderPackageInfo(container, pkg) {
         if (!container) return;
@@ -88,7 +88,7 @@ class PackageDetailView {
 
     /**
      * 리뷰 카드 생성
-     * @param {object} review
+     * @param {Record<string, any>} review
      * @param {number|null} currentUserId
      * @param {Function} onEdit
      * @param {Function} onDelete
@@ -146,7 +146,7 @@ class PackageDetailView {
     /**
      * 리뷰 목록 렌더링
      * @param {HTMLElement} container
-     * @param {Array} reviews
+     * @param {Array<any>} reviews
      * @param {number|null} currentUserId
      * @param {Function} onEdit
      * @param {Function} onDelete
@@ -172,7 +172,7 @@ class PackageDetailView {
     /**
      * 리뷰 작성/수정 폼 렌더링
      * @param {HTMLElement} container
-     * @param {object|null} existingReview - 수정 시 기존 리뷰 데이터
+     * @param {Record<string, any>|null} existingReview - 수정 시 기존 리뷰 데이터
      * @param {Function} onSubmit - (data) => void
      */
     static renderReviewForm(container, existingReview, onSubmit) {

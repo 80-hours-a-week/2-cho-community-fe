@@ -35,7 +35,6 @@ class WikiEditController extends BaseWikiController {
         this._setupBackButton(NAV_PATHS.WIKI_DETAIL(this.slug));
         await this._loadAndSetupForm();
     }
-
     /**
      * 기존 페이지 로드 후 폼 렌더링
      * @private
@@ -45,7 +44,7 @@ class WikiEditController extends BaseWikiController {
         if (!container) return;
 
         try {
-            const result = await WikiModel.getWikiPage(this.slug);
+            const result = await WikiModel.getWikiPage(/** @type {string} */ (this.slug));
             if (!result.ok) {
                 showToast('위키 페이지를 불러오지 못했습니다.');
                 return;
@@ -55,9 +54,9 @@ class WikiEditController extends BaseWikiController {
 
             WikiFormView.renderForm(container, {
                 existingPage,
-                onSubmit: (data) => this._handleSubmit(data),
+                onSubmit: /** @param {any} data */ (data) => this._handleSubmit(data),
                 onCancel: () => {
-                    location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(this.slug));
+                    location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(/** @type {string} */ (this.slug)));
                 },
             });
         } catch (error) {
@@ -65,17 +64,16 @@ class WikiEditController extends BaseWikiController {
             showToast('위키 페이지를 불러오지 못했습니다.');
         }
     }
-
     /**
      * 위키 페이지 수정 처리
-     * @param {object} data
+     * @param {Record<string, any>} data
      * @private
      */
     async _handleSubmit(data) {
         if (!this._validateWikiData(data)) return;
 
         try {
-            const result = await WikiModel.updateWikiPage(this.slug, {
+            const result = await WikiModel.updateWikiPage(/** @type {string} */ (this.slug), {
                 title: data.title,
                 content: data.content,
                 tags: data.tags,
@@ -84,7 +82,7 @@ class WikiEditController extends BaseWikiController {
             if (result.ok) {
                 showToast('위키 페이지가 수정되었습니다.');
                 setTimeout(() => {
-                    location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(this.slug));
+                    location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(/** @type {string} */ (this.slug)));
                 }, 500);
             } else {
                 this._handleApiError(result, '위키 페이지 수정에 실패했습니다.');

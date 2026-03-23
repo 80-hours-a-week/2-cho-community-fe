@@ -50,7 +50,7 @@ class BaseListView {
     /**
      * 필터 버튼 그룹 렌더링 (카테고리 탭, 태그 필터 등 공통)
      * @param {HTMLElement} container
-     * @param {Array} items - 필터 아이템 배열
+     * @param {Array<any>} items - 필터 아이템 배열
      * @param {*} activeKey - 현재 활성 키 (null이면 '전체')
      * @param {Function} onSelect - 선택 핸들러 (key) => void
      * @param {object} [options]
@@ -62,8 +62,8 @@ class BaseListView {
     static renderFilterButtons(container, items, activeKey, onSelect, {
         className = 'category-filter-btn',
         allLabel = '전체',
-        getKey = (item) => item,
-        getLabel = (item) => String(item),
+        getKey = (/** @type {any} */ item) => item,
+        getLabel = (/** @type {any} */ item) => String(item),
     } = {}) {
         if (!container) return;
         container.textContent = '';

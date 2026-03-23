@@ -54,26 +54,26 @@ class HeaderView {
             dropdown.className = 'header-dropdown hidden';
 
             const menuItems = [
-                createElement('li', { id: 'menu-edit-info' }, ['회원정보수정']),
-                createElement('li', { id: 'menu-change-pw' }, ['비밀번호수정']),
-                createElement('li', { id: 'menu-my-activity' }, ['내 활동']),
+                createElement('li', { id: 'menu-edit-info', role: 'menuitem', tabindex: '-1' }, ['회원정보수정']),
+                createElement('li', { id: 'menu-change-pw', role: 'menuitem', tabindex: '-1' }, ['비밀번호수정']),
+                createElement('li', { id: 'menu-my-activity', role: 'menuitem', tabindex: '-1' }, ['내 활동']),
             ];
 
             // 관리자 메뉴
             if (handlers.onAdminDashboard) {
                 menuItems.push(
-                    createElement('li', { id: 'menu-admin-dashboard', className: 'menu-admin' }, ['관리자 대시보드'])
+                    createElement('li', { id: 'menu-admin-dashboard', className: 'menu-admin', role: 'menuitem', tabindex: '-1' }, ['관리자 대시보드'])
                 );
             }
             if (handlers.onAdminReports) {
                 menuItems.push(
-                    createElement('li', { id: 'menu-admin-reports', className: 'menu-admin' }, ['신고 관리'])
+                    createElement('li', { id: 'menu-admin-reports', className: 'menu-admin', role: 'menuitem', tabindex: '-1' }, ['신고 관리'])
                 );
             }
 
-            menuItems.push(createElement('li', { id: 'menu-logout' }, ['로그아웃']));
+            menuItems.push(createElement('li', { id: 'menu-logout', role: 'menuitem', tabindex: '-1' }, ['로그아웃']));
 
-            dropdown.appendChild(createElement('ul', {}, menuItems));
+            dropdown.appendChild(createElement('ul', { role: 'menu' }, menuItems));
 
             const headerAuth = document.querySelector('.header-auth');
             if (headerAuth) {
@@ -106,6 +106,10 @@ class HeaderView {
         HeaderView._profileClickListener = (e) => {
             e.stopPropagation();
             dropdown.classList.toggle('hidden');
+            if (!dropdown.classList.contains('hidden')) {
+                const firstItem = dropdown.querySelector('[role="menuitem"]');
+                if (firstItem) firstItem.focus();
+            }
         };
         profileBtn.addEventListener('click', HeaderView._profileClickListener);
 
@@ -141,6 +145,27 @@ class HeaderView {
             bindMenuBtn('menu-admin-reports', handlers.onAdminReports);
         }
         bindMenuBtn('menu-logout', handlers.onLogout);
+
+        // 키보드 내비게이션
+        dropdown.addEventListener('keydown', (e) => {
+            const items = [...dropdown.querySelectorAll('[role="menuitem"]')];
+            const currentIndex = items.indexOf(document.activeElement);
+
+            switch (e.key) {
+                case 'Escape':
+                    dropdown.classList.add('hidden');
+                    profileBtn.focus();
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    items[currentIndex + 1 < items.length ? currentIndex + 1 : 0]?.focus();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    items[currentIndex - 1 >= 0 ? currentIndex - 1 : items.length - 1]?.focus();
+                    break;
+            }
+        });
     }
 
     /**

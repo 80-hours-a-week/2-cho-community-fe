@@ -68,7 +68,9 @@ export const API_ENDPOINTS = {
     FOLLOW: {
         /** @param {string|number} userId */
         FOLLOW: (userId) => `/v1/users/${userId}/follow`,
+        /** @param {string|number} userId */
         FOLLOWING: (userId) => `/v1/users/${userId}/following`,
+        /** @param {string|number} userId */
         FOLLOWERS: (userId) => `/v1/users/${userId}/followers`,
         MY_FOLLOWING: '/v1/users/me/following',
         MY_FOLLOWERS: '/v1/users/me/followers',

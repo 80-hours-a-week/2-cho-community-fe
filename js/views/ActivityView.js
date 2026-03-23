@@ -74,6 +74,7 @@ class ActivityView {
                     src: getImageUrl(block.profile_img),
                     className: 'block-card-avatar',
                     alt: '',
+                    onError: (e) => { e.target.src = '/assets/profiles/default_profile.jpg'; },
                 }),
                 createElement('div', { className: 'block-card-info' }, [
                     createElement('span', { className: 'block-card-nickname' }, [block.nickname || '탈퇴한 사용자']),

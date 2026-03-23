@@ -1,7 +1,7 @@
 // js/views/UserProfileView.js
 // 타 사용자 프로필 페이지 View
 
-import { getImageUrl } from './helpers.js';
+import { getImageUrl, handleImageError } from './helpers.js';
 import { createElement } from '../utils/dom.js';
 
 /**
@@ -18,6 +18,7 @@ class UserProfileView {
 
         if (imgEl && user.profileImageUrl) {
             imgEl.src = getImageUrl(user.profileImageUrl);
+            handleImageError(imgEl, 'profile');
         }
         if (nicknameEl) {
             nicknameEl.textContent = user.nickname;
@@ -156,6 +157,7 @@ class UserProfileView {
                     src: getImageUrl(user.profile_img),
                     className: 'follow-list-avatar',
                     alt: '',
+                    onError: (e) => { e.target.src = '/assets/profiles/default_profile.jpg'; },
                 }),
                 createElement('span', { className: 'follow-list-nickname' }, [user.nickname || '탈퇴한 사용자']),
             ]);

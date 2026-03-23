@@ -1,7 +1,6 @@
 // @ts-check
 // js/controllers/WikiListController.js
 // 위키 목록 페이지 컨트롤러
-
 import WikiModel from '../models/WikiModel.js';
 import WikiListView from '../views/WikiListView.js';
 import Logger from '../utils/Logger.js';
@@ -21,9 +20,9 @@ class WikiListController {
         /** @type {IntersectionObserver|null} */
         this.scrollObserver = null;
         this.filters = {
-            sort: 'latest',
-            tag: null,
-            search: null,
+            sort: /** @type {string} */ ('latest'),
+            /** @type {string|null} */ tag: null,
+            /** @type {string|null} */ search: null,
         };
         // 비동기 응답 무효화 카운터
         this.loadGeneration = 0;
@@ -58,7 +57,6 @@ class WikiListController {
             });
         }
     }
-
     /**
      * 검색 설정 (디바운스)
      * @private
@@ -66,12 +64,12 @@ class WikiListController {
     _setupSearch() {
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
-
+        /** @type {ReturnType<typeof setTimeout> | null} */
         let timer = null;
 
         const doSearch = () => {
             if (!searchInput) return;
-            this.filters.search = /** @type {HTMLInputElement} */ (searchInput).value.trim() || null;
+            this.filters.search = /** @type {string|null} */ (/** @type {HTMLInputElement} */ (searchInput).value.trim() || null);
             this._resetAndReload();
         };
 
@@ -81,12 +79,11 @@ class WikiListController {
                 if (e.key === 'Enter') doSearch();
             });
             searchInput.addEventListener('input', () => {
-                clearTimeout(timer);
+                clearTimeout(/** @type {any} */ (timer));
                 timer = setTimeout(doSearch, 300);
             });
         }
     }
-
     /**
      * 정렬 버튼 설정
      * @private
@@ -99,9 +96,8 @@ class WikiListController {
             const btn = /** @type {HTMLElement} */ (e.target).closest('.sort-btn');
             if (!btn) return;
 
-            const sort = /** @type {HTMLElement} */ (btn).dataset.sort;
+            const sort = /** @type {HTMLElement} */ (btn).dataset.sort || this.filters.sort;
             if (sort === this.filters.sort) return;
-
             sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
@@ -125,14 +121,13 @@ class WikiListController {
         try {
             const result = await WikiModel.getPopularTags(10);
             if (result.ok) {
-                const tags = (result.data?.data?.tags || []).map(t => t.name);
+                const tags = (result.data?.data?.tags || []).map(/** @param {any} t */ t => t.name);
                 if (tags.length > 0) this._renderTagFilters(tags);
             }
         } catch {
             // 태그 로드 실패 시 무시
         }
     }
-
     /**
      * 태그 필터 렌더링 — URL 네비게이션 (MPA 구조, 피드 카테고리와 동일)
      * @param {Array<string>} tags
@@ -144,14 +139,13 @@ class WikiListController {
         // 인라인 태그 필터 (모바일에서 표시 — URL 링크)
         // 사이드바 태그는 HeaderController._loadWikiSidebarTags()에서 처리
         if (this._tagContainer) {
-            WikiListView.renderTagFilters(this._tagContainer, tags, this.filters.tag, (tag) => {
+            WikiListView.renderTagFilters(this._tagContainer, tags, this.filters.tag, /** @param {any} tag */ (tag) => {
                 location.href = tag
                     ? resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag)}`)
                     : resolveNavPath(NAV_PATHS.WIKI);
             });
         }
     }
-
     /**
      * 무한 스크롤 설정
      * @private
@@ -200,15 +194,12 @@ class WikiListController {
         const generation = this.loadGeneration;
         const listElement = document.getElementById('wiki-list');
         const sentinel = document.getElementById('loading-sentinel');
-
         WikiListView.toggleLoadingSentinel(sentinel, true);
-
         try {
             const result = await WikiModel.getWikiPages(
                 this.currentOffset, this.LIMIT, this.filters.sort,
                 this.filters.tag, this.filters.search
             );
-
             // 세대가 바뀌었으면 이전 응답 무시
             if (generation !== this.loadGeneration) return;
 
@@ -226,16 +217,16 @@ class WikiListController {
 
             if (this.currentOffset === 0 && wikiPages.length === 0) {
                 if (this.filters.search) {
-                    WikiListView.renderEmptyState(listElement, `'${this.filters.search}' 검색 결과가 없습니다.`, `grep "${this.filters.search}" wiki/`);
+                    WikiListView.renderEmptyState(/** @type {HTMLElement} */ (listElement), `'${this.filters.search}' 검색 결과가 없습니다.`, `grep "${this.filters.search}" wiki/`);
                 } else {
-                    WikiListView.renderEmptyState(listElement, '등록된 위키 페이지가 없습니다.', 'ls wiki/');
+                    WikiListView.renderEmptyState(/** @type {HTMLElement} */ (listElement), '등록된 위키 페이지가 없습니다.', 'ls wiki/');
                 }
                 this.hasMore = false;
                 WikiListView.toggleLoadingSentinel(sentinel, false);
                 return;
             }
 
-            WikiListView.renderWikiPages(listElement, wikiPages, (slug) => {
+            WikiListView.renderWikiPages(/** @type {HTMLElement} */ (listElement), wikiPages, /** @param {any} slug */ (slug) => {
                 location.href = resolveNavPath(NAV_PATHS.WIKI_DETAIL(slug));
             });
 

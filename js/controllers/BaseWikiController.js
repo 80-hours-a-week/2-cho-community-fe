@@ -57,7 +57,7 @@ class BaseWikiController {
 
     /**
      * API 에러 응답 처리 (Pydantic 422 포함)
-     * @param {object} result - API 응답
+     * @param {Record<string, any>} result - API 응답
      * @param {string} fallbackMsg - 기본 에러 메시지
      * @protected
      */
@@ -73,7 +73,7 @@ class BaseWikiController {
 
     /**
      * 위키 공통 유효성 검사 (제목, 내용)
-     * @param {object} data
+     * @param {Record<string, any>} data
      * @returns {boolean}
      * @protected
      */

@@ -15,19 +15,19 @@ class PackageDetailController {
     constructor() {
         /** @type {number|null} */
         this.packageId = null;
-        /** @type {object|null} */
+        /** @type {Record<string, any>|null} */
         this.currentUser = null;
-        /** @type {object|null} */
+        /** @type {Record<string, any>|null} */
         this.packageData = null;
-        /** @type {Array} */
+        /** @type {Array<any>} */
         this.reviews = [];
-        /** @type {object|null} */
+        /** @type {Record<string, any>|null} */
         this.myReview = null;
     }
 
     /**
      * 컨트롤러 초기화
-     * @param {object|null} currentUser
+     * @param {Record<string, any>|null} currentUser
      */
     async init(currentUser) {
         this.currentUser = currentUser;
@@ -42,9 +42,7 @@ class PackageDetailController {
         this.packageId = parseInt(id, 10);
 
         this._setupBackButton();
-        await this._loadPackage();
-        await this._loadReviews();
-        this._setupReviewForm();
+        await this._refreshAll();
     }
 
     /**
@@ -65,19 +63,29 @@ class PackageDetailController {
     }
 
     /**
+     * 패키지 정보 + 리뷰 목록 + 리뷰 폼을 한 번에 갱신
+     * @private
+     */
+    async _refreshAll() {
+        await this._loadPackage();
+        await this._loadReviews();
+        this._renderReviewFormInSection(this.myReview);
+    }
+
+    /**
      * 패키지 정보 로드
      * @private
      */
     async _loadPackage() {
-        const container = document.getElementById('package-info');
+        const container = /** @type {HTMLElement} */ (document.getElementById('package-info'));
         try {
-            const result = await PackageModel.getPackage(this.packageId);
+            const result = await PackageModel.getPackage(/** @type {number} */ (this.packageId));
             if (!result.ok) {
                 showToast('패키지를 불러오지 못했습니다.');
                 return;
             }
             this.packageData = result.data?.data;
-            PackageDetailView.renderPackageInfo(container, this.packageData);
+            PackageDetailView.renderPackageInfo(container, /** @type {Record<string, any>} */ (this.packageData));
         } catch (error) {
             logger.error('패키지 로드 실패', error);
             showToast('패키지를 불러오지 못했습니다.');
@@ -89,9 +97,9 @@ class PackageDetailController {
      * @private
      */
     async _loadReviews() {
-        const container = document.getElementById('reviews-list');
+        const container = /** @type {HTMLElement} */ (document.getElementById('reviews-list'));
         try {
-            const result = await PackageModel.getReviews(this.packageId);
+            const result = await PackageModel.getReviews(/** @type {number} */ (this.packageId));
             if (!result.ok) {
                 showToast('리뷰를 불러오지 못했습니다.');
                 return;
@@ -100,7 +108,8 @@ class PackageDetailController {
 
             // 현재 사용자의 리뷰 찾기
             if (this.currentUser) {
-                this.myReview = this.reviews.find(r => r.user_id === this.currentUser.user_id) || null;
+                const userId = this.currentUser.user_id;
+                this.myReview = this.reviews.find(/** @param {any} r */ r => r.user_id === userId) || null;
             }
 
             const currentUserId = this.currentUser?.user_id || null;
@@ -108,8 +117,8 @@ class PackageDetailController {
                 container,
                 this.reviews,
                 currentUserId,
-                (review) => this._handleEditReview(review),
-                (reviewId) => this._handleDeleteReview(reviewId)
+                /** @param {any} review */ (review) => this._handleEditReview(review),
+                /** @param {any} reviewId */ (reviewId) => this._handleDeleteReview(reviewId)
             );
         } catch (error) {
             logger.error('리뷰 로드 실패', error);
@@ -118,10 +127,12 @@ class PackageDetailController {
     }
 
     /**
-     * 리뷰 폼 설정 (로그인 시만)
+     * review-form-section 에 리뷰 폼 렌더링 (신규/수정 공통)
+     * @param {Record<string, any>|null} review - 수정 시 기존 리뷰, 신규 시 null
+     * @param {boolean} [scroll=false] - 렌더링 후 폼으로 스크롤 여부
      * @private
      */
-    _setupReviewForm() {
+    _renderReviewFormInSection(review, scroll = false) {
         const formSection = document.getElementById('review-form-section');
         if (!formSection) return;
 
@@ -133,14 +144,16 @@ class PackageDetailController {
         // 이미 리뷰를 작성한 경우 수정 폼으로, 아니면 새 작성 폼
         PackageDetailView.renderReviewForm(
             formSection,
-            this.myReview,
-            (data) => this._handleReviewSubmit(data)
+            review,
+            /** @param {any} data */ (data) => this._handleReviewSubmit(data)
         );
+
+        if (scroll) formSection.scrollIntoView({ behavior: 'smooth' });
     }
 
     /**
      * 리뷰 작성/수정 처리
-     * @param {object} data
+     * @param {Record<string, any>} data
      * @private
      */
     async _handleReviewSubmit(data) {
@@ -153,55 +166,43 @@ class PackageDetailController {
             return;
         }
 
+        let submitOk = false;
         try {
-            let result;
             if (this.myReview) {
                 // 수정
-                result = await PackageModel.updateReview(this.packageId, this.myReview.review_id, data);
+                const result = await PackageModel.updateReview(/** @type {number} */ (this.packageId), this.myReview.review_id, data);
                 if (result.ok) {
                     showToast('리뷰가 수정되었습니다.');
+                    submitOk = true;
                 } else {
-                    showToast(result.data?.detail || '리뷰 수정에 실패했습니다.');
-                    return;
+                    showToast(/** @type {any} */ (result.data)?.detail || '리뷰 수정에 실패했습니다.');
                 }
             } else {
                 // 새 작성
-                result = await PackageModel.createReview(this.packageId, data);
+                const result = await PackageModel.createReview(/** @type {number} */ (this.packageId), data);
                 if (result.ok) {
                     showToast('리뷰가 등록되었습니다.');
+                    submitOk = true;
                 } else {
-                    showToast(result.data?.detail || '리뷰 등록에 실패했습니다.');
-                    return;
+                    showToast(/** @type {any} */ (result.data)?.detail || '리뷰 등록에 실패했습니다.');
                 }
             }
-
-            // 리뷰 + 패키지 정보 갱신
-            await this._loadPackage();
-            await this._loadReviews();
-            this._setupReviewForm();
         } catch (error) {
             logger.error('리뷰 제출 실패', error);
             showToast('리뷰 처리에 실패했습니다.');
         }
+
+        if (submitOk) await this._refreshAll();
     }
 
     /**
-     * 리뷰 수정 폼 표시
-     * @param {object} review
+     * 리뷰 수정 폼 표시 (목록에서 수정 버튼 클릭 시)
+     * @param {Record<string, any>} review
      * @private
      */
     _handleEditReview(review) {
-        const formSection = document.getElementById('review-form-section');
-        if (!formSection) return;
-
-        PackageDetailView.renderReviewForm(
-            formSection,
-            review,
-            (data) => this._handleReviewSubmit(data)
-        );
-
-        // 폼으로 스크롤
-        formSection.scrollIntoView({ behavior: 'smooth' });
+        // 선택한 리뷰로 폼 렌더링 후 스크롤
+        this._renderReviewFormInSection(review, true);
     }
 
     /**
@@ -210,18 +211,17 @@ class PackageDetailController {
      * @private
      */
     async _handleDeleteReview(reviewId) {
+        // 삭제 전 사용자 확인
         if (!confirm('리뷰를 삭제하시겠습니까?')) return;
 
         try {
-            const result = await PackageModel.deleteReview(this.packageId, reviewId);
+            const result = await PackageModel.deleteReview(/** @type {number} */ (this.packageId), reviewId);
             if (result.ok) {
                 showToast('리뷰가 삭제되었습니다.');
                 this.myReview = null;
-                await this._loadPackage();
-                await this._loadReviews();
-                this._setupReviewForm();
+                await this._refreshAll();
             } else {
-                showToast(result.data?.detail || '리뷰 삭제에 실패했습니다.');
+                showToast(/** @type {any} */ (result.data)?.detail || '리뷰 삭제에 실패했습니다.');
             }
         } catch (error) {
             logger.error('리뷰 삭제 실패', error);

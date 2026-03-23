@@ -9,9 +9,12 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+
 </head>
 
 <body>
@@ -51,10 +54,10 @@
                 <button class="feed-filter-btn hidden" id="following-btn">팔로잉</button>
                 <div class="filter-divider hidden" id="filter-divider"></div>
                 <div class="sort-buttons" id="sort-buttons">
-                    <button class="sort-btn active" data-sort="latest">최신순</button>
-                    <button class="sort-btn" data-sort="likes">인기순</button>
-                    <button class="sort-btn" data-sort="views">조회순</button>
-                    <button class="sort-btn" data-sort="comments">댓글순</button>
+                    <button class="sort-btn active" data-sort="latest" aria-pressed="true">최신순</button>
+                    <button class="sort-btn" data-sort="likes" aria-pressed="false">인기순</button>
+                    <button class="sort-btn" data-sort="views" aria-pressed="false">조회순</button>
+                    <button class="sort-btn" data-sort="comments" aria-pressed="false">댓글순</button>
                 </div>
             </div>
         </section>

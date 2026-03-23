@@ -11,7 +11,7 @@ import BaseListView from './BaseListView.js';
 class WikiListView extends BaseListView {
     /**
      * 위키 카드 요소 생성
-     * @param {object} page - 위키 페이지 데이터
+     * @param {Record<string, any>} page - 위키 페이지 데이터
      * @param {Function} onClick - 클릭 핸들러
      * @returns {HTMLElement}
      */
@@ -25,10 +25,10 @@ class WikiListView extends BaseListView {
         const card = createElement('li', { className: 'wiki-card', onClick: () => onClick(page.slug) }, [
             // 태그 뱃지
             createElement('div', { className: 'wiki-card-tags' },
-                tags.map(tag => createElement('a', {
+                tags.map(/** @param {any} tag */ tag => createElement('a', {
                     className: 'wiki-tag-badge',
                     href: resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag.name)}`),
-                    onClick: (e) => e.stopPropagation(),
+                    onClick: (/** @type {any} */ e) => e.stopPropagation(),
                 }, [tag.name]))
             ),
             // 제목
@@ -45,7 +45,7 @@ class WikiListView extends BaseListView {
     /**
      * 위키 페이지 목록 렌더링
      * @param {HTMLElement} container
-     * @param {Array} pages
+     * @param {Array<any>} pages
      * @param {Function} onPageClick
      */
     static renderWikiPages(container, pages, onPageClick) {

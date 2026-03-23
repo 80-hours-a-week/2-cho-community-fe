@@ -10,6 +10,10 @@ const logger = Logger.createLogger('ApiService');
 
 // FastAPI는 trailing slash 없는 요청을 307 리다이렉트하므로
 // POST/PUT/PATCH/DELETE 시 body가 유실됨. 모든 엔드포인트에 trailing slash 보장.
+/**
+ * @param {string} endpoint
+ * @returns {string}
+ */
 function ensureTrailingSlash(endpoint) {
     const [path, query] = endpoint.split('?');
     const normalized = path.endsWith('/') ? path : path + '/';
@@ -31,7 +35,6 @@ let _refreshing = null; // 동시 401 대응 (thundering herd 방지)
 export function setAccessToken(token) {
     _accessToken = token;
 }
-
 /**
  * Access Token을 반환합니다.
  * @returns {string|null}
@@ -57,7 +60,6 @@ class ApiService {
         }
         return headers;
     }
-
     /**
      * Refresh Token 쿠키로 새 Access Token을 요청합니다.
      * 동시에 여러 요청이 401을 받아도 refresh는 1번만 실행됩니다.
@@ -67,7 +69,6 @@ class ApiService {
         if (_refreshing) {
             return _refreshing;
         }
-
         _refreshing = (async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/v1/auth/token/refresh`, {
@@ -75,7 +76,6 @@ class ApiService {
                     credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                 });
-
                 if (response.ok) {
                     const data = await response.json();
                     const newToken = data?.data?.access_token;
@@ -85,20 +85,17 @@ class ApiService {
                         return true;
                     }
                 }
-
                 _accessToken = null;
                 return false;
-            } catch (e) {
+            } catch (_e) {
                 _accessToken = null;
                 return false;
             } finally {
                 _refreshing = null;
             }
         })();
-
         return _refreshing;
     }
-
     /**
      * GET 요청 (자동 재시도 적용)
      * @param {string} endpoint - API 엔드포인트 (예: '/v1/users/me')
@@ -109,13 +106,9 @@ class ApiService {
     static async get(endpoint, optionsOrRetry = false, extraHeadersArg = undefined) {
         // 하위 호환: 기존 boolean 호출 지원
         /** @type {{_isRetry?: boolean, signal?: AbortSignal, extraHeaders?: Record<string, string>}} */
-        let options = {};
-        if (typeof optionsOrRetry === 'boolean') {
-            options = { _isRetry: optionsOrRetry, extraHeaders: extraHeadersArg };
-        } else {
-            options = optionsOrRetry || {};
-        }
-
+        const options = typeof optionsOrRetry === 'boolean'
+            ? { _isRetry: optionsOrRetry, extraHeaders: extraHeadersArg }
+            : (optionsOrRetry || {});
         const { _isRetry = false, signal, extraHeaders } = options;
 
         logger.debug(`GET 요청: ${endpoint}`);
@@ -130,9 +123,7 @@ class ApiService {
                     credentials: 'include'
                 };
                 if (signal) fetchOptions.signal = signal;
-
                 const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, fetchOptions);
-
                 // 5xx 서버 에러나 429 Too Many Requests는 재시도 대상
                 if (response.status >= 500 || response.status === 429) {
                     const error = new Error(`Request failed with status ${response.status}`);
@@ -140,7 +131,6 @@ class ApiService {
                     error.status = response.status;
                     throw error;
                 }
-
                 return ApiService._handleResponse(response, 'GET', endpoint, {
                     retryFn: () => ApiService.get(endpoint, { _isRetry: true, signal, extraHeaders }),
                     _isRetry
@@ -159,7 +149,6 @@ class ApiService {
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'GET', endpoint);
         }
     }
-
     /**
      * POST 요청 (JSON)
      * @param {string} endpoint - API 엔드포인트
@@ -184,7 +173,6 @@ class ApiService {
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'POST', endpoint);
         }
     }
-
     /**
      * POST 요청 (FormData - 파일 업로드용)
      * @param {string} endpoint - API 엔드포인트
@@ -201,7 +189,6 @@ class ApiService {
             if (_accessToken) {
                 headers['Authorization'] = `Bearer ${_accessToken}`;
             }
-
             const response = await fetch(`${API_BASE_URL}${ensureTrailingSlash(endpoint)}`, {
                 method: 'POST',
                 headers: headers,
@@ -216,7 +203,6 @@ class ApiService {
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'POST', endpoint);
         }
     }
-
     /**
      * PATCH 요청
      * @param {string} endpoint - API 엔드포인트
@@ -241,7 +227,6 @@ class ApiService {
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'PATCH', endpoint);
         }
     }
-
     /**
      * PUT 요청
      * @param {string} endpoint - API 엔드포인트
@@ -266,7 +251,6 @@ class ApiService {
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'PUT', endpoint);
         }
     }
-
     /**
      * DELETE 요청
      * @param {string} endpoint - API 엔드포인트
@@ -295,7 +279,6 @@ class ApiService {
             return ApiService._handleNetworkError(/** @type {Error} */ (error), 'DELETE', endpoint);
         }
     }
-
     /**
      * 응답 처리 공통 로직
      * 401 수신 시 silent refresh 시도 후 원래 요청을 재시도합니다.
@@ -308,7 +291,6 @@ class ApiService {
      */
     static async _handleResponse(response, method = '', endpoint = '', options = {}) {
         let data = null;
-
         // 응답 본문이 있는 경우에만 처리
         const contentType = response.headers.get('content-type');
         try {
@@ -324,14 +306,12 @@ class ApiService {
             logger.warn(`응답 처리 실패: ${method} ${endpoint}`, e);
             data = { message: '응답을 처리할 수 없습니다.' };
         }
-
         // 응답 로깅 (304 Not Modified는 정상 캐시 응답)
         if (response.ok || response.status === 304) {
             logger.info(`${method} ${endpoint} 성공 (${response.status})`);
         } else {
             logger.error(`${method} ${endpoint} 실패 (${response.status})`, data);
         }
-
         // 401 처리: auth 엔드포인트가 아닌 경우 refresh 후 재시도
         const isAuthEndpoint = endpoint.includes('/auth/');
         if (response.status === 401 && !isAuthEndpoint && !options._isRetry) {
@@ -346,7 +326,6 @@ class ApiService {
                 window.dispatchEvent(new CustomEvent('auth:session-expired'));
             }
         }
-
         // 403 계정 정지: 본인 세션이 정지된 경우에만 이벤트 전파 (관리자 API 제외)
         const isAdminEndpoint = endpoint.includes('/v1/admin/');
         if (response.status === 403 && data?.detail?.error === 'account_suspended' && !isAdminEndpoint) {
@@ -354,28 +333,23 @@ class ApiService {
                 detail: data.detail
             }));
         }
-
         // 403 이메일 미인증: 배너 표시를 위한 이벤트 전파
         if (response.status === 403 && data?.detail?.error === 'email_not_verified') {
             window.dispatchEvent(new CustomEvent('auth:email-not-verified'));
         }
-
         /** @type {ApiResponse & {etag?: string}} */
         const result = {
             ok: response.ok,
             status: response.status,
             data: data
         };
-
         // ETag 헤더가 있으면 결과에 포함 (폴링 최적화용)
         const etag = response.headers.get('etag');
         if (etag) {
             result.etag = etag;
         }
-
         return result;
     }
-
     /**
      * 네트워크 에러 처리
      * @param {Error} error - 에러 객체

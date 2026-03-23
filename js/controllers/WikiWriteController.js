@@ -23,7 +23,6 @@ class WikiWriteController extends BaseWikiController {
         this._setupBackButton(NAV_PATHS.WIKI);
         this._setupForm();
     }
-
     /**
      * 폼 렌더링
      * @private
@@ -33,7 +32,7 @@ class WikiWriteController extends BaseWikiController {
         if (!container) return;
 
         WikiFormView.renderForm(container, {
-            onSubmit: (data) => this._handleSubmit(data),
+            onSubmit: /** @param {any} data */ (data) => this._handleSubmit(data),
             onCancel: () => {
                 if (window.history.length > 1) {
                     window.history.back();
@@ -43,10 +42,9 @@ class WikiWriteController extends BaseWikiController {
             },
         });
     }
-
     /**
      * 위키 페이지 생성 처리
-     * @param {object} data
+     * @param {Record<string, any>} data
      * @private
      */
     async _handleSubmit(data) {
@@ -60,7 +58,6 @@ class WikiWriteController extends BaseWikiController {
             showToast('슬러그는 영문 소문자, 숫자, 하이픈만 사용할 수 있습니다.');
             return;
         }
-
         try {
             const result = await WikiModel.createWikiPage({
                 title: data.title,

@@ -52,7 +52,7 @@ class DMDetailView {
         if (!messages || messages.length === 0) {
             const empty = createElement('div', {
                 className: 'dm-messages-empty',
-                textContent: '아직 메시지가 없습니다. 첫 메시지를 보내보세요!',
+                textContent: '$ echo "첫 메시지를 보내보세요"',
             });
             container.appendChild(empty);
             return;
@@ -88,18 +88,14 @@ class DMDetailView {
         });
         wrapper.dataset.messageId = msg.id;
 
-        // 상대방 메시지는 프로필 이미지 표시
-        if (!isMine) {
-            const profileImg = createElement('div', {
-                className: 'dm-card__avatar',
-            });
-            const imgUrl = msg.sender_profile_image;
-            if (imgUrl) {
-                const fullUrl = escapeCssUrl(getImageUrl(imgUrl));
-                profileImg.style.backgroundImage = `url('${fullUrl}')`;
-            }
-            wrapper.appendChild(profileImg);
-        }
+        // 터미널 프롬프트: [시간] 닉네임 >
+        const timeStr = DMDetailView._formatInlineTime(msg.created_at);
+        const nickname = isMine ? 'me' : (msg.sender_nickname || '?');
+        const prompt = createElement('span', {
+            className: 'dm-msg__prompt',
+            textContent: `[${timeStr}] ${nickname} >`,
+        });
+        wrapper.appendChild(prompt);
 
         // 삭제된 메시지는 플레이스홀더만 표시
         if (msg.is_deleted) {
@@ -107,14 +103,14 @@ class DMDetailView {
             const body = createElement('div', { className: 'dm-msg__body' });
             const content = createElement('div', {
                 className: 'dm-msg__content',
-                textContent: '삭제된 메시지입니다',
+                textContent: '[deleted]',
             });
             body.appendChild(content);
             wrapper.appendChild(body);
             return wrapper;
         }
 
-        // 메시지 본체 (내용 + 시간)
+        // 메시지 본체
         const body = createElement('div', { className: 'dm-msg__body' });
 
         // 내용: 마크다운 렌더링 (DOMPurify sanitized)
@@ -124,20 +120,13 @@ class DMDetailView {
         renderMarkdownTo(content, msg.content || '');
         body.appendChild(content);
 
-        // 시간 스탬프
-        const time = createElement('span', {
-            className: 'dm-msg__time',
-            textContent: DMDetailView.formatTime(msg.created_at),
-        });
-        body.appendChild(time);
-
         wrapper.appendChild(body);
 
-        // 내 메시지 읽음 상태 체크마크 (버블 오른쪽 대각선 아래에 위치)
+        // 내 메시지 읽음 상태 — 인라인 표시
         if (isMine) {
             const readStatus = createElement('span', {
                 className: `dm-msg__read-status${msg.is_read ? ' dm-msg__read-status--read' : ''}`,
-                textContent: msg.is_read ? '✓✓' : '✓',
+                textContent: msg.is_read ? '✓ read' : '✓',
             });
             wrapper.appendChild(readStatus);
         }
@@ -217,7 +206,9 @@ class DMDetailView {
      */
     static _formatDateDivider(dateString) {
         const d = new Date(dateString);
-        return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${d.getFullYear()}-${mm}-${dd}`;
     }
 
     /**
@@ -253,7 +244,7 @@ class DMDetailView {
         const statuses = container.querySelectorAll('.dm-msg--mine .dm-msg__read-status:not(.dm-msg__read-status--read)');
         statuses.forEach(el => {
             el.classList.add('dm-msg__read-status--read');
-            el.textContent = '✓✓';
+            el.textContent = '✓ read';
         });
     }
 
@@ -314,6 +305,19 @@ class DMDetailView {
     static hideContextMenu() {
         const existing = document.querySelector('.dm-context-menu');
         if (existing) existing.remove();
+    }
+
+    /**
+     * 인라인 타임스탬프 (HH:MM 형식 — 터미널 로그용)
+     * @param {string} dateString - ISO 날짜 문자열
+     * @returns {string}
+     * @private
+     */
+    static _formatInlineTime(dateString) {
+        if (!dateString) return '??:??';
+        const d = new Date(dateString);
+        if (isNaN(d.getTime())) return '??:??';
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     }
 
     /**

@@ -3,7 +3,6 @@
 // 패키지 목록 렌더링
 
 import { createElement } from '../utils/dom.js';
-import { formatDate } from '../utils/formatters.js';
 import { PACKAGE_CATEGORY_LABELS, NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import BaseListView from './BaseListView.js';
@@ -21,7 +20,7 @@ function renderStars(rating) {
 class PackageListView extends BaseListView {
     /**
      * 패키지 카드 요소 생성
-     * @param {object} pkg - 패키지 데이터
+     * @param {Record<string, any>} pkg - 패키지 데이터
      * @param {Function} onClick - 클릭 핸들러
      * @returns {HTMLElement}
      */
@@ -41,7 +40,7 @@ class PackageListView extends BaseListView {
                     ? [createElement('a', {
                         className: 'package-category-badge',
                         href: resolveNavPath(`${NAV_PATHS.PACKAGES}?category=${category}`),
-                        onClick: (e) => e.stopPropagation(),
+                        onClick: (/** @type {any} */ e) => e.stopPropagation(),
                     }, [PACKAGE_CATEGORY_LABELS[category]])]
                     : []),
                 ...(packageManager
@@ -66,7 +65,7 @@ class PackageListView extends BaseListView {
     /**
      * 패키지 목록 렌더링
      * @param {HTMLElement} container
-     * @param {Array} packages
+     * @param {Array<any>} packages
      * @param {Function} onPackageClick
      */
     static renderPackages(container, packages, onPackageClick) {
@@ -87,8 +86,8 @@ class PackageListView extends BaseListView {
         const items = Object.entries(PACKAGE_CATEGORY_LABELS);
         BaseListView.renderFilterButtons(container, items, activeCategory, onCategoryClick, {
             className: 'category-filter-btn',
-            getKey: ([key]) => key,
-            getLabel: ([, label]) => label,
+            getKey: (/** @param {[string, string]} entry */ ([key]) => key),
+            getLabel: (/** @param {[string, string]} entry */ ([, label]) => label),
         });
     }
 

@@ -4,7 +4,6 @@
 import AuthModel from '../models/AuthModel.js';
 import UserModel from '../models/UserModel.js';
 import ProfileView from '../views/ProfileView.js';
-import ModalView from '../views/ModalView.js';
 import { extractUploadedImageUrl, readFileAsDataURL } from '../views/helpers.js';
 import Logger from '../utils/Logger.js';
 import { resolveNavPath } from '../config.js';

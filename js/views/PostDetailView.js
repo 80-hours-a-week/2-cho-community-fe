@@ -2,7 +2,7 @@
 // 게시글 상세 렌더링 관련 로직
 
 import { formatDate, formatCount, escapeCssUrl } from '../utils/formatters.js';
-import { getImageUrl, showToast } from './helpers.js';
+import { getImageUrl, handleImageError, showToast } from './helpers.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { renderMarkdownTo } from '../utils/markdown.js';
@@ -303,6 +303,7 @@ class PostDetailView {
             img.src = getImageUrl(url);
             img.alt = 'Post Image';
             img.loading = 'lazy';
+            handleImageError(img);
             gallery.appendChild(img);
         });
 

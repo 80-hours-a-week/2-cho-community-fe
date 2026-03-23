@@ -1,25 +1,23 @@
 // @ts-check
 // js/controllers/PackageWriteController.js
 // 패키지 등록 페이지 컨트롤러
-
 import PackageModel from '../models/PackageModel.js';
 import PackageFormView from '../views/PackageFormView.js';
 import Logger from '../utils/Logger.js';
 import { NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { showToast } from '../views/helpers.js';
-
 const logger = Logger.createLogger('PackageWriteController');
 
 class PackageWriteController {
     constructor() {
-        /** @type {object|null} */
+        /** @type {Record<string, any>|null} */
         this.currentUser = null;
     }
 
     /**
      * 컨트롤러 초기화
-     * @param {object|null} currentUser
+     * @param {Record<string, any>|null} currentUser
      */
     init(currentUser) {
         this.currentUser = currentUser;
@@ -51,7 +49,6 @@ class PackageWriteController {
             });
         }
     }
-
     /**
      * 폼 렌더링
      * @private
@@ -60,12 +57,12 @@ class PackageWriteController {
         const container = document.getElementById('package-form');
         if (!container) return;
 
-        PackageFormView.renderPackageForm(container, (data) => this._handleSubmit(data));
+        PackageFormView.renderPackageForm(container, /** @param {any} data */ (data) => this._handleSubmit(data));
     }
 
     /**
      * 패키지 등록 처리
-     * @param {object} data
+     * @param {Record<string, any>} data
      * @private
      */
     async _handleSubmit(data) {
@@ -99,7 +96,7 @@ class PackageWriteController {
                     }, 500);
                 }
             } else {
-                showToast(result.data?.detail || '패키지 등록에 실패했습니다.');
+                showToast(/** @type {any} */ (result.data)?.detail || '패키지 등록에 실패했습니다.');
             }
         } catch (error) {
             logger.error('패키지 등록 실패', error);

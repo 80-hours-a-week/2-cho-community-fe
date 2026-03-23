@@ -264,7 +264,7 @@ class MarkdownEditor {
             this.previewEl.textContent = '';
             const sanitized = renderMarkdown(this.textarea.value);
             const template = document.createElement('template');
-            template.innerHTML = sanitized; // eslint-disable-line no-unsanitized/property -- DOMPurify sanitized
+            template.innerHTML = sanitized;
             this.previewEl.appendChild(template.content);
             this.previewEl.style.display = '';
             this.textarea.style.display = 'none';
@@ -299,7 +299,7 @@ class MarkdownEditor {
             this.previewEl.textContent = '';
             const sanitized = renderMarkdown(value);
             const template = document.createElement('template');
-            template.innerHTML = sanitized; // eslint-disable-line no-unsanitized/property -- DOMPurify sanitized
+            template.innerHTML = sanitized;
             this.previewEl.appendChild(template.content);
         }
     }

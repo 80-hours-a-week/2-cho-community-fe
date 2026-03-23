@@ -1,6 +1,5 @@
 // js/controllers/MainController.js
 // 메인 페이지 컨트롤러 (게시글 목록, 무한 스크롤)
-
 import PostModel from '../models/PostModel.js';
 import CategoryModel from '../models/CategoryModel.js';
 import PostListView from '../views/PostListView.js';
@@ -11,6 +10,7 @@ import { getAccessToken } from '../services/ApiService.js';
 import { showToast } from '../views/helpers.js';
 
 const logger = Logger.createLogger('MainController');
+const AUTOCOMPLETE_DEBOUNCE_MS = 300;
 
 const DEFAULT_FILTERS = Object.freeze({
     search: null,
@@ -20,10 +20,7 @@ const DEFAULT_FILTERS = Object.freeze({
     following: false,
     forYou: false,
 });
-
-/**
- * 메인 페이지 컨트롤러
- */
+/** 메인 페이지 컨트롤러 */
 class MainController {
     constructor() {
         this.currentOffset = 0;
@@ -40,28 +37,16 @@ class MainController {
         // 이전 API 요청 취소용
         this._abortController = null;
     }
-
-    /**
-     * 컨트롤러 초기화
-     */
+    /** 컨트롤러 초기화 */
     async init() {
-        // URL 파라미터에서 필터 읽기 (사이드바 카테고리 링크, 태그 링크 등)
         const urlParams = new URLSearchParams(window.location.search);
         const categoryParam = urlParams.get('category');
-        if (categoryParam) {
-            this.filters.category = Number(categoryParam);
-        }
+        if (categoryParam) this.filters.category = Number(categoryParam);
         const tagParam = urlParams.get('tag');
-        if (tagParam) {
-            this.filters.tag = tagParam;
-        }
-
-        // DOM 이벤트 바인딩을 먼저 수행 (네트워크 실패와 무관하게 동작 보장)
+        if (tagParam) this.filters.tag = tagParam;
         this._setupWriteButton();
         this._setupSearchAndSort();
         this._setupInfiniteScroll();
-
-        // 로그인 상태이면 추천/팔로잉 버튼 표시
         if (getAccessToken()) {
             const forYouBtn = document.getElementById('foryou-btn');
             const followingBtn = document.getElementById('following-btn');
@@ -70,16 +55,10 @@ class MainController {
             if (followingBtn) followingBtn.classList.remove('hidden');
             if (filterDivider) filterDivider.classList.remove('hidden');
         }
-
-        // 헤더의 인증 관련 로직은 HeaderController에서 처리
         await this._loadCategories();
         await this._loadPosts();
     }
-
-    /**
-     * 게시글 작성 버튼 이벤트를 설정합니다.
-     * @private
-     */
+    /** @private */
     _setupWriteButton() {
         const writeBtn = document.getElementById('write-btn');
         if (writeBtn) {
@@ -88,7 +67,18 @@ class MainController {
             });
         }
     }
-
+    /**
+     * 정렬을 최신순으로 초기화하고 해당 버튼을 활성화합니다.
+     * forYou/following 비활성화 후 호출됩니다.
+     * @private
+     */
+    _resetSortToLatest(sortButtons) {
+        this.filters.sort = 'latest';
+        if (sortButtons) {
+            const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
+            if (latestBtn) latestBtn.classList.add('active');
+        }
+    }
     /**
      * 검색바와 정렬 버튼 이벤트를 설정합니다.
      * @private
@@ -97,32 +87,24 @@ class MainController {
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
         const sortButtons = document.getElementById('sort-buttons');
-
+        const forYouBtn = document.getElementById('foryou-btn');
+        const followingBtn = document.getElementById('following-btn');
         const doSearch = () => {
             if (!searchInput) return;
             this.filters.search = searchInput.value.trim() || null;
             this._resetAndReload();
         };
-
         if (searchBtn) searchBtn.addEventListener('click', doSearch);
         if (searchInput) {
             searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    this._hideSearchSuggestions();
-                    doSearch();
-                }
+                if (e.key === 'Enter') { this._hideSearchSuggestions(); doSearch(); }
             });
             this._setupSearchAutocomplete(searchInput);
         }
-
-        const forYouBtn = document.getElementById('foryou-btn');
-        const followingBtn = document.getElementById('following-btn');
-
         if (forYouBtn) {
             forYouBtn.addEventListener('click', () => {
                 this.filters.forYou = !this.filters.forYou;
                 forYouBtn.classList.toggle('active', this.filters.forYou);
-
                 if (this.filters.forYou) {
                     // 추천 활성화 시 팔로잉 해제 + 정렬 버튼 비활성화
                     this.filters.following = false;
@@ -132,59 +114,46 @@ class MainController {
                     }
                 } else {
                     // 추천 비활성화 시 최신순으로 복귀
-                    this.filters.sort = 'latest';
-                    if (sortButtons) {
-                        const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
-                        if (latestBtn) latestBtn.classList.add('active');
-                    }
+                    this._resetSortToLatest(sortButtons);
                 }
                 this._resetAndReload();
             });
         }
-
         if (followingBtn) {
             followingBtn.addEventListener('click', () => {
                 this.filters.following = !this.filters.following;
                 followingBtn.classList.toggle('active', this.filters.following);
-
-                // 팔로잉 활성화 시 추천 해제
                 if (this.filters.following && this.filters.forYou) {
+                    // 팔로잉 활성화 시 추천 해제
                     this.filters.forYou = false;
                     if (forYouBtn) forYouBtn.classList.remove('active');
-                    // 정렬 버튼 복원
-                    this.filters.sort = 'latest';
-                    if (sortButtons) {
-                        const latestBtn = sortButtons.querySelector('[data-sort="latest"]');
-                        if (latestBtn) latestBtn.classList.add('active');
-                    }
+                    this._resetSortToLatest(sortButtons);
                 }
                 this._resetAndReload();
             });
         }
-
         if (sortButtons) {
             sortButtons.addEventListener('click', (e) => {
                 const btn = e.target.closest('.sort-btn');
                 if (!btn) return;
-
-                const sort = btn.dataset.sort;
-                if (sort === this.filters.sort && !this.filters.forYou) return;
-
-                // 정렬 버튼 클릭 시 추천 모드 해제
+                const mode = btn.dataset.sort;
+                if (mode === this.filters.sort && !this.filters.forYou) return;
                 if (this.filters.forYou) {
+                    // 정렬 버튼 클릭 시 추천 모드 해제
                     this.filters.forYou = false;
                     if (forYouBtn) forYouBtn.classList.remove('active');
                 }
-
-                sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                sortButtons.querySelectorAll('.sort-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                });
                 btn.classList.add('active');
-
-                this.filters.sort = sort;
+                btn.setAttribute('aria-pressed', 'true');
+                this.filters.sort = mode;
                 this._resetAndReload();
             });
         }
     }
-
     /**
      * 검색/정렬 변경 시 목록을 초기화하고 재로드합니다.
      * @private
@@ -195,13 +164,10 @@ class MainController {
         this.hasMore = true;
         this.isLoading = false;
         this.loadedPostIds.clear();
-
         const listElement = document.getElementById('post-list');
         if (listElement) listElement.textContent = '';
-
         this._loadPosts();
     }
-
     /**
      * 카테고리 목록 로드 및 탭 렌더링
      * @private
@@ -209,11 +175,9 @@ class MainController {
     async _loadCategories() {
         const tabContainer = document.getElementById('category-tabs');
         if (!tabContainer) return;
-
         try {
             const result = await CategoryModel.getCategories();
             if (!result.ok) return;
-
             this._categories = result.data?.data?.categories || [];
             this._renderCategoryTabs();
         } catch (error) {
@@ -221,7 +185,6 @@ class MainController {
             showToast('카테고리를 불러오지 못했습니다.');
         }
     }
-
     /**
      * 카테고리 탭 렌더링
      * @private
@@ -229,7 +192,6 @@ class MainController {
     _renderCategoryTabs() {
         const tabContainer = document.getElementById('category-tabs');
         if (!tabContainer || !this._categories) return;
-
         PostListView.renderCategoryTabs(tabContainer, this._categories, this.filters.category, (categoryId) => {
             if (categoryId === this.filters.category) return;
             this.filters.category = categoryId;
@@ -237,7 +199,6 @@ class MainController {
             this._resetAndReload();
         });
     }
-
     /**
      * 무한 스크롤 설정
      * @private
@@ -245,24 +206,15 @@ class MainController {
     _setupInfiniteScroll() {
         const sentinel = document.getElementById('loading-sentinel');
         if (!sentinel) return;
-
-        // 기존 observer가 있으면 정리
-        if (this.scrollObserver) {
-            this.scrollObserver.disconnect();
-        }
-
+        if (this.scrollObserver) this.scrollObserver.disconnect();
         this.scrollObserver = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !this.isLoading && this.hasMore) {
                 this._loadPosts();
             }
         }, { threshold: 0.1 });
-
         this.scrollObserver.observe(sentinel);
     }
-
-    /**
-     * 컨트롤러 정리 (페이지 이탈 시 호출)
-     */
+    /** 컨트롤러 정리 (페이지 이탈 시 호출) */
     destroy() {
         if (this._abortController) {
             this._abortController.abort();
@@ -273,100 +225,76 @@ class MainController {
             this.scrollObserver = null;
         }
     }
-
+    /**
+     * 현재 필터 상태로 PostModel.getPosts를 호출합니다.
+     * getPosts의 다수 위치 인자를 한 곳에서 관리합니다.
+     * @param {AbortSignal} signal
+     * @private
+     */
+    async _fetchPosts(signal) {
+        const effectiveSort = (this.filters.forYou ? 'for_you' : this.filters.sort);
+        return PostModel.getPosts(
+            this.currentOffset, this.LIMIT, this.filters.search, effectiveSort,
+            null, this.filters.category, this.filters.tag, this.filters.following,
+            { signal }
+        );
+    }
     /**
      * 게시글 목록을 API로부터 로드하고 화면에 렌더링합니다.
-     * 
+     *
      * 중복 게시글 처리 전략:
      * 무한 스크롤 도중 새로운 게시글이 작성되면 오프셋이 밀려 이미 로드된 게시글이 중복되어 내려올 수 있습니다.
-     * 이를 방지하기 위해 `this.loadedPostIds` Set을 사용하여 이미 화면에 표시된 게시글은 제외(필터링)합니다.
-     * 
+     * 이를 방지하기 위해 `this.loadedPostIds` Set으로 이미 표시된 게시글은 필터링합니다.
      * @private
-     * @returns {Promise<void>}
      */
     async _loadPosts() {
         if (this.isLoading || !this.hasMore) return;
-
-        // 이전 요청 취소
-        if (this._abortController) {
-            this._abortController.abort();
-        }
+        if (this._abortController) this._abortController.abort();
         this._abortController = new AbortController();
-
         this.isLoading = true;
         const generation = this.loadGeneration;
         const listElement = document.getElementById('post-list');
         const sentinel = document.getElementById('loading-sentinel');
-
         PostListView.toggleLoadingSentinel(sentinel, true);
-
+        if (this.currentOffset === 0 && listElement) {
+            listElement.textContent = '';
+            listElement.appendChild(PostListView.createSkeletonCards(3));
+        }
         try {
-            const sort = this.filters.forYou ? 'for_you' : this.filters.sort;
-            const result = await PostModel.getPosts(
-                this.currentOffset, this.LIMIT, this.filters.search, sort,
-                null, this.filters.category, this.filters.tag, this.filters.following,
-                { signal: this._abortController.signal }
-            );
-
-            // 취소된 요청은 무시
+            const result = await this._fetchPosts(this._abortController.signal);
             if (result?.aborted) return;
-
-            // 검색/정렬이 변경되어 세대가 바뀌었으면 이전 응답 무시
+            // 검색/정렬 변경으로 세대가 바뀌었으면 이전 응답 무시
             if (generation !== this.loadGeneration) return;
-
             if (!result.ok) throw new Error(UI_MESSAGES.POST_LOAD_FAIL);
-
             const posts = result.data?.data?.posts || [];
             const pagination = result.data?.data?.pagination;
-
             // 추천 피드 폴백 안내 (첫 페이지만)
             if (this.currentOffset === 0 && result.data?.data?.effective_sort) {
                 showToast('활동 데이터가 부족하여 최신순으로 표시됩니다. 게시글을 읽고 좋아요를 남겨보세요!');
             }
-
-            // 중복 게시물 필터링
-            // 무한 스크롤 시 데이터 순서 변경으로 인해 이미 로드한 게시물이 다시 내려올 수 있음.
             const newPosts = posts.filter(post => !this.loadedPostIds.has(post.post_id));
-
-            if (newPosts.length < posts.length) {
-                logger.warn(`${posts.length - newPosts.length}개의 중복 게시물 제외`);
-            }
-
-            // 새로운 게시물 ID 저장
+            if (newPosts.length < posts.length) logger.warn(`${posts.length - newPosts.length}개의 중복 게시물 제외`);
             newPosts.forEach(post => this.loadedPostIds.add(post.post_id));
-
-            // API 응답의 pagination 정보 또는 반환 개수로 hasMore 결정
             if (posts.length < this.LIMIT ||
                 (pagination && !pagination.has_more) ||
                 (pagination && this.currentOffset + posts.length >= pagination.total_count)) {
                 this.hasMore = false;
                 PostListView.toggleLoadingSentinel(sentinel, false);
             }
-
+            // 첫 페이지 로드 완료 시 스켈레톤 카드 제거
+            if (this.currentOffset === 0 && listElement) {
+                listElement.querySelectorAll('.skeleton-post').forEach(el => el.remove());
+            }
             if (this.currentOffset === 0 && newPosts.length === 0) {
-                if (this.filters.forYou) {
-                    PostListView.renderEmptyState(listElement, '추천 게시글을 준비 중입니다. 게시글을 읽고, 좋아요와 북마크를 남겨보세요!', 'recommend --for-you');
-                } else if (this.filters.following) {
-                    PostListView.renderEmptyState(listElement, '팔로우한 사용자의 게시글이 여기에 표시됩니다.', 'feed --following');
-                } else if (this.filters.search) {
-                    PostListView.renderEmptyState(listElement, `'${this.filters.search}' — ${UI_MESSAGES.SEARCH_NO_RESULTS}`, `grep "${this.filters.search}" posts/`);
-                } else {
-                    PostListView.renderEmptyState(listElement, '등록된 게시글이 없습니다.', 'ls posts/');
-                }
-                this.hasMore = false;
-                PostListView.toggleLoadingSentinel(sentinel, false);
+                this._renderEmptyFeed(listElement, sentinel);
                 return;
             }
-
-            // 새로운 게시물만 렌더링
             if (newPosts.length > 0) {
                 PostListView.renderPosts(listElement, newPosts, (postId) => {
                     location.href = resolveNavPath(NAV_PATHS.DETAIL(postId));
                 });
             }
-
             this.currentOffset += posts.length;
-
         } catch (error) {
             logger.error('게시글 목록 로딩 실패', error);
             PostListView.showSentinelError(sentinel, UI_MESSAGES.UNKNOWN_ERROR);
@@ -374,32 +302,39 @@ class MainController {
             this.isLoading = false;
         }
     }
-
     /**
-     * 검색 자동완성 설정 (300ms 디바운스)
+     * 빈 피드 상태 메시지 렌더링
+     * @private
+     */
+    _renderEmptyFeed(listElement, sentinel) {
+        if (this.filters.forYou) {
+            PostListView.renderEmptyState(listElement, '추천 게시글을 준비 중입니다. 게시글을 읽고, 좋아요와 북마크를 남겨보세요!', 'recommend --for-you');
+        } else if (this.filters.following) {
+            PostListView.renderEmptyState(listElement, '팔로우한 사용자의 게시글이 여기에 표시됩니다.', 'feed --following');
+        } else if (this.filters.search) {
+            PostListView.renderEmptyState(listElement, `'${this.filters.search}' — ${UI_MESSAGES.SEARCH_NO_RESULTS}`, `grep "${this.filters.search}" posts/`);
+        } else {
+            PostListView.renderEmptyState(listElement, '등록된 게시글이 없습니다.', 'ls posts/');
+        }
+        this.hasMore = false;
+        PostListView.toggleLoadingSentinel(sentinel, false);
+    }
+    /**
+     * 검색 자동완성 설정 (AUTOCOMPLETE_DEBOUNCE_MS 디바운스)
      * @param {HTMLInputElement} input
      * @private
      */
     _setupSearchAutocomplete(input) {
         let timer = null;
         const MIN_QUERY = 2;
-
         input.addEventListener('input', () => {
             clearTimeout(timer);
             const query = input.value.trim();
-            if (query.length < MIN_QUERY) {
-                this._hideSearchSuggestions();
-                return;
-            }
-            timer = setTimeout(() => this._fetchSuggestions(query), 300);
+            if (query.length < MIN_QUERY) { this._hideSearchSuggestions(); return; }
+            timer = setTimeout(() => this._fetchSuggestions(query), AUTOCOMPLETE_DEBOUNCE_MS);
         });
-
-        input.addEventListener('blur', () => {
-            // 클릭 이벤트가 먼저 발생하도록 지연
-            setTimeout(() => this._hideSearchSuggestions(), 150);
-        });
+        input.addEventListener('blur', () => setTimeout(() => this._hideSearchSuggestions(), 150));
     }
-
     /**
      * 검색 제안 목록 조회 및 렌더링
      * @param {string} query
@@ -409,43 +344,30 @@ class MainController {
         try {
             const result = await PostModel.getPosts({ search: query, limit: 5, offset: 0 });
             if (!result.ok) return;
-
-            const posts = result.data?.data?.posts || [];
-            this._renderSuggestions(posts, query);
+            this._renderSuggestions(result.data?.data?.posts || []);
         } catch {
             this._hideSearchSuggestions();
         }
     }
-
     /**
      * 검색 제안 드롭다운 렌더링
      * @param {Array} posts
-     * @param {string} query - 하이라이트용 검색어
      * @private
      */
-    _renderSuggestions(posts, query) {
+    _renderSuggestions(posts) {
         const container = document.getElementById('search-suggestions');
         if (!container) return;
-
         container.textContent = '';
-
-        if (posts.length === 0) {
-            container.style.display = 'none';
-            return;
-        }
-
+        if (posts.length === 0) { container.style.display = 'none'; return; }
         posts.forEach(post => {
             const li = document.createElement('li');
             li.className = 'search-suggestion-item';
-
             const title = document.createElement('span');
             title.className = 'suggestion-title';
             title.textContent = post.title;
-
             const author = document.createElement('span');
             author.className = 'suggestion-author';
             author.textContent = post.author?.nickname || '';
-
             li.appendChild(title);
             li.appendChild(author);
             li.addEventListener('mousedown', (e) => {
@@ -454,17 +376,12 @@ class MainController {
             });
             container.appendChild(li);
         });
-
         container.style.display = '';
     }
-
     /** @private */
     _hideSearchSuggestions() {
         const container = document.getElementById('search-suggestions');
-        if (container) {
-            container.style.display = 'none';
-            container.textContent = '';
-        }
+        if (container) { container.style.display = 'none'; container.textContent = ''; }
     }
 }
 

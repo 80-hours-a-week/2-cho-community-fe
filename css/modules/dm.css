@@ -1,5 +1,6 @@
 /* css/modules/dm.css */
-/* DM(쪽지) — Terminal Editorial 디자인 시스템 */
+/* DM(쪽지) — Terminal Log 스타일 */
+/* 대화를 터미널 세션으로 표현 — Terminal Editorial 디자인 시스템 */
 
 /* ============================= */
 /* DM 목록 페이지               */
@@ -258,7 +259,7 @@
 }
 
 /* ============================= */
-/* DM 대화 상세 페이지           */
+/* DM 대화 상세 — 터미널 세션     */
 /* ============================= */
 
 .dm-detail-container {
@@ -269,19 +270,17 @@
     height: calc(100vh - var(--header-height));
 }
 
-/* 대화 헤더 — 상단 accent 보더 */
+/* 터미널 타이틀 바 — macOS 윈도우 크롬 */
 .dm-detail-header {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 2px solid var(--color-primary);
-    background: var(--dm-panel-bg);
-    position: sticky;
-    top: 0;
-    z-index: var(--z-header);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--color-border);
 }
 
+/* 대화 상대 정보 — 터미널 타이틀 */
 .dm-other-user-info {
     flex: 1;
     display: flex;
@@ -290,108 +289,111 @@
     min-width: 0;
 }
 
+/* 터미널 헤더에서는 아바타 숨김 — 닉네임만 표시 */
 .dm-other-user-info .dm-card__avatar {
-    width: 28px;
-    height: 28px;
+    display: none;
 }
 
 .dm-other-user-info .dm-card__name {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
-    color: var(--text-heading);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-code-text);
     margin-bottom: 0;
+    letter-spacing: var(--tracking-wide);
 }
 
-/* 메시지 영역 */
+/* 헤더 이름 앞에 세션 프롬프트 추가 */
+.dm-other-user-info .dm-card__name::before {
+    content: 'dm — ';
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+}
+
+.dm-other-user-info .dm-card__name::after {
+    content: '@camplinux';
+    color: var(--text-caption);
+    font-weight: var(--font-weight-normal);
+}
+
+/* ============================= */
+/* 메시지 영역 — 터미널 본체      */
+/* ============================= */
+
 .dm-messages {
     flex: 1;
     overflow-y: auto;
     padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 0;
+    background: var(--color-code-bg);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-code-text);
 }
 
-/* 메시지 버블 공통 */
+/* ============================= */
+/* 메시지 — 터미널 로그 엔트리     */
+/* ============================= */
+
 .dm-msg {
-    max-width: 70%;
+    max-width: 100%;
     word-break: break-word;
-}
-
-/* 내 메시지 (오른쪽) — primary teal */
-.dm-msg--mine {
-    align-self: flex-end;
-    background: var(--dm-bubble-mine);
-    color: var(--dm-bubble-mine-text);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-md);
-    border-bottom-right-radius: var(--radius-sm);
-    position: relative;
-    margin-bottom: var(--spacing-xs);
-}
-
-/* 상대방 메시지 (왼쪽) */
-.dm-msg--other {
-    align-self: flex-start;
     display: flex;
-    gap: var(--spacing-xs);
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-2xs) 0;
 }
 
-/* 상대방 아바타 — 스퀘어 */
+/* 내 메시지 — 티얼 좌측 보더 */
+.dm-msg--mine {
+    align-self: stretch;
+    border-left: 2px solid var(--color-primary);
+    padding-left: var(--spacing-sm);
+    position: relative;
+    margin-bottom: 0;
+    background: none;
+    color: var(--color-code-text);
+    border-radius: 0;
+}
+
+/* 상대방 메시지 — 보더 없음 */
+.dm-msg--other {
+    align-self: stretch;
+    padding-left: calc(2px + var(--spacing-sm));
+}
+
+/* 터미널 로그에서는 아바타 숨김 — 닉네임 프롬프트로 대체 */
 .dm-msg .dm-card__avatar {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    align-self: flex-end;
-    border-radius: var(--radius-sm);
+    display: none;
 }
 
-/* 상대방 메시지 버블 (아바타 제외) */
-.dm-msg--other .dm-msg__body {
-    background: var(--dm-bubble-other);
-    color: var(--dm-bubble-other-text);
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-md);
-    border-bottom-left-radius: var(--radius-sm);
-}
-
-/* 삭제된 메시지 */
-.dm-msg--deleted .dm-msg__content {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    letter-spacing: var(--tracking-wide);
-    color: var(--dm-bubble-deleted-text);
-}
-
-.dm-msg--deleted.dm-msg--mine {
-    background: var(--dm-bubble-deleted);
-}
-
-.dm-msg--deleted.dm-msg--other .dm-msg__body {
-    background: var(--dm-bubble-deleted);
-}
-
-/* 빈 메시지 상태 */
-.dm-messages-empty {
-    text-align: center;
-    padding: var(--spacing-6xl) var(--spacing-xl);
-    color: var(--text-placeholder);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-sm);
-    letter-spacing: var(--tracking-wide);
-}
-
+/* 메시지 본체 */
 .dm-msg__body {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-width: 0;
 }
 
+/* 상대방 버블 스타일 제거 — 플레인 텍스트 */
+.dm-msg--other .dm-msg__body {
+    background: none;
+    color: var(--color-code-text);
+    padding: 0;
+    border-radius: 0;
+}
+
+/* 메시지 내용 */
 .dm-msg__content {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-caption);
     line-height: var(--line-height-normal);
+    font-family: var(--font-family-mono);
 }
 
-/* 마크다운 렌더링된 내용 내부 여백 초기화 */
+/* 마크다운 내부 여백 초기화 */
 .dm-msg__content p {
     margin: 0;
 }
@@ -400,67 +402,115 @@
     margin-top: var(--spacing-xs);
 }
 
+/* 메시지 프롬프트 — JS에서 추가하는 .dm-msg__prompt */
+.dm-msg__prompt {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.dm-msg--mine .dm-msg__prompt {
+    color: var(--color-primary);
+}
+
+.dm-msg--other .dm-msg__prompt {
+    color: var(--color-code-function);
+}
+
+/* 타임스탬프 — 인라인 프롬프트 앞 */
 .dm-msg__time {
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    margin-top: var(--spacing-2xs);
     letter-spacing: var(--tracking-wide);
-    opacity: 0.7;
+    opacity: 0.5;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0;
 }
 
 .dm-msg--mine .dm-msg__time {
-    text-align: right;
-    color: var(--dm-bubble-mine-text);
+    text-align: left;
+    color: var(--color-code-text);
 }
 
 .dm-msg--other .dm-msg__time {
     text-align: left;
-    color: var(--text-placeholder);
+    color: var(--color-code-text);
 }
 
-/* 읽음 체크마크 (버블 오른쪽 대각선 아래) */
+/* 읽음 상태 — 인라인 표시 */
 .dm-msg__read-status {
-    position: absolute;
-    bottom: -14px;
-    right: -2px;
+    position: static;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--text-placeholder);
-    opacity: 0.7;
+    opacity: 0.5;
+    margin-left: var(--spacing-xs);
+    white-space: nowrap;
 }
 
 .dm-msg__read-status--read {
-    color: var(--dm-read-check);
-    opacity: 1;
+    color: var(--color-primary);
+    opacity: 0.8;
 }
 
-/* 날짜 구분선 — 모노 타이포 */
+/* ============================= */
+/* 삭제된 메시지 — dim 처리       */
+/* ============================= */
+
+.dm-msg--deleted .dm-msg__content {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-code-comment);
+    font-style: italic;
+}
+
+.dm-msg--deleted.dm-msg--mine {
+    background: none;
+    opacity: 0.5;
+}
+
+.dm-msg--deleted.dm-msg--other .dm-msg__body {
+    background: none;
+    opacity: 0.5;
+}
+
+/* 빈 메시지 상태 */
+.dm-messages-empty {
+    text-align: center;
+    padding: var(--spacing-6xl) var(--spacing-xl);
+    color: var(--color-code-comment);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
+}
+
+/* ============================= */
+/* 날짜 구분선 — 터미널 코멘트    */
+/* ============================= */
+
 .dm-date-divider {
     text-align: center;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
-    color: var(--text-placeholder);
+    color: var(--color-code-comment);
     letter-spacing: var(--tracking-wide);
     padding: var(--spacing-md) 0;
     position: relative;
 }
 
-.dm-date-divider::before,
-.dm-date-divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 30%;
-    height: 1px;
-    background: var(--border-subtle);
-}
-
 .dm-date-divider::before {
-    left: 0;
+    content: '# ─── ';
+    color: var(--color-code-comment);
 }
 
 .dm-date-divider::after {
-    right: 0;
+    content: ' ───';
+    color: var(--color-code-comment);
 }
 
 /* ============================= */
@@ -472,11 +522,12 @@
     align-items: center;
     gap: var(--spacing-xs);
     padding: var(--spacing-xs) var(--spacing-lg);
-    color: var(--text-placeholder);
+    color: var(--color-code-comment);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     letter-spacing: var(--tracking-wide);
     min-height: 24px;
+    background: var(--color-code-bg);
 }
 
 .dm-typing:empty {
@@ -492,7 +543,7 @@
     width: 5px;
     height: 5px;
     border-radius: var(--radius-sm);
-    background: var(--dm-typing-dot);
+    background: var(--color-primary);
     animation: dm-typing-bounce 1.4s infinite ease-in-out;
 }
 
@@ -506,7 +557,7 @@
 }
 
 /* ============================= */
-/* 입력 영역                     */
+/* 입력 영역 — 터미널 프롬프트    */
 /* ============================= */
 
 .dm-input-area {
@@ -514,10 +565,21 @@
     align-items: flex-end;
     gap: var(--spacing-sm);
     padding: var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid var(--border-subtle);
-    background: var(--dm-panel-bg);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-code-bg);
     position: sticky;
     bottom: 0;
+}
+
+/* 프롬프트 기호 — CSS로 추가 */
+.dm-input-area::before {
+    content: '$';
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    flex-shrink: 0;
+    align-self: center;
 }
 
 .dm-editor-wrapper {
@@ -541,8 +603,8 @@
 
 .dm-context-menu {
     position: fixed;
-    background: var(--surface-elevated);
-    border: 1px solid var(--border-default);
+    background: var(--color-code-bg);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     z-index: var(--z-modal);
@@ -580,7 +642,7 @@
     padding: var(--spacing-xs);
     border: none;
     background: transparent;
-    color: var(--text-caption);
+    color: var(--color-code-text);
     cursor: pointer;
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
@@ -589,4 +651,13 @@
 .dm-detail-header .btn-icon:hover {
     color: var(--color-danger);
     background: var(--color-danger-bg);
+}
+
+/* 헤더 뒤로가기 버튼도 터미널 색상 */
+.dm-detail-header .back-button {
+    color: var(--color-code-text);
+}
+
+.dm-detail-header .back-button:hover {
+    color: var(--color-primary);
 }

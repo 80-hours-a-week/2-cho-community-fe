@@ -148,6 +148,7 @@ class AdminReportController {
             AdminReportView.renderReports(listEl, reports, {
                 onResolve: (reportId) => this._confirmResolve(reportId, 'resolved'),
                 onDismiss: (reportId) => this._confirmResolve(reportId, 'dismissed'),
+                onReopen: (reportId) => this._handleReopen(reportId),
             }, isAppend);
 
             this.currentOffset += reports.length;
@@ -250,6 +251,28 @@ class AdminReportController {
 
         this.resolveTargetId = null;
         this.resolveAction = null;
+    }
+
+    /**
+     * 처리된 신고를 다시 열기
+     * @param {number} reportId
+     * @private
+     */
+    async _handleReopen(reportId) {
+        if (!confirm('신고를 다시 열어 재검토하시겠습니까?')) return;
+
+        try {
+            const result = await ReportModel.reopenReport(reportId);
+            if (result.ok) {
+                showToast('신고가 다시 열렸습니다.');
+                this._resetAndReload();
+            } else {
+                showToast(UI_MESSAGES.UNKNOWN_ERROR);
+            }
+        } catch (_error) {
+            logger.error('신고 다시 열기 실패', _error);
+            showToast(UI_MESSAGES.UNKNOWN_ERROR);
+        }
     }
 }
 

@@ -10,7 +10,6 @@ import { resolveNavPath } from '../config.js';
 import { showToast } from '../views/helpers.js';
 
 const logger = Logger.createLogger('WikiDetailController');
-
 class WikiDetailController {
     constructor() {
         /** @type {string|null} */
@@ -24,7 +23,7 @@ class WikiDetailController {
      * @param {Promise<object|null>|null} [currentUserPromise]
      */
     async init(currentUserPromise = null) {
-        /** @type {object|null} */
+        /** @type {Record<string, any>|null} */
         this.currentUser = currentUserPromise ? await currentUserPromise : null;
         // URL에서 slug 추출 (/wiki/slug-name)
         const rawSlug = window.location.pathname.replace(/^\/wiki\//, '');
@@ -64,7 +63,7 @@ class WikiDetailController {
     async _loadWikiPage() {
         const container = document.getElementById('wiki-content');
         try {
-            const result = await WikiModel.getWikiPage(this.slug);
+            const result = await WikiModel.getWikiPage(/** @type {string} */ (this.slug));
             if (!result.ok) {
                 showToast('위키 페이지를 불러오지 못했습니다.');
                 return;
@@ -75,7 +74,7 @@ class WikiDetailController {
             // 현재 사용자 확인
             const currentUserId = this.currentUser?.user_id || null;
 
-            WikiDetailView.renderWikiPage(container, this.pageData, currentUserId);
+            WikiDetailView.renderWikiPage(/** @type {HTMLElement} */ (container), /** @type {Record<string, any>} */ (this.pageData), currentUserId);
 
             // 수정 버튼 이벤트
             this._setupEditButton();
@@ -95,7 +94,7 @@ class WikiDetailController {
         const editBtn = document.getElementById('wiki-edit-btn');
         if (editBtn) {
             editBtn.addEventListener('click', () => {
-                location.href = resolveNavPath(NAV_PATHS.WIKI_EDIT(this.slug));
+                location.href = resolveNavPath(NAV_PATHS.WIKI_EDIT(/** @type {string} */ (this.slug)));
             });
         }
     }
@@ -111,12 +110,12 @@ class WikiDetailController {
                 if (!confirm('정말 이 위키 페이지를 삭제하시겠습니까?')) return;
 
                 try {
-                    const result = await WikiModel.deleteWikiPage(this.slug);
+                    const result = await WikiModel.deleteWikiPage(/** @type {string} */ (this.slug));
                     if (result.ok) {
                         showToast('위키 페이지가 삭제되었습니다.');
                         location.href = resolveNavPath(NAV_PATHS.WIKI);
                     } else {
-                        showToast(result.data?.detail || '위키 페이지 삭제에 실패했습니다.');
+                        showToast(/** @type {any} */ (result.data)?.detail || '위키 페이지 삭제에 실패했습니다.');
                     }
                 } catch (error) {
                     logger.error('위키 페이지 삭제 실패', error);

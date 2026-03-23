@@ -1,7 +1,6 @@
 // @ts-check
 // js/controllers/PackageListController.js
 // 패키지 목록 페이지 컨트롤러
-
 import PackageModel from '../models/PackageModel.js';
 import PackageListView from '../views/PackageListView.js';
 import Logger from '../utils/Logger.js';
@@ -21,9 +20,9 @@ class PackageListController {
         /** @type {IntersectionObserver|null} */
         this.scrollObserver = null;
         this.filters = {
-            sort: 'latest',
-            category: null,
-            search: null,
+            sort: /** @type {string} */ ('latest'),
+            /** @type {string|null} */ category: null,
+            /** @type {string|null} */ search: null,
         };
         // 비동기 응답 무효화 카운터
         this.loadGeneration = 0;
@@ -58,7 +57,6 @@ class PackageListController {
             });
         }
     }
-
     /**
      * 검색 설정 (디바운스)
      * @private
@@ -67,11 +65,12 @@ class PackageListController {
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
 
+        /** @type {ReturnType<typeof setTimeout> | null} */
         let timer = null;
 
         const doSearch = () => {
             if (!searchInput) return;
-            this.filters.search = /** @type {HTMLInputElement} */ (searchInput).value.trim() || null;
+            this.filters.search = /** @type {string|null} */ (/** @type {HTMLInputElement} */ (searchInput).value.trim() || null);
             this._resetAndReload();
         };
 
@@ -81,12 +80,11 @@ class PackageListController {
                 if (e.key === 'Enter') doSearch();
             });
             searchInput.addEventListener('input', () => {
-                clearTimeout(timer);
+                clearTimeout(/** @type {any} */ (timer));
                 timer = setTimeout(doSearch, 300);
             });
         }
     }
-
     /**
      * 정렬 버튼 설정
      * @private
@@ -99,9 +97,8 @@ class PackageListController {
             const btn = /** @type {HTMLElement} */ (e.target).closest('.sort-btn');
             if (!btn) return;
 
-            const sort = /** @type {HTMLElement} */ (btn).dataset.sort;
+            const sort = /** @type {HTMLElement} */ (btn).dataset.sort || this.filters.sort;
             if (sort === this.filters.sort) return;
-
             sortButtons.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
@@ -109,7 +106,6 @@ class PackageListController {
             this._resetAndReload();
         });
     }
-
     /**
      * 카테고리 필터 설정
      * @private
@@ -122,7 +118,7 @@ class PackageListController {
         const urlCategory = new URLSearchParams(location.search).get('category');
         if (urlCategory) this.filters.category = urlCategory;
 
-        PackageListView.renderCategoryFilters(container, this.filters.category, (category) => {
+        PackageListView.renderCategoryFilters(container, this.filters.category, /** @param {any} category */ (category) => {
             if (category === this.filters.category) return;
             this.filters.category = category;
             PackageListView.renderCategoryFilters(container, this.filters.category, arguments.callee);
@@ -132,7 +128,6 @@ class PackageListController {
         // 카테고리 변경 시 재렌더링을 위한 참조 저장
         this._categoryContainer = container;
     }
-
     /**
      * 무한 스크롤 설정
      * @private
@@ -174,7 +169,7 @@ class PackageListController {
             PackageListView.renderCategoryFilters(
                 this._categoryContainer,
                 this.filters.category,
-                (category) => {
+                /** @param {any} category */ (category) => {
                     if (category === this.filters.category) return;
                     this.filters.category = category;
                     this._resetAndReload();
@@ -194,15 +189,12 @@ class PackageListController {
         const generation = this.loadGeneration;
         const listElement = document.getElementById('package-list');
         const sentinel = document.getElementById('loading-sentinel');
-
         PackageListView.toggleLoadingSentinel(sentinel, true);
-
         try {
             const result = await PackageModel.getPackages(
                 this.currentOffset, this.LIMIT, this.filters.sort,
                 this.filters.category, this.filters.search
             );
-
             // 세대가 바뀌었으면 이전 응답 무시
             if (generation !== this.loadGeneration) return;
 
@@ -220,16 +212,16 @@ class PackageListController {
 
             if (this.currentOffset === 0 && packages.length === 0) {
                 if (this.filters.search) {
-                    PackageListView.renderEmptyState(listElement, `'${this.filters.search}' 검색 결과가 없습니다.`, `apt search "${this.filters.search}"`);
+                    PackageListView.renderEmptyState(/** @type {HTMLElement} */ (listElement), `'${this.filters.search}' 검색 결과가 없습니다.`, `apt search "${this.filters.search}"`);
                 } else {
-                    PackageListView.renderEmptyState(listElement, '등록된 패키지가 없습니다.', 'apt list --installed');
+                    PackageListView.renderEmptyState(/** @type {HTMLElement} */ (listElement), '등록된 패키지가 없습니다.', 'apt list --installed');
                 }
                 this.hasMore = false;
                 PackageListView.toggleLoadingSentinel(sentinel, false);
                 return;
             }
 
-            PackageListView.renderPackages(listElement, packages, (packageId) => {
+            PackageListView.renderPackages(/** @type {HTMLElement} */ (listElement), packages, /** @param {any} packageId */ (packageId) => {
                 location.href = resolveNavPath(NAV_PATHS.PACKAGE_DETAIL(packageId));
             });
 

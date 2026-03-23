@@ -48,6 +48,26 @@ export function getImageUrl(url) {
     return `${API_BASE_URL}${url}`;
 }
 
+/** 기본 프로필 이미지 경로 */
+const DEFAULT_PROFILE_IMG = '/assets/profiles/default_profile.jpg';
+
+/**
+ * 이미지 로드 실패 시 처리 — img 요소에 onerror 핸들러 연결
+ * 프로필 이미지: 기본 아바타로 대체 / 게시글 이미지: 숨김 처리
+ * @param {HTMLImageElement} img - 이미지 요소
+ * @param {'profile'|'content'} [type='content'] - 이미지 유형
+ */
+export function handleImageError(img, type = 'content') {
+    img.addEventListener('error', () => {
+        if (type === 'profile') {
+            img.src = DEFAULT_PROFILE_IMG;
+            img.removeAttribute('onerror');
+        } else {
+            img.style.display = 'none';
+        }
+    }, { once: true });
+}
+
 /**
  * 헬퍼 텍스트에 에러 메시지 표시
  * @param {HTMLElement} helperEl - 헬퍼 텍스트 요소

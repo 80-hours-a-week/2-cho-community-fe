@@ -41,8 +41,17 @@ class ReportModel {
     static async resolveReport(reportId, status, suspendDays = null) {
         /** @type {{status: 'resolved' | 'dismissed', suspend_days?: number}} */
         const body = { status };
-        if (suspendDays != null) body.suspend_days = suspendDays;
+        if (suspendDays !== null) body.suspend_days = suspendDays;
         return ApiService.patch(API_ENDPOINTS.ADMIN.RESOLVE_REPORT(reportId), body);
+    }
+
+    /**
+     * 처리된 신고를 다시 열기 (관리자)
+     * @param {number} reportId - 신고 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async reopenReport(reportId) {
+        return ApiService.patch(`${API_ENDPOINTS.ADMIN.RESOLVE_REPORT(reportId)}/reopen`, {});
     }
 }
 
