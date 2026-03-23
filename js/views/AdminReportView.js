@@ -61,11 +61,11 @@ class AdminReportView {
                 createElement('div', { className: 'report-card-actions' }, [
                     createElement('button', {
                         className: 'report-action-btn resolve-btn',
-                        onClick: () => handlers.onResolve(report.id),
+                        onClick: () => handlers.onResolve(report.report_id),
                     }, ['처리 (삭제)']),
                     createElement('button', {
                         className: 'report-action-btn dismiss-btn',
-                        onClick: () => handlers.onDismiss(report.id),
+                        onClick: () => handlers.onDismiss(report.report_id),
                     }, ['기각']),
                 ])
             );

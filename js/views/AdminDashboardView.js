@@ -95,13 +95,13 @@ class AdminDashboardView {
                 actions.push(createElement('button', {
                     className: 'success-btn',
                     textContent: '정지 해제',
-                    onClick: () => handlers.onUnsuspend(user.id),
+                    onClick: () => handlers.onUnsuspend(user.user_id),
                 }));
             } else {
                 actions.push(createElement('button', {
                     className: 'danger-btn',
                     textContent: '정지',
-                    onClick: () => handlers.onSuspend(user.id, user.nickname),
+                    onClick: () => handlers.onSuspend(user.user_id, user.nickname),
                 }));
             }
         }
