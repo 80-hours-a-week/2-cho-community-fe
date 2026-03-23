@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     controller.init();
 
     // 소셜 로그인 버튼 URL 설정
-    const kakaoBtn = document.getElementById('kakao-login-btn');
-    const naverBtn = document.getElementById('naver-login-btn');
-    if (kakaoBtn) kakaoBtn.href = `${API_BASE_URL}/v1/auth/social/kakao/authorize`;
-    if (naverBtn) naverBtn.href = `${API_BASE_URL}/v1/auth/social/naver/authorize`;
+    const githubBtn = document.getElementById('github-login-btn');
+    if (githubBtn) githubBtn.href = `${API_BASE_URL}/v1/auth/social/github/authorize`;
 });
