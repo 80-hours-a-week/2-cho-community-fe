@@ -5,7 +5,7 @@
 /* 페이지 전환 효과 (Page Transitions) */
 /* ============================= */
 body {
-    animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.15s ease-out;
 }
 
 @keyframes fadeIn {
@@ -64,6 +64,7 @@ body {
     border-radius: var(--radius-full);
 }
 
+/* macOS 윈도우 컨트롤 색상 — 의도적으로 테마 비적용 (양 테마에서 동일) */
 .terminal-state__dot--red { background: #FF5F56; }
 .terminal-state__dot--yellow { background: #FFBD2E; }
 .terminal-state__dot--green { background: #27C93F; }

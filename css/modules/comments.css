@@ -192,7 +192,7 @@
     align-items: center;
     gap: var(--spacing-xs);
     margin-top: var(--spacing-sm);
-    padding: 3px var(--spacing-sm);
+    padding: var(--spacing-2xs) var(--spacing-sm);
     border: 1px solid var(--border-subtle);
     border-radius: var(--btn-radius);
     background: transparent;

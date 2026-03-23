@@ -6,7 +6,7 @@
     position: fixed;
     left: 50%;
     bottom: 40px;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(var(--spacing-xl));
     background-color: var(--color-toast-bg);
     color: var(--color-toast-text);
     text-align: center;
