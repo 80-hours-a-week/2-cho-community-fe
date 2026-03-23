@@ -78,7 +78,7 @@ class AuthModel {
                         };
                     }
                 }
-            } catch (e) {
+            } catch (_e) {
                 logger.debug('Silent refresh 실패');
             }
             return { isAuthenticated: false, user: null };

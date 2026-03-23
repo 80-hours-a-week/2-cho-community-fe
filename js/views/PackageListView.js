@@ -3,7 +3,6 @@
 // 패키지 목록 렌더링
 
 import { createElement } from '../utils/dom.js';
-import { formatDate } from '../utils/formatters.js';
 import { PACKAGE_CATEGORY_LABELS, NAV_PATHS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import BaseListView from './BaseListView.js';

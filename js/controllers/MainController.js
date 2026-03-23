@@ -423,7 +423,7 @@ class MainController {
      * @param {string} query - 하이라이트용 검색어
      * @private
      */
-    _renderSuggestions(posts, query) {
+    _renderSuggestions(posts, _query) {
         const container = document.getElementById('search-suggestions');
         if (!container) return;
 

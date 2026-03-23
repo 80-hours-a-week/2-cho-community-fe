@@ -101,7 +101,7 @@ class PostFormView {
                         const tags = result.data?.data?.tags || [];
                         this._showSuggestions(tags);
                     }
-                } catch (_) {
+                } catch (_unused) {
                     // 자동완성 실패는 무시
                 }
             }, 300);

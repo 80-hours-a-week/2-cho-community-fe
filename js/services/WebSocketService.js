@@ -156,7 +156,7 @@ class WebSocketService {
             }
 
             // 인증 타임아웃: auth_ok/auth_error 미수신 시 연결 종료 → 폴링 폴백
-            let authTimer = setTimeout(() => {
+            const authTimer = setTimeout(() => {
                 if (this._state === 'authenticating') {
                     logger.warn('WebSocket 인증 타임아웃 (%dms)', AUTH_TIMEOUT);
                     this._ws?.close();

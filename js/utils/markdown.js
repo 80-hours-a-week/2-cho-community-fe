@@ -134,7 +134,7 @@ export function renderMarkdown(markdown) {
 export function renderMarkdownTo(element, markdown) {
     // DOMPurify로 sanitize된 안전한 HTML — XSS safe
     const sanitizedHtml = renderMarkdown(markdown);
-    element.innerHTML = sanitizedHtml; // eslint-disable-line no-unsanitized/property
+    element.innerHTML = sanitizedHtml;
 
     // 코드 복사 버튼 이벤트 바인딩 (sanitize 후 안전한 DOM에서 바인딩)
     element.querySelectorAll('.code-copy-btn').forEach(btn => {

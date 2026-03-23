@@ -1,7 +1,7 @@
 // js/controllers/SocialSignupController.js
 import ApiService from '../services/ApiService.js';
 import FormValidator from '../views/FormValidator.js';
-import { showToast, showError, hideError, updateButtonState } from '../views/helpers.js';
+import { showToast, showError, updateButtonState } from '../views/helpers.js';
 import { resolveNavPath } from '../config.js';
 import { NAV_PATHS } from '../constants.js';
 import Logger from '../utils/Logger.js';

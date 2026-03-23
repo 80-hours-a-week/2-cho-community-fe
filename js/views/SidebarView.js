@@ -4,7 +4,6 @@
 import { createElement } from '../utils/dom.js';
 import { NAV_PATHS, CATEGORY_LABELS, PACKAGE_CATEGORY_LABELS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
-import { Icons } from '../utils/icons.js';
 
 /**
  * 사이드바 View 클래스
@@ -18,7 +17,7 @@ class SidebarView {
      * @param {boolean} options.isAdmin - 관리자 여부
      * @returns {HTMLElement}
      */
-    static create({ user, isAdmin }) {
+    static create({ user: _user, isAdmin }) {
         const currentPath = location.pathname;
 
         const sidebar = createElement('nav', { className: 'sidebar', id: 'app-sidebar' }, [

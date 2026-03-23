@@ -88,7 +88,7 @@ class ApiService {
 
                 _accessToken = null;
                 return false;
-            } catch (e) {
+            } catch (_e) {
                 _accessToken = null;
                 return false;
             } finally {
@@ -109,12 +109,9 @@ class ApiService {
     static async get(endpoint, optionsOrRetry = false, extraHeadersArg = undefined) {
         // 하위 호환: 기존 boolean 호출 지원
         /** @type {{_isRetry?: boolean, signal?: AbortSignal, extraHeaders?: Record<string, string>}} */
-        let options = {};
-        if (typeof optionsOrRetry === 'boolean') {
-            options = { _isRetry: optionsOrRetry, extraHeaders: extraHeadersArg };
-        } else {
-            options = optionsOrRetry || {};
-        }
+        const options = typeof optionsOrRetry === 'boolean'
+            ? { _isRetry: optionsOrRetry, extraHeaders: extraHeadersArg }
+            : (optionsOrRetry || {});
 
         const { _isRetry = false, signal, extraHeaders } = options;
 

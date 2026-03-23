@@ -1,7 +1,7 @@
 // js/views/ProfileView.js
 // 프로필 수정 페이지 View - DOM 조작 담당
 
-import { showError, hideError, showToast, getImageUrl, updateButtonState as updateBtnState } from './helpers.js';
+import { showError, showToast, getImageUrl, updateButtonState as updateBtnState } from './helpers.js';
 import { escapeCssUrl } from '../utils/formatters.js';
 
 /**

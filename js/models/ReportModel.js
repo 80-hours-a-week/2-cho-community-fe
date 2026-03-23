@@ -41,7 +41,7 @@ class ReportModel {
     static async resolveReport(reportId, status, suspendDays = null) {
         /** @type {{status: 'resolved' | 'dismissed', suspend_days?: number}} */
         const body = { status };
-        if (suspendDays != null) body.suspend_days = suspendDays;
+        if (suspendDays !== null) body.suspend_days = suspendDays;
         return ApiService.patch(API_ENDPOINTS.ADMIN.RESOLVE_REPORT(reportId), body);
     }
 }

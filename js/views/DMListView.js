@@ -1,7 +1,7 @@
 // js/views/DMListView.js
 // DM 대화 목록 DOM 렌더링 (View 전용)
 
-import { createElement, clearElement } from '../utils/dom.js';
+import { createElement } from '../utils/dom.js';
 import { getImageUrl } from './helpers.js';
 import { escapeCssUrl } from '../utils/formatters.js';
 import { resolveNavPath } from '../config.js';

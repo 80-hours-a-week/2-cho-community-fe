@@ -89,7 +89,7 @@ function rect(x, y, w, h, rx) {
     el.setAttribute('y', String(y));
     el.setAttribute('width', String(w));
     el.setAttribute('height', String(h));
-    if (rx != null) el.setAttribute('rx', String(rx));
+    if (rx !== null && rx !== undefined) el.setAttribute('rx', String(rx));
     return el;
 }
 
