@@ -16,9 +16,10 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
     <header>
         <div class="header-title-wrapper">
-            <button id="back-btn" class="back-button">
+            <button id="back-btn" class="back-button" aria-label="뒤로 가기">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -29,7 +30,7 @@
         </div>
     </header>
 
-    <main class="main-container">
+    <main class="main-container" id="main-content">
         <h1>내 활동</h1>
         <div class="activity-tabs">
             <button class="tab-btn active" data-tab="posts">내가 쓴 글</button>

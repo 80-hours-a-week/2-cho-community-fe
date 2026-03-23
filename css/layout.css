@@ -61,9 +61,6 @@ header {
     stroke: var(--color-text-primary);
 }
 
-.back-button:focus {
-    outline: none;
-}
 
 /* Title — 세리프 + 터미널 커서 애니메이션 */
 .header-home-link {

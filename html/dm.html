@@ -16,6 +16,7 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
     <header>
         <div class="header-title-wrapper">
             <a href="/main" class="header-home-link"><h2>Camp Linux</h2></a>
@@ -23,7 +24,7 @@
         </div>
     </header>
 
-    <main class="main-container">
+    <main class="main-container" id="main-content">
         <div class="dm-desktop-layout">
             <!-- 좌측 사이드바: 대화 목록 -->
             <div class="dm-sidebar">
@@ -47,7 +48,7 @@
                 <div id="dm-chat-area" class="dm-chat-area" style="display:none;">
                     <div class="dm-detail-header">
                         <div id="dm-other-user" class="dm-other-user-info"></div>
-                        <button id="dm-delete-btn" class="btn-icon" title="대화 삭제">
+                        <button id="dm-delete-btn" class="btn-icon" title="대화 삭제" aria-label="대화 삭제">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

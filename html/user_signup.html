@@ -16,9 +16,10 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
     <header>
         <div class="header-title-wrapper">
-            <button id="back-btn" class="back-button">
+            <button id="back-btn" class="back-button" aria-label="뒤로 가기">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -28,7 +29,7 @@
         </div>
     </header>
 
-    <div class="signup-container">
+    <div class="signup-container" id="main-content">
         <h2 class="signup-title">회원가입</h2>
 
         <form id="signup-form">
@@ -50,34 +51,34 @@
             <div class="input-group">
                 <label for="email" class="input-label">이메일*</label>
                 <input type="email" id="email" name="email" class="input-field" required placeholder="이메일을 입력하세요"
-                    autocomplete="email">
+                    autocomplete="email" aria-describedby="email-helper">
                 <span id="email-helper" class="error-msg">* helper text</span>
             </div>
 
             <div class="input-group">
                 <label for="password" class="input-label">비밀번호*</label>
                 <input type="password" id="password" name="password" class="input-field" required
-                    placeholder="비밀번호를 입력하세요" autocomplete="new-password">
+                    placeholder="비밀번호를 입력하세요" autocomplete="new-password" aria-describedby="password-helper">
                 <span id="password-helper" class="error-msg">* helper text</span>
             </div>
 
             <div class="input-group">
                 <label for="password-confirm" class="input-label">비밀번호 확인*</label>
                 <input type="password" id="password-confirm" name="password-confirm" class="input-field" required
-                    placeholder="비밀번호를 한번 더 입력하세요" autocomplete="new-password">
+                    placeholder="비밀번호를 한번 더 입력하세요" autocomplete="new-password" aria-describedby="password-confirm-helper">
                 <span id="password-confirm-helper" class="error-msg">* helper text</span>
             </div>
 
             <div class="input-group">
                 <label for="nickname" class="input-label">닉네임*</label>
                 <input type="text" id="nickname" name="nickname" class="input-field" required placeholder="닉네임을 입력하세요"
-                    autocomplete="username">
+                    autocomplete="username" aria-describedby="nickname-helper">
                 <span id="nickname-helper" class="error-msg">* helper text</span>
             </div>
 
             <div class="terms-section">
                 <label class="terms-label">
-                    <input type="checkbox" id="terms-checkbox">
+                    <input type="checkbox" id="terms-checkbox" aria-describedby="terms-helper">
                     <a id="terms-link" href="#" target="_blank" class="terms-link">이용약관</a>에 동의합니다.*
                 </label>
                 <span id="terms-helper" class="error-msg">* helper text</span>
@@ -88,13 +89,9 @@
 
         <div class="social-login-divider">또는</div>
         <div class="social-login-buttons">
-            <a id="kakao-login-btn" class="social-login-btn social-login-btn--kakao" href="#">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.46 2 10.65c0 2.68 1.75 5.04 4.4 6.38-.16.56-.58 2.04-.66 2.36-.1.4.15.39.31.28.13-.08 2.04-1.38 2.86-1.95.68.1 1.38.15 2.09.15 5.52 0 10-3.46 10-7.72C22 6.46 17.52 3 12 3z"/></svg>
-                카카오 로그인
-            </a>
-            <a id="naver-login-btn" class="social-login-btn social-login-btn--naver" href="#">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.27 3H7.73A4.73 4.73 0 003 7.73v8.54A4.73 4.73 0 007.73 21h8.54A4.73 4.73 0 0021 16.27V7.73A4.73 4.73 0 0016.27 3zm.46 12.6h-2.85l-3.06-4.36v4.36H7.97V8.4h2.85l3.06 4.36V8.4h2.85v7.2z"/></svg>
-                네이버 로그인
+            <a id="github-login-btn" class="social-login-btn social-login-btn--github" href="#">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.603-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                GitHub 로그인
             </a>
         </div>
 

@@ -12,13 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
     <header>
         <div class="header-title-wrapper">
             <a href="/main" class="header-home-link"><h2>Camp Linux</h2></a>
         </div>
     </header>
 
-    <div class="social-signup-container">
+    <div class="social-signup-container" id="main-content">
         <h2 class="social-signup-title">닉네임 설정</h2>
         <p class="social-signup-desc">커뮤니티에서 사용할 닉네임을 설정해주세요.</p>
 
@@ -26,7 +27,7 @@
             <div class="input-group">
                 <label for="nickname" class="input-label">닉네임*</label>
                 <input type="text" id="nickname" name="nickname" class="input-field" required
-                    placeholder="영문, 숫자, 언더바 (3~10자)" autocomplete="username">
+                    placeholder="영문, 숫자, 언더바 (3~10자)" autocomplete="username" aria-describedby="nickname-helper">
                 <span id="nickname-helper" class="error-msg">* helper text</span>
             </div>
 

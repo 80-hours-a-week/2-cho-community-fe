@@ -17,9 +17,10 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
     <header>
         <div class="header-title-wrapper">
-            <button id="back-btn" class="back-button">
+            <button id="back-btn" class="back-button" aria-label="뒤로 가기">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -31,7 +32,7 @@
         </div>
     </header>
 
-    <main class="main-container post-detail-container">
+    <main class="main-container post-detail-container" id="main-content">
         <!-- 게시글 내용 섹션 (Post Content Section) -->
         <article class="post-content-wrapper">
             <div id="post-badges" class="post-badges"></div>
@@ -99,6 +100,7 @@
                     <span id="reply-indicator-text"></span>
                     <button id="reply-cancel-btn" class="reply-cancel-btn">취소</button>
                 </div>
+                <label for="comment-input" class="sr-only">댓글 입력</label>
                 <textarea id="comment-input" placeholder="댓글을 남겨주세요!"></textarea>
                 <div class="comment-submit-wrapper">
                     <button id="comment-submit-btn" class="comment-submit-btn">댓글 등록</button>

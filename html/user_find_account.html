@@ -17,9 +17,10 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
     <header>
         <div class="header-title-wrapper">
-            <button id="back-btn" class="back-button">
+            <button id="back-btn" class="back-button" aria-label="뒤로 가기">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 19L8 12L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -28,7 +29,7 @@
             <a href="/main" class="header-home-link"><h2>Camp Linux</h2></a>
         </div>
     </header>
-    <div class="login-container">
+    <div class="login-container" id="main-content">
         <h2>계정 찾기</h2>
 
         <!-- 탭 네비게이션 -->
@@ -45,7 +46,7 @@
                 <div class="input-group">
                     <label for="nickname">닉네임</label>
                     <input type="text" id="nickname" name="nickname"
-                        placeholder="가입 시 사용한 닉네임을 입력하세요" autocomplete="username">
+                        placeholder="가입 시 사용한 닉네임을 입력하세요" autocomplete="username" aria-describedby="nickname-helper">
                     <span id="nickname-helper"></span>
                 </div>
                 <button type="submit" class="login-btn" id="find-email-btn" disabled>이메일 찾기</button>
@@ -61,7 +62,7 @@
                 <div class="input-group">
                     <label for="reset-email">이메일</label>
                     <input type="email" id="reset-email" name="email"
-                        placeholder="가입 시 사용한 이메일을 입력하세요" autocomplete="email">
+                        placeholder="가입 시 사용한 이메일을 입력하세요" autocomplete="email" aria-describedby="reset-email-helper">
                     <span id="reset-email-helper"></span>
                 </div>
                 <button type="submit" class="login-btn" id="reset-password-btn" disabled>임시 비밀번호 받기</button>

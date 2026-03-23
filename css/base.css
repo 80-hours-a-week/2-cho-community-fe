@@ -96,6 +96,50 @@ ol {
     border: 0;
 }
 
+/* ============================= */
+/* 포커스 표시 — 키보드 내비게이션 (Focus Visible) */
+/* ============================= */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: var(--input-focus-ring);
+}
+
+/* ============================= */
+/* 본문 건너뛰기 링크 (Skip Navigation) */
+/* ============================= */
+.skip-nav {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+    background: var(--color-primary);
+    color: var(--color-text-white);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    text-decoration: none;
+    z-index: calc(var(--z-modal) + 10);
+}
+
+.skip-nav:focus {
+    position: fixed;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    width: auto;
+    height: auto;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    border-radius: var(--radius-sm);
+}
+
 /* 모노스페이스 유틸리티 — 메타데이터, 날짜, 통계에 사용 */
 .mono {
     font-family: var(--font-family-mono);
