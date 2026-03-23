@@ -1,0 +1,62 @@
+###############################################################################
+# CI — Frontend ESLint + TypeScript + Vite Build
+#
+# PR과 main 푸시 시 코드 품질 검사 자동 실행
+# ESLint 린트 → TypeScript 타입 체크 → Vite 프로덕션 빌드 검증
+###############################################################################
+
+name: CI — Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "js/**"
+      - "css/**"
+      - "html/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "eslint.config.js"
+      - "vite.config.js"
+  pull_request:
+    branches: [main]
+    paths:
+      - "js/**"
+      - "css/**"
+      - "html/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "eslint.config.js"
+      - "vite.config.js"
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-build:
+    name: Lint + Type Check + Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npx eslint js/
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Vite production build
+        run: npx vite build
