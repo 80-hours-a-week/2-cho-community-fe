@@ -58,6 +58,18 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
+      output: {
+        // 마크다운 관련 라이브러리(marked, dompurify, highlight.js)를 별도 chunk로 분리하여
+        // 마크다운을 사용하지 않는 페이지에서 불필요한 코드 로딩 방지
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('marked') || id.includes('dompurify') || id.includes('highlight.js')) {
+              return 'vendor-markdown';
+            }
+            return 'vendor';
+          }
+        },
+      },
       input: {
         user_login: resolve(__dirname, 'html/user_login.html'),
         user_signup: resolve(__dirname, 'html/user_signup.html'),
