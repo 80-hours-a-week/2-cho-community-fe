@@ -60,20 +60,20 @@ flowchart TD
 │   │   ├── dm.js              # DM 데스크톱 통합 (좌우 분할)
 │   │   └── ...                # 총 26개
 │   │
-│   ├── controllers/           # 비즈니스 로직 (21개)
+│   ├── controllers/           # 비즈니스 로직 (31개)
 │   │   ├── MainController.js
 │   │   ├── DetailController.js
 │   │   ├── HeaderController.js  # 인증 상태, 알림 뱃지, WebSocket 관리
 │   │   ├── DMPageController.js  # DM 데스크톱 좌우 분할 오케스트레이션
 │   │   └── ...
 │   │
-│   ├── models/                # API 통신 계층 (10개)
+│   ├── models/                # API 통신 계층 (12개)
 │   │   ├── PostModel.js
 │   │   ├── AuthModel.js
 │   │   ├── DMModel.js
 │   │   └── ...
 │   │
-│   ├── views/                 # DOM 렌더링 (22개)
+│   ├── views/                 # DOM 렌더링 (30개)
 │   │   ├── PostListView.js
 │   │   ├── PostDetailView.js
 │   │   ├── ModalView.js
@@ -103,17 +103,17 @@ flowchart TD
 │
 └── css/
     ├── style.css              # @import 진입점
-    ├── variables.css           # 60+ 디자인 토큰
+    ├── variables.css           # 160+ 디자인 토큰
     ├── base.css               # 리셋, 타이포그래피
     ├── layout.css             # 헤더, 컨테이너
-    ├── modules/               # 재사용 컴포넌트 스타일 (16개)
+    ├── modules/               # 재사용 컴포넌트 스타일 (21개)
     │   ├── cards.css
     │   ├── markdown.css
     │   ├── responsive.css     # 모바일 반응형 미디어 쿼리
     │   ├── dm.css
     │   ├── bottom-tabs.css    # 모바일 하단 탭 바 스타일
     │   └── ...
-    └── pages/                 # 페이지별 스타일 (7개)
+    └── pages/                 # 페이지별 스타일 (10개)
 ```
 
 ---
@@ -224,7 +224,7 @@ DOM CustomEvent로 컴포넌트 간 느슨한 결합을 구현합니다.
 
 ### 디자인 토큰
 
-`css/variables.css`에 60개 이상의 CSS Custom Properties를 정의하고, 22개 CSS 파일에서 `var()` 참조로 일관성을 보장합니다.
+`css/variables.css`에 160개 이상의 CSS Custom Properties를 정의하고, 31개 CSS 파일에서 `var()` 참조로 일관성을 보장합니다.
 
 | 카테고리 | 예시 |
 | -------- | ---- |
@@ -243,7 +243,7 @@ DOM CustomEvent로 컴포넌트 간 느슨한 결합을 구현합니다.
 
 ### 다크 모드
 
-`ThemeService`가 `[data-theme="dark"]` 속성을 토글하면, `variables.css`의 다크 테마 토큰이 활성화되어 22개 CSS 파일이 자동 전환됩니다. FOUC(Flash of Unstyled Content) 방지를 위해 26개 HTML에 인라인 스크립트로 초기 테마를 즉시 적용합니다.
+`ThemeService`가 `[data-theme="dark"]` 속성을 토글하면, `variables.css`의 다크 테마 토큰이 활성화되어 31개 CSS 파일이 자동 전환됩니다. FOUC(Flash of Unstyled Content) 방지를 위해 26개 HTML에 인라인 스크립트로 초기 테마를 즉시 적용합니다.
 
 ### CSS 로딩 순서
 
@@ -252,9 +252,9 @@ style.css (@import 진입점)
   ├── variables.css      # 반드시 첫 번째
   ├── base.css           # 리셋, 타이포그래피
   ├── layout.css         # 헤더, 컨테이너
-  ├── modules/*.css      # 재사용 컴포넌트 (16개)
+  ├── modules/*.css      # 재사용 컴포넌트 (21개)
   │   └── responsive.css # 반드시 마지막 (미디어 쿼리 오버라이드)
-  └── pages/*.css        # 페이지별 스타일 (7개)
+  └── pages/*.css        # 페이지별 스타일 (10개)
 ```
 
 ---
