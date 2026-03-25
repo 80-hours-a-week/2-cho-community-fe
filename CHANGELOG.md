@@ -2,6 +2,11 @@
 
 ## 2026-03 (Mar)
 
+- feat: 구독 벨 버튼 (게시글 상세), watching 표시 (게시글 목록)
+- feat: 답변 채택 UI (Q&A 카테고리), 해결됨 배지 (게시글 목록)
+- feat: 알림 설정에 이메일 다이제스트 빈도 선택 추가
+- feat: reply 알림 타입 렌더링
+
 - **03-18: SSH 배포를 ArgoCD GitOps 방식으로 전환**
   - `deploy-k8s.yml`: SSH + `kubectl set image` → infra repo 태그 커밋 방식
   - `kustomize edit set image`로 overlay `newTag` 업데이트 후 git push
