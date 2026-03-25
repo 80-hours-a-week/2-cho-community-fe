@@ -135,6 +135,12 @@
     letter-spacing: var(--tracking-wide);
 }
 
+/* 구독 중 표시 (Watching Indicator) */
+.watching-indicator {
+    font-size: var(--font-size-xs);
+    cursor: help;
+}
+
 /* ============================= */
 /* 읽은 게시글 (Read Post) */
 /* ============================= */

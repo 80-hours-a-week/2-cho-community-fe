@@ -498,6 +498,31 @@ class PostDetailView {
     }
 
     /**
+     * 구독 버튼 상태 업데이트
+     * @param {string} level - 구독 레벨 ('normal' | 'watching' | 'muted')
+     */
+    static updateSubscriptionState(level) {
+        const btn = document.getElementById('subscription-btn');
+        if (!btn) return;
+        const iconEl = btn.querySelector('.subscription-icon');
+        const textEl = btn.querySelector('.subscription-text');
+        // 클래스 초기화 후 현재 상태 적용
+        btn.classList.remove('watching', 'muted');
+        if (level === 'watching') {
+            btn.classList.add('watching');
+            if (iconEl) iconEl.textContent = '🔔';
+            if (textEl) textEl.textContent = '구독 중';
+        } else if (level === 'muted') {
+            btn.classList.add('muted');
+            if (iconEl) iconEl.textContent = '🔕';
+            if (textEl) textEl.textContent = '음소거';
+        } else {
+            if (iconEl) iconEl.textContent = '🔔';
+            if (textEl) textEl.textContent = '구독';
+        }
+    }
+
+    /**
      * 토스트 메시지 표시
      * @param {string} message - 메세지
      */

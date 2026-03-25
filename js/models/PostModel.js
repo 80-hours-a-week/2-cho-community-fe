@@ -196,6 +196,34 @@ class PostModel {
         formData.append('file', file);
         return ApiService.postFormData(API_ENDPOINTS.POSTS.IMAGE, formData);
     }
+
+    /**
+     * 게시글 구독 상태 조회
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<{level: string}>>}
+     */
+    static async getSubscription(postId) {
+        return ApiService.get(API_ENDPOINTS.POSTS.SUBSCRIPTION(postId));
+    }
+
+    /**
+     * 게시글 구독 설정
+     * @param {string|number} postId - 게시글 ID
+     * @param {string} level - 구독 레벨 (watching, muted)
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async setSubscription(postId, level) {
+        return ApiService.put(API_ENDPOINTS.POSTS.SUBSCRIPTION(postId), { level });
+    }
+
+    /**
+     * 게시글 구독 해제
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async deleteSubscription(postId) {
+        return ApiService.delete(API_ENDPOINTS.POSTS.SUBSCRIPTION(postId));
+    }
 }
 
 export default PostModel;

@@ -140,6 +140,41 @@
     margin-bottom: var(--spacing-md);
 }
 
+/* 구독 버튼 (Subscription Button) */
+.subscription-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background-color: var(--surface-secondary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-fast);
+}
+
+.subscription-btn:hover {
+    background-color: var(--color-border-dark);
+}
+
+.subscription-btn.watching {
+    background-color: var(--color-primary);
+    color: var(--color-text-white);
+    border-color: var(--color-primary);
+}
+
+.subscription-btn.watching:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.subscription-btn.muted {
+    background-color: var(--color-text-tertiary);
+    color: var(--color-text-white);
+    border-color: var(--color-text-tertiary);
+}
+
+.subscription-btn.muted:hover {
+    background-color: var(--color-text-secondary);
+}
+
 .share-btn {
     background-color: var(--color-info);
     color: var(--color-text-white);

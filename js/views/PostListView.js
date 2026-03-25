@@ -102,11 +102,16 @@ class PostListView extends BaseListView {
 
         const body = createElement('div', { className: 'post-card__body' }, bodyChildren);
         // --- 3. 하단 통계 바 ---
-        const postStats = createElement('div', { className: 'post-stats' }, [
+        const statsChildren = [
             createElement('span', {}, [`♥ ${formatCount(likes)}`]),
             createElement('span', {}, [`◆ ${formatCount(comments)}`]),
             createElement('span', {}, [`▸ ${formatCount(views)}`]),
-        ]);
+        ];
+        // 구독 중(watching) 표시
+        if (post.is_watching) {
+            statsChildren.push(createElement('span', { className: 'watching-indicator', title: '구독 중' }, ['🔔']));
+        }
+        const postStats = createElement('div', { className: 'post-stats' }, statsChildren);
         const footer = createElement('div', { className: 'post-card__footer' }, [postStats]);
 
         // --- 카드 조립 ---
