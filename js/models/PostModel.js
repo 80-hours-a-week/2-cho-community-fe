@@ -187,6 +187,25 @@ class PostModel {
     }
 
     /**
+     * 답변 채택
+     * @param {string|number} postId - 게시글 ID
+     * @param {string|number} commentId - 채택할 댓글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async setAcceptedAnswer(postId, commentId) {
+        return ApiService.patch(API_ENDPOINTS.POSTS.ACCEPTED_ANSWER(postId), { comment_id: commentId });
+    }
+
+    /**
+     * 답변 채택 해제
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async unsetAcceptedAnswer(postId) {
+        return ApiService.delete(API_ENDPOINTS.POSTS.ACCEPTED_ANSWER(postId));
+    }
+
+    /**
      * 이미지 업로드
      * @param {File} file - 이미지 파일
      * @returns {Promise<ApiResponse<ImageUploadResponse>>}

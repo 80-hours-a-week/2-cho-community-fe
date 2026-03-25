@@ -2,6 +2,7 @@
 // 댓글 관리 컨트롤러
 
 import CommentModel from '../models/CommentModel.js';
+import PostModel from '../models/PostModel.js';
 import CommentListView from '../views/CommentListView.js';
 import PostDetailView from '../views/PostDetailView.js'; // 토스트 메시지 및 입력창 제어용
 import ModalView from '../views/ModalView.js';
@@ -34,6 +35,16 @@ class CommentController {
         this._modeTarget = null;
         this.isSubmitting = false; // 중복 제출 방지 플래그
         this.commentSort = 'oldest'; // 댓글 정렬 상태
+        /** @type {object|null} 게시글 컨텍스트 (Q&A 답변 채택용) */
+        this.postContext = null;
+    }
+
+    /**
+     * 게시글 컨텍스트 설정 (Q&A 답변 채택 UI용)
+     * @param {object} context - { categoryId, authorId }
+     */
+    setPostContext(context) {
+        this.postContext = context;
     }
 
     // 하위 호환 getter — 외부에서 this.editingCommentId / this.replyingToComment 읽기 지원
@@ -91,7 +102,8 @@ class CommentController {
             onReply: (comment) => this.startReply(comment),
             onReport: (comment) => this._reportComment(comment),
             onLike: (comment) => this._handleCommentLike(comment),
-        }, this.isAdmin, this.commentSort);
+            onAcceptAnswer: (comment, isAccepted) => this._handleAcceptAnswer(comment, isAccepted),
+        }, this.isAdmin, this.commentSort, this.postContext);
 
         // 정렬 버튼 이벤트 바인딩 (최초 1회만)
         if (!this._sortBound) {
@@ -343,6 +355,32 @@ class CommentController {
             CommentListView.toggleLikeOptimistic(commentId);
             logger.error('댓글 좋아요 처리 실패', error);
             PostDetailView.showToast(UI_MESSAGES.COMMENT_LIKE_FAIL);
+        }
+    }
+
+    /**
+     * 답변 채택/해제 처리
+     * @param {object} comment - 대상 댓글
+     * @param {boolean} isAccepted - 현재 채택 상태
+     * @private
+     */
+    async _handleAcceptAnswer(comment, isAccepted) {
+        try {
+            const result = isAccepted
+                ? await PostModel.unsetAcceptedAnswer(this.postId)
+                : await PostModel.setAcceptedAnswer(this.postId, comment.comment_id);
+
+            if (result.ok) {
+                PostDetailView.showToast(
+                    isAccepted ? UI_MESSAGES.UNACCEPT_ANSWER_SUCCESS : UI_MESSAGES.ACCEPT_ANSWER_SUCCESS
+                );
+                this._notifyChange();
+            } else {
+                PostDetailView.showToast(UI_MESSAGES.ACCEPT_ANSWER_FAIL);
+            }
+        } catch (error) {
+            logger.error('답변 채택 처리 실패', error);
+            PostDetailView.showToast(UI_MESSAGES.ACCEPT_ANSWER_FAIL);
         }
     }
 

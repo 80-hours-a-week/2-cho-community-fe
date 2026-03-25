@@ -21,9 +21,10 @@ class CommentListView {
      * @param {object} handlers - 이벤트 핸들러 객체
      * @param {boolean} isReply - 대댓글 여부
      * @param {boolean} isAdmin - 관리자 여부
+     * @param {object} [postContext=null] - 게시글 컨텍스트 (Q&A 답변 채택용)
      * @returns {HTMLElement} - 댓글 요소
      */
-    static createCommentElement(comment, currentUserId, handlers, isReply = false, isAdmin = false) {
+    static createCommentElement(comment, currentUserId, handlers, isReply = false, isAdmin = false, postContext = null) {
         const isOwner = currentUserId && !comment.is_deleted &&
             comment.author && currentUserId === comment.author.user_id;
 
@@ -45,6 +46,23 @@ class CommentListView {
         const isEdited = comment.updated_at && comment.updated_at !== comment.created_at;
 
         const actionButtons = [];
+
+        // Q&A 답변 채택 버튼 (루트 댓글에만, 게시글 작성자만, Q&A 카테고리만)
+        const isQnA = postContext && postContext.categoryId === 2;
+        const isPostAuthor = postContext && currentUserId && currentUserId === postContext.authorId;
+        const isAccepted = comment.is_accepted === true;
+
+        if (!isReply && isQnA && isPostAuthor) {
+            actionButtons.push(
+                createElement('button', {
+                    className: `small-btn accept-answer-btn${isAccepted ? ' active' : ''}`,
+                    onClick: (e) => {
+                        e.stopPropagation();
+                        if (handlers.onAcceptAnswer) handlers.onAcceptAnswer(comment, isAccepted);
+                    },
+                }, [isAccepted ? '채택 해제' : '답변 채택'])
+            );
+        }
 
         // 답글 버튼 (루트 댓글에만, 로그인 시에만)
         if (!isReply && currentUserId) {
@@ -128,6 +146,12 @@ class CommentListView {
                     ];
                     const commentDistroBadge = createDistroBadge(comment.author?.distro, 'small');
                     if (commentDistroBadge) headerChildren.push(commentDistroBadge);
+                    // 채택된 답변 배지
+                    if (isAccepted && !isReply) {
+                        headerChildren.push(
+                            createElement('span', { className: 'accepted-answer-badge' }, ['\u2713 채택된 답변'])
+                        );
+                    }
                     headerChildren.push(
                         createElement('span', { className: 'comment-date' }, [
                             dateStr,
@@ -200,8 +224,10 @@ class CommentListView {
      * @param {string|number|null} currentUserId - 현재 로그인한 사용자 ID
      * @param {object} handlers - 이벤트 핸들러 객체
      * @param {boolean} [isAdmin=false] - 관리자 여부
+     * @param {string} [currentSort='oldest'] - 현재 정렬 기준
+     * @param {object} [postContext=null] - 게시글 컨텍스트 (Q&A 답변 채택용)
      */
-    static renderComments(container, comments, currentUserId, handlers, isAdmin = false, currentSort = 'oldest') {
+    static renderComments(container, comments, currentUserId, handlers, isAdmin = false, currentSort = 'oldest', postContext = null) {
         container.textContent = '';
 
         const fragment = document.createDocumentFragment();
@@ -223,10 +249,20 @@ class CommentListView {
         ]);
         fragment.appendChild(sortBar);
 
-        comments.forEach(comment => {
+        // 채택된 답변을 상단에 고정 (Q&A 카테고리인 경우)
+        let sortedComments = comments;
+        if (postContext && postContext.categoryId === 2) {
+            sortedComments = [...comments].sort((a, b) => {
+                if (a.is_accepted && !b.is_accepted) return -1;
+                if (!a.is_accepted && b.is_accepted) return 1;
+                return 0;
+            });
+        }
+
+        sortedComments.forEach(comment => {
             // 루트 댓글
             const element = CommentListView.createCommentElement(
-                comment, currentUserId, handlers, false, isAdmin
+                comment, currentUserId, handlers, false, isAdmin, postContext
             );
             fragment.appendChild(element);
 
@@ -234,7 +270,7 @@ class CommentListView {
             if (comment.replies && comment.replies.length > 0) {
                 comment.replies.forEach(reply => {
                     const replyEl = CommentListView.createCommentElement(
-                        reply, currentUserId, handlers, true, isAdmin
+                        reply, currentUserId, handlers, true, isAdmin, postContext
                     );
                     fragment.appendChild(replyEl);
                 });

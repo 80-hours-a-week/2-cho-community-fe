@@ -217,6 +217,17 @@
     color: var(--color-text-secondary);
 }
 
+/* 해결됨 배지 (Q&A 채택 답변) */
+.solved-badge {
+    display: inline-block;
+    background-color: var(--color-success, #22c55e);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-semibold, 600);
+}
+
 /* 카드 구분선 */
 .post-card .post-divider {
     background-color: var(--card-divider);

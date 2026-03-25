@@ -124,6 +124,11 @@ class DetailController {
                 );
                 this.commentController.setupInputEvents();
             }
+            // Q&A 답변 채택 UI를 위한 게시글 컨텍스트 설정
+            this.commentController.setPostContext({
+                categoryId: post.category_id,
+                authorId: post.author?.user_id || post.author?.id,
+            });
             this.commentController.render(comments);
             this._loadRelatedPosts(this.currentPostId);
         } catch (error) {

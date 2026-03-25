@@ -289,3 +289,22 @@
 .reply-btn {
     color: var(--color-primary-accent);
 }
+
+/* ============================= */
+/* Accepted Answer               */
+/* ============================= */
+.accepted-answer-badge {
+    display: inline-block;
+    background-color: var(--color-success, #22c55e);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm, 4px);
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-semibold, 600);
+    margin-left: 8px;
+}
+
+.accept-answer-btn {
+    font-size: var(--font-size-xs, 0.75rem);
+    cursor: pointer;
+}
