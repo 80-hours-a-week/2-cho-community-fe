@@ -187,6 +187,25 @@ class PostModel {
     }
 
     /**
+     * 답변 채택
+     * @param {string|number} postId - 게시글 ID
+     * @param {string|number} commentId - 채택할 댓글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async setAcceptedAnswer(postId, commentId) {
+        return ApiService.patch(API_ENDPOINTS.POSTS.ACCEPTED_ANSWER(postId), { comment_id: commentId });
+    }
+
+    /**
+     * 답변 채택 해제
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async unsetAcceptedAnswer(postId) {
+        return ApiService.delete(API_ENDPOINTS.POSTS.ACCEPTED_ANSWER(postId));
+    }
+
+    /**
      * 이미지 업로드
      * @param {File} file - 이미지 파일
      * @returns {Promise<ApiResponse<ImageUploadResponse>>}
@@ -195,6 +214,34 @@ class PostModel {
         const formData = new FormData();
         formData.append('file', file);
         return ApiService.postFormData(API_ENDPOINTS.POSTS.IMAGE, formData);
+    }
+
+    /**
+     * 게시글 구독 상태 조회
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<{level: string}>>}
+     */
+    static async getSubscription(postId) {
+        return ApiService.get(API_ENDPOINTS.POSTS.SUBSCRIPTION(postId));
+    }
+
+    /**
+     * 게시글 구독 설정
+     * @param {string|number} postId - 게시글 ID
+     * @param {string} level - 구독 레벨 (watching, muted)
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async setSubscription(postId, level) {
+        return ApiService.put(API_ENDPOINTS.POSTS.SUBSCRIPTION(postId), { level });
+    }
+
+    /**
+     * 게시글 구독 해제
+     * @param {string|number} postId - 게시글 ID
+     * @returns {Promise<ApiResponse<void>>}
+     */
+    static async deleteSubscription(postId) {
+        return ApiService.delete(API_ENDPOINTS.POSTS.SUBSCRIPTION(postId));
     }
 }
 

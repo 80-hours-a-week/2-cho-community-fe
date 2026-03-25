@@ -211,3 +211,23 @@
     accent-color: var(--color-primary);
     cursor: pointer;
 }
+
+/* 알림 설정 구분선 */
+.notification-setting-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--spacing-md) 0;
+}
+
+/* 다이제스트 빈도 셀렉트 */
+.notification-setting-select {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--btn-radius);
+    background: var(--color-bg-input, var(--color-bg-primary));
+    color: var(--color-text-primary);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    letter-spacing: var(--tracking-wide);
+}

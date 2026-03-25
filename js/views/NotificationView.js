@@ -27,6 +27,7 @@ class NotificationView {
             like: '좋아요를 눌렀습니다',
             mention: '회원님을 언급했습니다',
             follow: '새 게시글을 작성했습니다',
+            reply: '구독 중인 게시글에 댓글을 남겼습니다',
         };
         const typeText = typeTextMap[notification.type] || '알림이 있습니다';
 

@@ -5,7 +5,7 @@
 
 import {
     createElement,
-    Sun, Moon, Bell, LayoutGrid, BookOpen, Package, ChevronLeft,
+    Sun, Moon, Bell, BellRing, BellOff, LayoutGrid, BookOpen, Package, ChevronLeft,
     Bold, Italic, Strikethrough, Heading, Link, Image, Code,
     SquareCode, TextQuote, List, ListOrdered, Minus, Eye, Mail, EyeOff,
 } from 'lucide';
@@ -18,6 +18,8 @@ const ICON_DEFS = {
     sun:           [Sun, 20],
     moon:          [Moon, 20],
     bell:          [Bell, 20],
+    bellRing:      [BellRing, 20],
+    bellOff:       [BellOff, 20],
     layoutGrid:    [LayoutGrid, 20],
     bookOpen:      [BookOpen, 20],
     package:       [Package, 20],

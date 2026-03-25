@@ -53,6 +53,12 @@ class NotificationController {
             });
             // 체크박스 변경 시 즉시 저장
             settingsPanel.addEventListener('change', (e) => {
+                // 다이제스트 빈도 셀렉트 처리
+                const select = e.target.closest('#setting-digest-frequency');
+                if (select) {
+                    this._updateDigestFrequency(select.value);
+                    return;
+                }
                 const checkbox = e.target.closest('input[type="checkbox"]');
                 if (!checkbox) return;
                 const type = checkbox.id.replace('setting-', '');
@@ -239,7 +245,7 @@ class NotificationController {
     }
 
     /**
-     * 알림 설정 로드 → 체크박스 반영
+     * 알림 설정 로드 → 체크박스 + 다이제스트 빈도 반영
      * @private
      */
     async _loadSettings() {
@@ -250,6 +256,12 @@ class NotificationController {
             if (!settings) return;
 
             for (const [type, enabled] of Object.entries(settings)) {
+                // digest_frequency는 별도 처리
+                if (type === 'digest_frequency') {
+                    const select = document.getElementById('setting-digest-frequency');
+                    if (select) select.value = enabled || 'off';
+                    continue;
+                }
                 const checkbox = document.getElementById(`setting-${type}`);
                 if (checkbox) checkbox.checked = enabled;
             }
@@ -276,6 +288,33 @@ class NotificationController {
             // 실패 시 체크박스 롤백
             const checkbox = document.getElementById(`setting-${type}`);
             if (checkbox) checkbox.checked = !enabled;
+        }
+    }
+
+    /**
+     * 이메일 다이제스트 빈도 변경
+     * @param {string} frequency - 빈도 값 ('daily' | 'weekly' | 'off')
+     * @private
+     */
+    async _updateDigestFrequency(frequency) {
+        const select = document.getElementById('setting-digest-frequency');
+        const prevValue = this._lastDigestFrequency || 'off';
+        this._lastDigestFrequency = frequency;
+
+        try {
+            const result = await NotificationModel.updateSettings({ digest_frequency: frequency });
+            if (result.ok) {
+                const labels = { daily: '매일', weekly: '매주', off: '끄기' };
+                showToast(`이메일 다이제스트가 "${labels[frequency] || frequency}"(으)로 변경되었습니다.`);
+            } else {
+                // 실패 시 롤백
+                if (select) select.value = prevValue;
+                showToast('다이제스트 설정 변경에 실패했습니다.');
+            }
+        } catch (error) {
+            logger.error('다이제스트 빈도 변경 실패', error);
+            if (select) select.value = prevValue;
+            showToast('다이제스트 설정 변경에 실패했습니다.');
         }
     }
 }

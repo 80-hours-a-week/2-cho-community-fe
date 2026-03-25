@@ -27,6 +27,10 @@ export const API_ENDPOINTS = {
         VOTE_POLL: (postId) => `/v1/posts/${postId}/poll/vote`,
         /** @param {string|number} postId */
         RELATED: (postId) => `/v1/posts/${postId}/related`,
+        /** @param {string|number} postId */
+        SUBSCRIPTION: (postId) => `/v1/posts/${postId}/subscription`,
+        /** @param {string|number} postId */
+        ACCEPTED_ANSWER: (postId) => `/v1/posts/${postId}/accepted-answer`,
     },
     CATEGORIES: {
         ROOT: '/v1/categories',
@@ -200,6 +204,10 @@ export const UI_MESSAGES = {
     DM_DELETED_USER: '탈퇴한 사용자에게 메시지를 보낼 수 없습니다.',
     DM_EMPTY: '아직 대화가 없습니다.',
     DM_DELETE_SUCCESS: '대화가 삭제되었습니다.',
+    SUBSCRIPTION_FAIL: '구독 처리에 실패했습니다.',
+    ACCEPT_ANSWER_SUCCESS: '답변이 채택되었습니다.',
+    UNACCEPT_ANSWER_SUCCESS: '답변 채택이 해제되었습니다.',
+    ACCEPT_ANSWER_FAIL: '답변 채택에 실패했습니다.',
 };
 
 export const NAV_PATHS = {

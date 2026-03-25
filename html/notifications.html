@@ -63,6 +63,16 @@
                 <span>북마크</span>
                 <input type="checkbox" id="setting-bookmark" checked>
             </label>
+            <div class="notification-setting-divider"></div>
+            <h3>이메일 다이제스트</h3>
+            <label class="notification-setting-row">
+                <span>다이제스트 빈도</span>
+                <select id="setting-digest-frequency" class="notification-setting-select">
+                    <option value="daily">매일</option>
+                    <option value="weekly">매주</option>
+                    <option value="off">끄기</option>
+                </select>
+            </label>
         </div>
         <ul id="notification-list" class="notification-list">
             <!-- 알림 항목이 여기에 주입됩니다 -->

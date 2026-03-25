@@ -8,6 +8,7 @@ import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { renderMarkdownTo } from '../utils/markdown.js';
 import { createElement } from '../utils/dom.js';
 import { highlightMentions } from '../utils/mention.js';
+import { Icons } from '../utils/icons.js';
 import { createDistroBadge } from '../utils/distro.js';
 
 /**
@@ -495,6 +496,39 @@ class PostDetailView {
         });
 
         section.classList.remove('hidden');
+    }
+
+    /**
+     * 구독 버튼 상태 업데이트
+     * @param {string} level - 구독 레벨 ('normal' | 'watching' | 'muted')
+     */
+    static updateSubscriptionState(level) {
+        const btn = document.getElementById('subscription-btn');
+        if (!btn) return;
+        const iconEl = btn.querySelector('.subscription-icon');
+        const textEl = btn.querySelector('.subscription-text');
+        // 클래스 초기화 후 현재 상태 적용
+        btn.classList.remove('watching', 'muted');
+        // Lucide SVG 아이콘 교체
+        if (iconEl) {
+            iconEl.textContent = '';
+            if (level === 'watching') {
+                iconEl.appendChild(Icons.bellRing(16));
+            } else if (level === 'muted') {
+                iconEl.appendChild(Icons.bellOff(16));
+            } else {
+                iconEl.appendChild(Icons.bell(16));
+            }
+        }
+        if (level === 'watching') {
+            btn.classList.add('watching');
+            if (textEl) textEl.textContent = '구독 중';
+        } else if (level === 'muted') {
+            btn.classList.add('muted');
+            if (textEl) textEl.textContent = '음소거';
+        } else {
+            if (textEl) textEl.textContent = '구독';
+        }
     }
 
     /**

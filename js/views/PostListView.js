@@ -10,6 +10,7 @@ import { NAV_PATHS, CATEGORY_LABELS } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { createDistroBadge } from '../utils/distro.js';
 import BaseListView from './BaseListView.js';
+import { Icons } from '../utils/icons.js';
 
 /**
  * 게시글 목록 View 클래스
@@ -76,6 +77,10 @@ class PostListView extends BaseListView {
                 post.category_name || CATEGORY_LABELS[post.category_id],
             ]));
         }
+        // Q&A 카테고리에서 채택된 답변이 있으면 "해결됨" 배지 표시
+        if (post.accepted_answer_id && post.category_id === 2) {
+            badges.push(createElement('span', { className: 'solved-badge' }, ['해결됨']));
+        }
         if (badges.length > 0) {
             bodyChildren.push(createElement('div', { className: 'post-badges' }, badges));
         }
@@ -102,11 +107,18 @@ class PostListView extends BaseListView {
 
         const body = createElement('div', { className: 'post-card__body' }, bodyChildren);
         // --- 3. 하단 통계 바 ---
-        const postStats = createElement('div', { className: 'post-stats' }, [
+        const statsChildren = [
             createElement('span', {}, [`♥ ${formatCount(likes)}`]),
             createElement('span', {}, [`◆ ${formatCount(comments)}`]),
             createElement('span', {}, [`▸ ${formatCount(views)}`]),
-        ]);
+        ];
+        // 구독 중(watching) 표시
+        if (post.is_watching) {
+            const watchSpan = createElement('span', { className: 'watching-indicator', title: '구독 중' });
+            watchSpan.appendChild(Icons.bell(14));
+            statsChildren.push(watchSpan);
+        }
+        const postStats = createElement('div', { className: 'post-stats' }, statsChildren);
         const footer = createElement('div', { className: 'post-card__footer' }, [postStats]);
 
         // --- 카드 조립 ---

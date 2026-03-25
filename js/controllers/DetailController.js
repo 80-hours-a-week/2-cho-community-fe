@@ -23,6 +23,9 @@ class DetailController {
         this.deleteTargetId = null; // 오직 게시글 삭제 대상 ID만 저장
         this.isLiking = false;
         this.isBookmarking = false;
+        this.isSubscribing = false;
+        /** @type {string} 구독 상태: 'normal' | 'watching' | 'muted' */
+        this.subscriptionLevel = 'normal';
         this.commentController = null;
         this.currentPost = null; // 현재 게시글 데이터 (pin 상태 등)
         this.reportTarget = null; // { type: 'post'|'comment', id: number }
@@ -101,6 +104,13 @@ class DetailController {
             PostDetailView.toggleReportButton(this.currentUserId && !isOwner);
             PostDetailView.togglePinButton(this._isAdmin, post.is_pinned);
             PostDetailView.toggleBlockButton(this.currentUserId && !isOwner, post.is_blocked);
+            // 구독 버튼 (로그인한 사용자만 표시)
+            if (this.currentUserId) {
+                this.subscriptionLevel = post.is_watching ? 'watching' : 'normal';
+                PostDetailView.updateSubscriptionState(this.subscriptionLevel);
+                const subBtn = document.getElementById('subscription-btn');
+                if (subBtn) subBtn.style.display = '';
+            }
             this.pollHandler.setPollData(post.poll);
             this.pollHandler.setupListeners();
             if (!this.commentController) {
@@ -114,6 +124,11 @@ class DetailController {
                 );
                 this.commentController.setupInputEvents();
             }
+            // Q&A 답변 채택 UI를 위한 게시글 컨텍스트 설정
+            this.commentController.setPostContext({
+                categoryId: post.category_id,
+                authorId: post.author?.user_id || post.author?.id,
+            });
             this.commentController.render(comments);
             this._loadRelatedPosts(this.currentPostId);
         } catch (error) {
@@ -157,6 +172,7 @@ class DetailController {
         this._bindClick('delete-post-btn', () => this._openDeleteModal());
         this._bindClick('like-box', () => this._handleLike());
         this._bindClick('bookmark-box', () => this._handleBookmark());
+        this._bindClick('subscription-btn', () => this._handleSubscription());
         this._bindClick('share-post-btn', () => this._handleShare());
         this._bindClick('pin-post-btn', () => this._handlePinToggle());
         this._bindClick('block-user-btn', () => this._handleBlock());
@@ -229,6 +245,47 @@ class DetailController {
             PostDetailView.showToast(UI_MESSAGES.SERVER_ERROR);
         } finally {
             this.isBookmarking = false;
+        }
+    }
+    /**
+     * 구독 토글 처리 — normal → watching → muted → normal 순환
+     * @private
+     */
+    async _handleSubscription() {
+        if (this.isSubscribing) return;
+        // 다음 상태 결정: normal → watching → muted → normal
+        const nextMap = { normal: 'watching', watching: 'muted', muted: 'normal' };
+        const nextLevel = nextMap[this.subscriptionLevel] || 'watching';
+        const prevLevel = this.subscriptionLevel;
+
+        // 낙관적 UI 업데이트
+        this.subscriptionLevel = nextLevel;
+        PostDetailView.updateSubscriptionState(nextLevel);
+
+        this.isSubscribing = true;
+        try {
+            /** @type {any} */
+            let result;
+            if (nextLevel === 'normal') {
+                // 구독 해제
+                result = await PostModel.deleteSubscription(this.currentPostId);
+            } else {
+                // watching 또는 muted 설정
+                result = await PostModel.setSubscription(this.currentPostId, nextLevel);
+            }
+            if (!result.ok) {
+                // 롤백
+                this.subscriptionLevel = prevLevel;
+                PostDetailView.updateSubscriptionState(prevLevel);
+                showToast(UI_MESSAGES.SUBSCRIPTION_FAIL);
+            }
+        } catch (error) {
+            logger.error('구독 처리 실패', error);
+            this.subscriptionLevel = prevLevel;
+            PostDetailView.updateSubscriptionState(prevLevel);
+            showToast(UI_MESSAGES.SERVER_ERROR);
+        } finally {
+            this.isSubscribing = false;
         }
     }
     /**
