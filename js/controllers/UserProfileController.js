@@ -4,6 +4,7 @@
 import UserModel from '../models/UserModel.js';
 import PostModel from '../models/PostModel.js';
 import DMModel from '../models/DMModel.js';
+import ReputationModel from '../models/ReputationModel.js';
 import UserProfileView from '../views/UserProfileView.js';
 import PostListView from '../views/PostListView.js';
 import { showToast } from '../views/helpers.js';
@@ -53,6 +54,7 @@ class UserProfileController {
         this.emptyEl = document.getElementById('user-posts-empty');
 
         await this._loadProfile();
+        await this._loadReputation();
         this._setupDmButton();
         this._setupFollowButton();
         this._setupBlockButton();
@@ -83,6 +85,30 @@ class UserProfileController {
         } catch (error) {
             logger.error('프로필 로드 실패', error);
             showToast('프로필을 불러오지 못했습니다.');
+        }
+    }
+
+    /**
+     * 평판 점수 + 배지 쇼케이스 로드
+     * @private
+     */
+    async _loadReputation() {
+        // 평판 데이터 로드 실패해도 프로필은 정상 표시
+        try {
+            const [repRes, badgesRes] = await Promise.all([
+                ReputationModel.getUserReputation(this.userId),
+                ReputationModel.getUserBadges(this.userId),
+            ]);
+            if (repRes.data) {
+                UserProfileView.renderReputation(repRes.data.data || repRes.data);
+            }
+            if (badgesRes.data) {
+                UserProfileView.renderBadgeShowcase(
+                    badgesRes.data.data?.badges || badgesRes.data.badges || []
+                );
+            }
+        } catch (e) {
+            logger.warn('평판 데이터 로드 실패:', e);
         }
     }
 

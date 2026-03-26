@@ -41,6 +41,7 @@ class HeaderView {
      * @param {Function} handlers.onChangePassword - 비밀번호 수정 클릭 핸들러
      * @param {Function} handlers.onMyActivity - 내 활동 클릭 핸들러
      * @param {Function} handlers.onLogout - 로그아웃 클릭 핸들러
+     * @param {Function} [handlers.onBadges] - 배지 클릭 핸들러
      * @param {Function} [handlers.onAdminDashboard] - 관리자 대시보드 클릭 핸들러 (관리자만)
      * @param {Function} [handlers.onAdminReports] - 신고 관리 클릭 핸들러 (관리자만)
      * @returns {HTMLElement} - 드롭다운 요소
@@ -71,6 +72,7 @@ class HeaderView {
                 );
             }
 
+            menuItems.push(createElement('li', { id: 'menu-badges', role: 'menuitem', tabindex: '-1' }, ['배지']));
             menuItems.push(createElement('li', { id: 'menu-logout', role: 'menuitem', tabindex: '-1' }, ['로그아웃']));
 
             dropdown.appendChild(createElement('ul', { role: 'menu' }, menuItems));
@@ -144,6 +146,7 @@ class HeaderView {
         if (handlers.onAdminReports) {
             bindMenuBtn('menu-admin-reports', handlers.onAdminReports);
         }
+        bindMenuBtn('menu-badges', handlers.onBadges);
         bindMenuBtn('menu-logout', handlers.onLogout);
 
         // 키보드 내비게이션

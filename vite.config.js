@@ -30,6 +30,7 @@ function mpaRewritePlugin() {
     '/wiki': '/html/wiki_list.html',
     '/wiki/write': '/html/wiki_write.html',
     '/wiki/edit': '/html/wiki_edit.html',
+    '/badges': '/html/badges.html',
   };
 
   function rewriteMiddleware(req, _res, next) {
@@ -97,6 +98,7 @@ export default defineConfig({
         wiki_detail: resolve(__dirname, 'html/wiki_detail.html'),
         wiki_write: resolve(__dirname, 'html/wiki_write.html'),
         wiki_edit: resolve(__dirname, 'html/wiki_edit.html'),
+        badges: resolve(__dirname, 'html/badges.html'),
       },
     },
   },

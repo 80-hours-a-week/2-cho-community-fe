@@ -91,6 +91,7 @@ class HeaderController {
                     onEditInfo: () => this._handleEditInfo(),
                     onChangePassword: () => this._handleChangePassword(),
                     onMyActivity: () => this._handleMyActivity(),
+                    onBadges: () => this._handleBadges(),
                     onLogout: () => this._handleLogout(),
                 };
                 if (this.currentUser.role === 'admin') {
@@ -229,6 +230,7 @@ class HeaderController {
     _handleEditInfo() { this._navigate('/edit-profile'); }
     _handleChangePassword() { this._navigate('/password'); }
     _handleMyActivity() { this._navigate(NAV_PATHS.MY_ACTIVITY); }
+    _handleBadges() { this._navigate(NAV_PATHS.BADGES); }
     _handleAdminDashboard() { this._navigate(NAV_PATHS.ADMIN_DASHBOARD); }
     _handleAdminReports() { this._navigate(NAV_PATHS.ADMIN_REPORTS); }
     /**
@@ -311,11 +313,22 @@ class HeaderController {
      * @private
      */
     _showNotificationToast(latest) {
+        // 배지 획득 / 등급 상승은 시스템 알림
+        if (latest.type === 'badge_earned') {
+            showToast('새로운 배지를 획득했습니다!');
+            return;
+        }
+        if (latest.type === 'level_up') {
+            showToast('신뢰 등급이 상승했습니다!');
+            return;
+        }
+
         const typeTextMap = {
             comment: '댓글을 남겼습니다',
             like: '좋아요를 눌렀습니다',
             mention: '회원님을 언급했습니다',
             follow: '새 게시글을 작성했습니다',
+            reply: '답글을 남겼습니다',
         };
         const actor = latest.actor_nickname || '알 수 없는 사용자';
         const action = typeTextMap[latest.type] || '알림이 있습니다';

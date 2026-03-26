@@ -194,6 +194,103 @@ class UserProfileView {
         }
     }
 
+    /**
+     * 평판 점수 + 신뢰 등급 + 진행률 바 렌더링
+     * @param {object} reputationData - 평판 데이터 (score, trust_level, trust_level_name, next_level_threshold)
+     */
+    static renderReputation(reputationData) {
+        const container = document.getElementById('reputation-section');
+        if (!container) return;
+
+        container.textContent = '';
+
+        const score = reputationData.score ?? reputationData.reputation_score ?? 0;
+        const level = reputationData.trust_level ?? reputationData.level ?? 0;
+        const levelName = reputationData.trust_level_name ?? reputationData.level_name ?? `Level ${level}`;
+        const nextThreshold = reputationData.next_level_threshold ?? reputationData.next_threshold ?? 0;
+        const prevThreshold = reputationData.current_level_threshold ?? reputationData.prev_threshold ?? 0;
+
+        // 진행률 계산 (0~100%)
+        let progressPct = 0;
+        if (nextThreshold > prevThreshold) {
+            progressPct = Math.min(100, Math.round(((score - prevThreshold) / (nextThreshold - prevThreshold)) * 100));
+        } else if (nextThreshold === 0) {
+            // 최고 레벨: 100% 처리
+            progressPct = 100;
+        }
+
+        const scoreEl = createElement('span', { className: 'reputation-score' }, [
+            score.toLocaleString('ko-KR'),
+            ' 점',
+        ]);
+
+        const badgeEl = createElement('span', {
+            className: 'trust-level-badge',
+            dataset: { level: String(level) },
+        }, [`Level ${level} — ${levelName}`]);
+
+        const progressFill = createElement('div', {
+            className: 'trust-level-progress-fill',
+            style: { width: `${progressPct}%` },
+        });
+
+        const progressBar = createElement('div', { className: 'trust-level-progress' }, [progressFill]);
+
+        const wrapper = createElement('div', { className: 'reputation-section-inner' }, [
+            scoreEl,
+            badgeEl,
+            progressBar,
+        ]);
+
+        container.appendChild(wrapper);
+    }
+
+    /**
+     * 배지 쇼케이스 렌더링 (최대 5개 미니 배지 + 전체 보기 링크)
+     * @param {Array<object>} badges - 획득한 배지 목록
+     */
+    static renderBadgeShowcase(badges) {
+        const container = document.getElementById('badge-showcase-section');
+        if (!container) return;
+
+        container.textContent = '';
+
+        const showcaseEl = createElement('div', { className: 'badge-showcase' });
+
+        if (!badges || badges.length === 0) {
+            const emptyMsg = createElement('span', {
+                className: 'badge-showcase-empty',
+                style: { fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' },
+            }, ['아직 획득한 배지가 없습니다']);
+            container.appendChild(emptyMsg);
+            return;
+        }
+
+        // 최대 5개만 표시
+        const displayed = badges.slice(0, 5);
+        displayed.forEach(badge => {
+            const icon = badge.icon ?? badge.emoji ?? '🏅';
+            const name = badge.name ?? badge.badge_name ?? '';
+            const tier = badge.tier ?? badge.rarity ?? '';
+
+            const miniEl = createElement('span', {
+                className: `badge-mini badge-icon ${tier}`,
+                title: name,
+            }, [icon]);
+
+            showcaseEl.appendChild(miniEl);
+        });
+
+        const viewAllLink = createElement('a', {
+            href: '/badges',
+            className: 'badge-showcase-link',
+            style: { fontSize: 'var(--font-size-sm)', color: 'var(--color-primary)' },
+        }, ['전체 보기']);
+
+        container.appendChild(showcaseEl);
+        container.appendChild(viewAllLink);
+    }
+
     static showEmptyPosts(emptyEl) {
         if (emptyEl) emptyEl.classList.remove('hidden');
     }

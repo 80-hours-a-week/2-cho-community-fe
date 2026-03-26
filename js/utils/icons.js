@@ -8,6 +8,10 @@ import {
     Sun, Moon, Bell, BellRing, BellOff, LayoutGrid, BookOpen, Package, ChevronLeft,
     Bold, Italic, Strikethrough, Heading, Link, Image, Code,
     SquareCode, TextQuote, List, ListOrdered, Minus, Eye, Mail, EyeOff,
+    // 배지 아이콘
+    Edit, MessageSquare, Heart, UserCheck, Bookmark, ThumbsUp, FileText, Star,
+    MessageCircle, Edit3, CheckCircle, Award, TrendingUp, Users, Calendar,
+    Zap, Shield, Globe, Book, Sunrise, Flag, Crown,
 } from 'lucide';
 
 /**
@@ -39,6 +43,30 @@ const ICON_DEFS = {
     eye:           [Eye, 16],
     mail:          [Mail, 20],
     eyeOff:        [EyeOff, 16],
+    // 배지 아이콘 (badge_definition.icon 값과 매칭)
+    edit:          [Edit, 20],
+    comment:       [MessageSquare, 20],
+    heart:         [Heart, 20],
+    'user-check':  [UserCheck, 20],
+    bookmark:      [Bookmark, 20],
+    'thumbs-up':   [ThumbsUp, 20],
+    'file-text':   [FileText, 20],
+    star:          [Star, 20],
+    'message-circle': [MessageCircle, 20],
+    'edit-3':      [Edit3, 20],
+    'check-circle': [CheckCircle, 20],
+    award:         [Award, 20],
+    'trending-up': [TrendingUp, 20],
+    'book-open':   [BookOpen, 20],
+    users:         [Users, 20],
+    calendar:      [Calendar, 20],
+    zap:           [Zap, 20],
+    shield:        [Shield, 20],
+    globe:         [Globe, 20],
+    book:          [Book, 20],
+    sunrise:       [Sunrise, 20],
+    flag:          [Flag, 20],
+    crown:         [Crown, 20],
 };
 
 /**

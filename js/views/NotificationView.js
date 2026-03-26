@@ -28,6 +28,8 @@ class NotificationView {
             mention: '회원님을 언급했습니다',
             follow: '새 게시글을 작성했습니다',
             reply: '구독 중인 게시글에 댓글을 남겼습니다',
+            badge_earned: '배지를 획득했습니다',
+            level_up: '신뢰 등급이 상승했습니다',
         };
         const typeText = typeTextMap[notification.type] || '알림이 있습니다';
 

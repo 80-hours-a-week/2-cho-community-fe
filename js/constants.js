@@ -123,6 +123,16 @@ export const API_ENDPOINTS = {
     WIKI: {
         ROOT: '/v1/wiki',
     },
+    REPUTATION: {
+        /** @param {string|number} userId */
+        USER: (userId) => `/v1/users/${userId}/reputation`,
+        /** @param {string|number} userId */
+        HISTORY: (userId) => `/v1/users/${userId}/reputation/history`,
+        /** @param {string|number} userId */
+        USER_BADGES: (userId) => `/v1/users/${userId}/badges`,
+        ALL_BADGES: '/v1/badges',
+        TRUST_LEVELS: '/v1/trust-levels',
+    },
     DMS: {
         ROOT: '/v1/dms',
         UNREAD_COUNT: '/v1/dms/unread-count',
@@ -244,6 +254,7 @@ export const NAV_PATHS = {
     WIKI_WRITE: '/wiki/write',
     /** @param {string} slug */
     WIKI_EDIT: (slug) => `/wiki/edit?slug=${slug}`,
+    BADGES: '/badges',
 };
 
 export const SORT_OPTIONS = {
@@ -293,6 +304,7 @@ export const HTML_PATHS = {
     '/wiki': '/html/wiki_list.html',
     '/wiki/write': '/html/wiki_write.html',
     '/wiki/edit': '/html/wiki_edit.html',
+    '/badges': '/html/badges.html',
 };
 
 /** @type {Record<number, string>} */
