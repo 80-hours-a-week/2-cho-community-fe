@@ -1,0 +1,139 @@
+/* css/modules/reputation.css */
+/* 평판 시스템 공통 컴포넌트 스타일 */
+
+/* 평판 점수 표시 */
+.reputation-score {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+/* 신뢰 등급 배지 */
+.trust-level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+
+.trust-level-badge[data-level="0"] { background: var(--color-bg-secondary); color: var(--color-text-secondary); }
+.trust-level-badge[data-level="1"] { background: #e8f5e9; color: #2e7d32; }
+.trust-level-badge[data-level="2"] { background: #e3f2fd; color: #1565c0; }
+.trust-level-badge[data-level="3"] { background: #fff3e0; color: #e65100; }
+.trust-level-badge[data-level="4"] { background: #fce4ec; color: #c62828; }
+
+[data-theme="dark"] .trust-level-badge[data-level="1"] { background: #1b5e20; color: #a5d6a7; }
+[data-theme="dark"] .trust-level-badge[data-level="2"] { background: #0d47a1; color: #90caf9; }
+[data-theme="dark"] .trust-level-badge[data-level="3"] { background: #bf360c; color: #ffcc80; }
+[data-theme="dark"] .trust-level-badge[data-level="4"] { background: #b71c1c; color: #ef9a9a; }
+
+/* 신뢰 등급 진행률 바 */
+.trust-level-progress {
+    width: 100%;
+    max-width: 200px;
+    height: 6px;
+    background: var(--color-bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.trust-level-progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+/* 배지 카드 */
+.badge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-primary);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.badge-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.badge-card.earned {
+    border-color: var(--color-primary);
+}
+
+.badge-card.unearned {
+    opacity: 0.5;
+    filter: grayscale(0.8);
+}
+
+.badge-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: var(--font-size-lg);
+}
+
+.badge-icon.bronze { background: #fef3e2; color: #cd7f32; }
+.badge-icon.silver { background: #f5f5f5; color: #808080; }
+.badge-icon.gold { background: #fff8e1; color: #ffd700; }
+
+[data-theme="dark"] .badge-icon.bronze { background: #3e2723; color: #cd7f32; }
+[data-theme="dark"] .badge-icon.silver { background: #424242; color: #bdbdbd; }
+[data-theme="dark"] .badge-icon.gold { background: #33280e; color: #ffd700; }
+
+.badge-name {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.badge-description {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+/* 배지 쇼케이스 (프로필용) */
+.badge-showcase {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.badge-showcase .badge-mini {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* 해결됨 배지 */
+.solved-badge {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+
+[data-theme="dark"] .solved-badge {
+    background: #1b5e20;
+    color: #a5d6a7;
+}
