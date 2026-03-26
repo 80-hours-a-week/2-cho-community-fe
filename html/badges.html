@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <script>(function(){var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)})()</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>배지 — Camp Linux</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages/badges.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+
+</head>
+
+<body>
+    <a href="#main-content" class="skip-nav">본문으로 건너뛰기</a>
+    <header>
+        <div class="header-title-wrapper">
+            <a href="/main" class="header-home-link"><h2>Camp Linux</h2></a>
+            <div id="auth-section" class="header-auth"></div>
+        </div>
+    </header>
+
+    <main class="main-container main-container--wide" id="main-content">
+        <section class="welcome-hero">
+            <div class="welcome-hero__text">
+                <h3 class="welcome-hero__heading">배지</h3>
+                <p class="welcome-hero__sub">커뮤니티 활동으로 획득할 수 있는 배지 목록</p>
+            </div>
+        </section>
+
+        <section id="badges-container">
+            <!-- 배지 그리드가 JS로 주입됨 -->
+        </section>
+    </main>
+
+    <div id="toast"></div>
+
+    <script type="module" src="/js/app/badges.js"></script>
+</body>
+
+</html>

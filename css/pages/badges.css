@@ -1,0 +1,45 @@
+/* css/pages/badges.css */
+/* 배지 목록 페이지 전용 스타일 */
+
+.badges-page-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.badges-page-header h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+}
+
+.badge-category-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.badge-category-header {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.badge-earned-date {
+    font-size: var(--font-size-xs);
+    color: var(--color-success);
+}
+
+.badge-threshold {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
+
+@media (max-width: 480px) {
+    .badge-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
