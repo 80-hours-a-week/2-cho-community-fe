@@ -46,7 +46,7 @@ flowchart TD
 
 ```
 2-cho-community-fe/
-├── html/                      # 26개 HTML 페이지
+├── html/                      # 27개 HTML 페이지
 ├── vite.config.js             # Vite MPA 설정 + 클린 URL 리라이트
 ├── Dockerfile                 # 멀티 스테이지 빌드 (node → nginx)
 ├── nginx.conf                 # 프로덕션 서빙 설정
@@ -58,7 +58,7 @@ flowchart TD
 │   │   ├── write.js           # 게시글 작성
 │   │   ├── dm_list.js         # DM 대화 목록
 │   │   ├── dm.js              # DM 데스크톱 통합 (좌우 분할)
-│   │   └── ...                # 총 26개
+│   │   └── ...                # 총 27개
 │   │
 │   ├── controllers/           # 비즈니스 로직 (31개)
 │   │   ├── MainController.js
@@ -148,6 +148,7 @@ flowchart TD
 | `/wiki/detail?slug=` | `wiki_detail.html` | 위키 상세 — 마크다운 렌더링, 태그, 조회수, 수정/삭제 |
 | `/wiki/write` | `wiki_write.html` | 위키 작성 — 마크다운 에디터, 태그 입력 |
 | `/wiki/edit?id=` | `wiki_edit.html` | 위키 수정 — 기존 데이터 프리필, 태그 관리 |
+| `/badges` | `badges.html` | 배지 & 평판 — 전체 배지 목록, 보유/미보유 구분, 신뢰 레벨, 평판 포인트 |
 
 ---
 
@@ -243,7 +244,7 @@ DOM CustomEvent로 컴포넌트 간 느슨한 결합을 구현합니다.
 
 ### 다크 모드
 
-`ThemeService`가 `[data-theme="dark"]` 속성을 토글하면, `variables.css`의 다크 테마 토큰이 활성화되어 31개 CSS 파일이 자동 전환됩니다. FOUC(Flash of Unstyled Content) 방지를 위해 26개 HTML에 인라인 스크립트로 초기 테마를 즉시 적용합니다.
+`ThemeService`가 `[data-theme="dark"]` 속성을 토글하면, `variables.css`의 다크 테마 토큰이 활성화되어 31개 CSS 파일이 자동 전환됩니다. FOUC(Flash of Unstyled Content) 방지를 위해 27개 HTML에 인라인 스크립트로 초기 테마를 즉시 적용합니다.
 
 ### CSS 로딩 순서
 
@@ -293,9 +294,9 @@ style.css (@import 진입점)
 
 ### Vite 설정
 
-26개 HTML을 개별 엔트리포인트로 등록하는 MPA(Multi-Page Application) 구성입니다.
+27개 HTML을 개별 엔트리포인트로 등록하는 MPA(Multi-Page Application) 구성입니다.
 
-- **클린 URL 리라이트 플러그인**: `/main` → `/post_list.html`, `/detail` → `/post_detail.html` 등 26개 경로 매핑. 개발(configureServer)과 프리뷰(configurePreviewServer) 모두 지원
+- **클린 URL 리라이트 플러그인**: `/main` → `/post_list.html`, `/detail` → `/post_detail.html` 등 27개 경로 매핑. 개발(configureServer)과 프리뷰(configurePreviewServer) 모두 지원
 - **프로덕션 빌드**: `npm run build` → `dist/` (HTML + `assets/` 해시된 JS/CSS 번들)
 - **HMR**: 개발 서버에서 CSS/JS 변경 즉시 반영
 
