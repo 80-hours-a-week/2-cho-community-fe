@@ -77,9 +77,12 @@ class PostListView extends BaseListView {
                 post.category_name || CATEGORY_LABELS[post.category_id],
             ]));
         }
-        // Q&A 카테고리에서 채택된 답변이 있으면 "해결됨" 배지 표시
-        if (post.accepted_answer_id && post.category_id === 2) {
+        // Q&A 카테고리에서 해결/미해결 배지 표시
+        if (post.is_solved && post.category_id === 2) {
             badges.push(createElement('span', { className: 'solved-badge' }, ['해결됨']));
+        }
+        if (!post.is_solved && post.category_id === 2) {
+            badges.push(createElement('span', { className: 'unsolved-badge' }, ['미해결']));
         }
         if (badges.length > 0) {
             bodyChildren.push(createElement('div', { className: 'post-badges' }, badges));

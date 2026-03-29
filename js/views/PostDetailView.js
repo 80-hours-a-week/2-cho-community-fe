@@ -38,6 +38,29 @@ class PostDetailView {
             }
         }
 
+        // Q&A 해결됨 배너
+        if (post.accepted_answer_id && post.category_id === 2) {
+            const existingBanner = document.getElementById('solved-banner');
+            if (existingBanner) existingBanner.remove();
+
+            const bannerText = createElement('span', { className: 'solved-banner__text' }, ['이 질문은 해결되었습니다']);
+            const bannerLink = createElement('a', {
+                className: 'solved-banner__link',
+                onClick: () => {
+                    const accepted = document.querySelector(`[data-comment-id="${post.accepted_answer_id}"]`);
+                    if (accepted) accepted.scrollIntoView({ behavior: 'smooth' });
+                },
+            }, ['채택된 답변 보기']);
+            const banner = createElement('div', {
+                className: 'solved-banner',
+                id: 'solved-banner',
+            }, [bannerText, bannerLink]);
+
+            if (badgeArea?.parentElement) {
+                badgeArea.parentElement.insertBefore(banner, badgeArea.nextSibling);
+            }
+        }
+
         // 태그 표시
         const tagsContainer = document.getElementById('post-tags');
         if (tagsContainer) {
