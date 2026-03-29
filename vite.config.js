@@ -38,6 +38,10 @@ function mpaRewritePlugin() {
     if (rewrites[urlPath]) {
       req.url = req.url.replace(urlPath, rewrites[urlPath]);
     }
+    // 태그 상세 페이지: /tags/{name} 동적 라우팅
+    if (!rewrites[urlPath] && urlPath.startsWith('/tags/') && urlPath !== '/tags') {
+      req.url = req.url.replace(urlPath, '/html/tag_detail.html');
+    }
     // 위키 상세 페이지: /wiki/{slug} 동적 라우팅
     if (!rewrites[urlPath] && urlPath.startsWith('/wiki/') && urlPath !== '/wiki/write' && urlPath !== '/wiki/edit') {
       req.url = req.url.replace(urlPath, '/html/wiki_detail.html');
@@ -99,6 +103,7 @@ export default defineConfig({
         wiki_write: resolve(__dirname, 'html/wiki_write.html'),
         wiki_edit: resolve(__dirname, 'html/wiki_edit.html'),
         badges: resolve(__dirname, 'html/badges.html'),
+        tag_detail: resolve(__dirname, 'html/tag_detail.html'),
       },
     },
   },

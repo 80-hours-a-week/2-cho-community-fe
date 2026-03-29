@@ -116,6 +116,8 @@ export const API_ENDPOINTS = {
     },
     TAGS: {
         ROOT: '/v1/tags',
+        /** @param {string} name */
+        DETAIL: (name) => `/v1/tags/${encodeURIComponent(name)}`,
     },
     PACKAGES: {
         ROOT: '/v1/packages',
@@ -255,6 +257,8 @@ export const NAV_PATHS = {
     /** @param {string} slug */
     WIKI_EDIT: (slug) => `/wiki/edit?slug=${slug}`,
     BADGES: '/badges',
+    /** @param {string} name */
+    TAG_DETAIL: (name) => `/tags/${encodeURIComponent(name)}`,
 };
 
 export const SORT_OPTIONS = {
@@ -305,6 +309,7 @@ export const HTML_PATHS = {
     '/wiki/write': '/html/wiki_write.html',
     '/wiki/edit': '/html/wiki_edit.html',
     '/badges': '/html/badges.html',
+    '/tags': '/html/tag_detail.html',
 };
 
 /** @type {Record<number, string>} */
