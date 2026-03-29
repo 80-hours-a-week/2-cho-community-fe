@@ -61,6 +61,50 @@ class WikiModel {
     static async deleteWikiPage(slug) {
         return ApiService.delete(`${API_ENDPOINTS.WIKI.ROOT}/${slug}`);
     }
+
+    /**
+     * 위키 페이지 편집 히스토리 조회
+     * @param {string} slug
+     * @param {number} offset
+     * @param {number} limit
+     */
+    static async getHistory(slug, offset = 0, limit = 20) {
+        return ApiService.request(
+            `${API_ENDPOINTS.WIKI.HISTORY(slug)}?offset=${offset}&limit=${limit}`
+        );
+    }
+
+    /**
+     * 특정 리비전 조회
+     * @param {string} slug
+     * @param {number} revisionNumber
+     */
+    static async getRevision(slug, revisionNumber) {
+        return ApiService.request(API_ENDPOINTS.WIKI.REVISION(slug, revisionNumber));
+    }
+
+    /**
+     * 두 리비전 간 diff 조회
+     * @param {string} slug
+     * @param {number} fromRev
+     * @param {number} toRev
+     */
+    static async getDiff(slug, fromRev, toRev) {
+        return ApiService.request(
+            `${API_ENDPOINTS.WIKI.DIFF(slug)}?from=${fromRev}&to=${toRev}`
+        );
+    }
+
+    /**
+     * 특정 리비전으로 롤백
+     * @param {string} slug
+     * @param {number} revisionNumber
+     */
+    static async rollback(slug, revisionNumber) {
+        return ApiService.request(API_ENDPOINTS.WIKI.ROLLBACK(slug, revisionNumber), {
+            method: 'POST',
+        });
+    }
 }
 
 export default WikiModel;

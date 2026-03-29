@@ -124,6 +124,20 @@ export const API_ENDPOINTS = {
     },
     WIKI: {
         ROOT: '/v1/wiki',
+        /** @param {string} slug */
+        HISTORY: (slug) => `/v1/wiki/${slug}/history`,
+        /**
+         * @param {string} slug
+         * @param {number} n
+         */
+        REVISION: (slug, n) => `/v1/wiki/${slug}/revisions/${n}`,
+        /** @param {string} slug */
+        DIFF: (slug) => `/v1/wiki/${slug}/diff`,
+        /**
+         * @param {string} slug
+         * @param {number} n
+         */
+        ROLLBACK: (slug, n) => `/v1/wiki/${slug}/rollback/${n}`,
     },
     REPUTATION: {
         /** @param {string|number} userId */
@@ -256,6 +270,15 @@ export const NAV_PATHS = {
     WIKI_WRITE: '/wiki/write',
     /** @param {string} slug */
     WIKI_EDIT: (slug) => `/wiki/edit?slug=${slug}`,
+    /** @param {string} slug */
+    WIKI_HISTORY: (slug) => `/wiki/${slug}/history`,
+    /**
+     * @param {string} slug
+     * @param {number} n
+     */
+    WIKI_REVISION: (slug, n) => `/wiki/${slug}/revisions/${n}`,
+    /** @param {string} slug */
+    WIKI_DIFF: (slug) => `/wiki/${slug}/diff`,
     BADGES: '/badges',
     /** @param {string} name */
     TAG_DETAIL: (name) => `/tags/${encodeURIComponent(name)}`,
