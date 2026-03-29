@@ -143,7 +143,7 @@ Camp Linux 커뮤니티 프론트엔드를 Vanilla JS MPA에서 React SPA로 재
 ### 레이아웃 구조
 
 - **MainLayout**: Header + Sidebar + `<Outlet />` + BottomTab
-- **AuthGuard**: `useAuth()`의 `isAuthenticated`를 확인, 미인증 시 `<Navigate to="/login" />`으로 리다이렉트, 인증됐으면 `<Outlet />`으로 자식 라우트 렌더링
+- **AuthGuard**: `useAuth()`의 `isLoading`과 `isAuthenticated`를 확인. `isLoading` 중이면 `<LoadingSpinner />`표시, 로딩 완료 후 미인증이면 `<Navigate to="/login" />`으로 리다이렉트, 인증됐으면 `<Outlet />`으로 자식 라우트 렌더링
 - 로그인/회원가입은 MainLayout 밖 (독립 레이아웃)
 
 ---
@@ -178,7 +178,7 @@ interface AuthContextType {
 
 ### 회원가입 흐름
 
-SignupPage에서 `api.postForm()`으로 `POST /v1/users/` 호출 → 성공 시 로그인 페이지로 이동 (자동 로그인 없음, 이메일 인증 필요할 수 있음).
+SignupPage에서 `api.postFormData()`으로 `POST /v1/users/` 호출 → 성공 시 로그인 페이지로 이동 (자동 로그인 없음, 이메일 인증 필요할 수 있음).
 
 ### 앱 시작 인증 흐름
 
@@ -193,7 +193,7 @@ SignupPage에서 `api.postForm()`으로 `POST /v1/users/` 호출 → 성공 시 
 - `setAccessToken()` / `getAccessToken()` — 모듈 스코프 변수
 - `request()` — Authorization 헤더 주입, trailing slash 보장, 401 자동 refresh
 - `api.get()`, `api.post()`, `api.put()`, `api.patch()`, `api.delete()` — JSON 메서드
-- `api.postForm()` — `multipart/form-data` 전송 (회원가입, 이미지 업로드용)
+- `api.postFormData()` — `multipart/form-data` 전송 (회원가입, 이미지 업로드용)
 
 ---
 
@@ -238,7 +238,7 @@ SignupPage에서 `api.postForm()`으로 `POST /v1/users/` 호출 → 성공 시 
 ### ProfilePage (내 프로필 편집, `/edit-profile`)
 
 - 프로필 이미지 업로드, 닉네임, 자기소개, 배포판 플레어
-- API: `PUT /v1/users/me/` + `POST /v1/users/profile/image/`
+- API: `PATCH /v1/users/me/` + `POST /v1/users/profile/image/`
 
 ### UserProfilePage (타인 프로필, `/user-profile/:id`)
 
