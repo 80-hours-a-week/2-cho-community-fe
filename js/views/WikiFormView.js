@@ -64,11 +64,24 @@ class WikiFormView {
             /** @type {HTMLTextAreaElement} */ (contentTextarea).value = existingPage.content;
         }
         formChildren.push(createFormGroup('내용', contentTextarea));
+        // 편집 요약 입력
+        const editSummaryInput = createElement('input', {
+            type: 'text',
+            className: 'form-input',
+            id: 'edit-summary',
+            placeholder: '변경 사항을 요약해주세요',
+            maxlength: '500',
+        });
+        if (!isEdit) {
+            /** @type {HTMLInputElement} */ (editSummaryInput).value = '초기 작성';
+        }
+        formChildren.push(createFormGroup('편집 요약', editSummaryInput));
         // 버튼
         const submitBtn = createElement('button', {
             className: 'review-submit-btn',
             textContent: isEdit ? '페이지 수정' : '페이지 작성',
             onClick: () => {
+                const editSummary = /** @type {HTMLInputElement} */ (editSummaryInput).value.trim();
                 const data = {
                     title: /** @type {HTMLInputElement} */ (titleInput).value.trim(),
                     tags: /** @type {HTMLInputElement} */ (tagsInput).value
@@ -76,6 +89,7 @@ class WikiFormView {
                         .map(t => t.trim())
                         .filter(t => t.length > 0),
                     content: /** @type {HTMLTextAreaElement} */ (contentTextarea).value.trim(),
+                    edit_summary: editSummary || '초기 작성',
                 };
                 // 작성 시 슬러그 포함
                 if (!isEdit) {

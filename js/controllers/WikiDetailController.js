@@ -76,6 +76,8 @@ class WikiDetailController {
 
             WikiDetailView.renderWikiPage(/** @type {HTMLElement} */ (container), /** @type {Record<string, any>} */ (this.pageData), currentUserId);
 
+            // 편집 기록 버튼 이벤트
+            this._setupHistoryButton();
             // 수정 버튼 이벤트
             this._setupEditButton();
             // 삭제 버튼 이벤트
@@ -83,6 +85,19 @@ class WikiDetailController {
         } catch (error) {
             logger.error('위키 페이지 로드 실패', error);
             showToast('위키 페이지를 불러오지 못했습니다.');
+        }
+    }
+
+    /**
+     * 편집 기록 버튼 설정
+     * @private
+     */
+    _setupHistoryButton() {
+        const historyBtn = document.getElementById('wiki-history-btn');
+        if (historyBtn) {
+            historyBtn.addEventListener('click', () => {
+                location.href = resolveNavPath(NAV_PATHS.WIKI_HISTORY(/** @type {string} */ (this.slug)));
+            });
         }
     }
 

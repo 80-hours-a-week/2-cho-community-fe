@@ -77,6 +77,7 @@ class WikiEditController extends BaseWikiController {
                 title: data.title,
                 content: data.content,
                 tags: data.tags,
+                edit_summary: data.edit_summary,
             });
 
             if (result.ok) {

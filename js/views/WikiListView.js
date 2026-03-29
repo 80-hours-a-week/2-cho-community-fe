@@ -27,7 +27,7 @@ class WikiListView extends BaseListView {
             createElement('div', { className: 'wiki-card-tags' },
                 tags.map(/** @param {any} tag */ tag => createElement('a', {
                     className: 'wiki-tag-badge',
-                    href: resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag.name)}`),
+                    href: resolveNavPath(NAV_PATHS.TAG_DETAIL(tag.name)),
                     onClick: (/** @type {any} */ e) => e.stopPropagation(),
                 }, [tag.name]))
             ),

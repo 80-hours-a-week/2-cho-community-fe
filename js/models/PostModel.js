@@ -20,9 +20,10 @@ class PostModel {
      * @param {string|null} [tag=null] - 태그 필터
      * @param {boolean} [following=false] - 팔로잉 피드 필터
      * @param {{signal?: AbortSignal}} [options={}] - 추가 옵션 (AbortSignal 등)
+     * @param {boolean|null} [solved=null] - Q&A 해결 여부 필터
      * @returns {Promise<ApiResponse<{posts: PostSummary[], pagination: Pagination}>>}
      */
-    static async getPosts(offset = 0, limit = 10, search = null, sort = 'latest', authorId = null, categoryId = null, tag = null, following = false, options = {}) {
+    static async getPosts(offset = 0, limit = 10, search = null, sort = 'latest', authorId = null, categoryId = null, tag = null, following = false, options = {}, solved = null) {
         let url = `${API_ENDPOINTS.POSTS.ROOT}/?offset=${offset}&limit=${limit}&sort=${sort}`;
         if (search) {
             url += `&search=${encodeURIComponent(search)}`;
@@ -38,6 +39,9 @@ class PostModel {
         }
         if (following) {
             url += `&following=true`;
+        }
+        if (solved !== null && solved !== undefined) {
+            url += `&solved=${solved}`;
         }
         return ApiService.get(url, options);
     }

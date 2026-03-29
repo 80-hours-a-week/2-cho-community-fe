@@ -53,7 +53,7 @@ class WikiDetailView {
             container.appendChild(createElement('div', { className: 'wiki-detail-tags' },
                 tags.map(/** @param {any} tag */ tag => createElement('a', {
                     className: 'wiki-tag-badge',
-                    href: resolveNavPath(`${NAV_PATHS.WIKI}?tag=${encodeURIComponent(tag.name)}`),
+                    href: resolveNavPath(NAV_PATHS.TAG_DETAIL(tag.name)),
                 }, [tag.name]))
             ));
         }
@@ -63,6 +63,11 @@ class WikiDetailView {
         renderMarkdownTo(contentEl, content);
         // 액션 버튼
         const actionChildren = [];
+        // 편집 기록 버튼 — 모든 사용자에게 표시
+        actionChildren.push(createElement('button', {
+            className: 'nav-link-btn',
+            id: 'wiki-history-btn',
+        }, ['편집 기록']));
         // 수정 버튼 — 로그인 사용자 모두 가능
         if (currentUserId) {
             actionChildren.push(createElement('button', {

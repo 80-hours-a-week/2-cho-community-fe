@@ -77,9 +77,12 @@ class PostListView extends BaseListView {
                 post.category_name || CATEGORY_LABELS[post.category_id],
             ]));
         }
-        // Q&A 카테고리에서 채택된 답변이 있으면 "해결됨" 배지 표시
-        if (post.accepted_answer_id && post.category_id === 2) {
+        // Q&A 카테고리에서 해결/미해결 배지 표시
+        if (post.is_solved && post.category_id === 2) {
             badges.push(createElement('span', { className: 'solved-badge' }, ['해결됨']));
+        }
+        if (!post.is_solved && post.category_id === 2) {
+            badges.push(createElement('span', { className: 'unsolved-badge' }, ['미해결']));
         }
         if (badges.length > 0) {
             bodyChildren.push(createElement('div', { className: 'post-badges' }, badges));
@@ -93,12 +96,11 @@ class PostListView extends BaseListView {
             bodyChildren.push(
                 createElement('div', { className: 'post-tags' },
                     post.tags.map(/** @param {any} tag */ tag =>
-                        createElement('span', {
+                        createElement('a', {
                             className: 'tag-badge',
-                            onClick: (/** @type {any} */ e) => {
-                                e.stopPropagation();
-                                location.href = resolveNavPath(`${NAV_PATHS.MAIN}?tag=${encodeURIComponent(tag.name)}`);
-                            },
+                            href: resolveNavPath(NAV_PATHS.TAG_DETAIL(tag.name)),
+                            title: tag.description || undefined,
+                            onClick: (/** @type {any} */ e) => e.stopPropagation(),
                         }, [`#${tag.name}`])
                     )
                 )

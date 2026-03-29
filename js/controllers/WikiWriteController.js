@@ -64,6 +64,7 @@ class WikiWriteController extends BaseWikiController {
                 slug: data.slug,
                 content: data.content,
                 tags: data.tags,
+                edit_summary: data.edit_summary || '초기 작성',
             });
 
             if (result.ok) {

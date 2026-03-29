@@ -8,6 +8,7 @@ import { NAV_PATHS, UI_MESSAGES } from '../constants.js';
 import { resolveNavPath } from '../config.js';
 import { getAccessToken } from '../services/ApiService.js';
 import { showToast } from '../views/helpers.js';
+import { createElement } from '../utils/dom.js';
 
 const logger = Logger.createLogger('MainController');
 const AUTOCOMPLETE_DEBOUNCE_MS = 300;
@@ -19,6 +20,7 @@ const DEFAULT_FILTERS = Object.freeze({
     tag: null,
     following: false,
     forYou: false,
+    solved: null,
 });
 /** 메인 페이지 컨트롤러 */
 class MainController {
@@ -195,9 +197,51 @@ class MainController {
         PostListView.renderCategoryTabs(tabContainer, this._categories, this.filters.category, (categoryId) => {
             if (categoryId === this.filters.category) return;
             this.filters.category = categoryId;
+            // Q&A 카테고리가 아니면 solved 필터 초기화
+            if (categoryId !== 2) {
+                this.filters.solved = null;
+            }
             this._renderCategoryTabs();
+            this._renderSolvedFilter();
             this._resetAndReload();
         });
+        this._renderSolvedFilter();
+    }
+    /**
+     * Q&A 카테고리 선택 시 해결/미해결 필터 렌더링
+     * @private
+     */
+    _renderSolvedFilter() {
+        const feedFilters = document.getElementById('feed-filters');
+        if (!feedFilters) return;
+        // 기존 solved 필터 제거
+        const existing = document.getElementById('solved-filter');
+        if (existing) existing.remove();
+        // Q&A 카테고리(category_id === 2)일 때만 표시
+        if (this.filters.category !== 2) return;
+        const options = [
+            { label: '전체', value: null },
+            { label: '해결됨', value: true },
+            { label: '미해결', value: false },
+        ];
+        const buttons = options.map(opt => {
+            const isActive = this.filters.solved === opt.value;
+            const btn = createElement('button', {
+                className: `sort-btn${isActive ? ' active' : ''}`,
+                onClick: () => {
+                    if (this.filters.solved === opt.value) return;
+                    this.filters.solved = opt.value;
+                    this._renderSolvedFilter();
+                    this._resetAndReload();
+                },
+            }, [opt.label]);
+            return btn;
+        });
+        const container = createElement('div', {
+            className: 'sort-buttons',
+            id: 'solved-filter',
+        }, buttons);
+        feedFilters.appendChild(container);
     }
     /**
      * 무한 스크롤 설정
@@ -236,7 +280,7 @@ class MainController {
         return PostModel.getPosts(
             this.currentOffset, this.LIMIT, this.filters.search, effectiveSort,
             null, this.filters.category, this.filters.tag, this.filters.following,
-            { signal }
+            { signal }, this.filters.solved
         );
     }
     /**

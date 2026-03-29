@@ -179,3 +179,85 @@
     font-size: var(--font-size-caption);
     letter-spacing: var(--tracking-wide);
 }
+
+/* ============================= */
+/* 편집 기록 (Wiki History)       */
+/* ============================= */
+.wiki-history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.wiki-history-table th,
+.wiki-history-table td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.wiki-history-table tr:nth-child(even) {
+    background: var(--color-bg-secondary);
+}
+
+/* ============================= */
+/* 리비전 경고 배너               */
+/* ============================= */
+.wiki-revision-banner {
+    background: var(--color-warning-bg, #fff3cd);
+    color: var(--color-warning-text, #856404);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* ============================= */
+/* Diff 뷰                       */
+/* ============================= */
+.wiki-diff-container {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.wiki-diff-panel {
+    flex: 1;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.wiki-diff-panel-header {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-bg-secondary);
+    font-weight: var(--font-weight-semibold);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.diff-line {
+    padding: 1px var(--spacing-sm);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.diff-line-equal {
+    background: transparent;
+}
+
+.diff-line-delete {
+    background: var(--color-error-bg, #fdd);
+}
+
+.diff-line-insert {
+    background: var(--color-success-bg, #dfd);
+}
+
+.diff-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+    .wiki-diff-container {
+        flex-direction: column;
+    }
+}
