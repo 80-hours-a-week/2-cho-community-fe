@@ -25,7 +25,8 @@ Camp Linux 커뮤니티 프론트엔드를 Vanilla JS MPA에서 React SPA로 재
 | 빌드 | Vite | 기존 FE에서 사용 중, 빠른 HMR |
 | UI | React 19 | 학습 목표 |
 | 언어 | TypeScript (.tsx) | props 타입 정의, 업계 표준 |
-| 라우팅 | React Router v7 | SPA 클라이언트 라우팅 |
+| Vite 플러그인 | @vitejs/plugin-react | JSX 변환 + React Fast Refresh (필수) |
+| 라우팅 | React Router v7 (library 모드) | SPA 클라이언트 라우팅. framework 모드(파일 기반 라우팅) 아님 |
 | 상태 관리 | useState / useContext | 최소 시작, 필요 시 확장 |
 | CSS | 기존 CSS 그대로 이전 | 디자인 유지, 학습 부담 감소 |
 | 마크다운 | marked + DOMPurify + highlight.js | 기존 의존성 유지 |
@@ -142,7 +143,7 @@ Camp Linux 커뮤니티 프론트엔드를 Vanilla JS MPA에서 React SPA로 재
 ### 레이아웃 구조
 
 - **MainLayout**: Header + Sidebar + `<Outlet />` + BottomTab
-- **AuthGuard**: 미인증 시 `/login`으로 리다이렉트
+- **AuthGuard**: `useAuth()`의 `isAuthenticated`를 확인, 미인증 시 `<Navigate to="/login" />`으로 리다이렉트, 인증됐으면 `<Outlet />`으로 자식 라우트 렌더링
 - 로그인/회원가입은 MainLayout 밖 (독립 레이아웃)
 
 ---
@@ -163,8 +164,21 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  setUser: (user: User) => void;  // 회원가입 후 수동 설정용
 }
 ```
+
+### 주요 API 엔드포인트
+
+- 로그인: `POST /v1/auth/session` (JSON) — access_token 응답
+- 로그아웃: `DELETE /v1/auth/session`
+- 토큰 갱신: `POST /v1/auth/token/refresh` (쿠키 기반)
+- 내 정보: `GET /v1/auth/me`
+- 회원가입: `POST /v1/users/` (**multipart/form-data** — Form + File)
+
+### 회원가입 흐름
+
+SignupPage에서 `api.postForm()`으로 `POST /v1/users/` 호출 → 성공 시 로그인 페이지로 이동 (자동 로그인 없음, 이메일 인증 필요할 수 있음).
 
 ### 앱 시작 인증 흐름
 
@@ -178,7 +192,8 @@ interface AuthContextType {
 
 - `setAccessToken()` / `getAccessToken()` — 모듈 스코프 변수
 - `request()` — Authorization 헤더 주입, trailing slash 보장, 401 자동 refresh
-- `api.get()`, `api.post()`, `api.put()`, `api.delete()` — 공개 메서드
+- `api.get()`, `api.post()`, `api.put()`, `api.patch()`, `api.delete()` — JSON 메서드
+- `api.postForm()` — `multipart/form-data` 전송 (회원가입, 이미지 업로드용)
 
 ---
 
@@ -229,7 +244,12 @@ interface AuthContextType {
 
 - 프로필 정보 + 팔로우/차단/DM 버튼
 - 탭: 작성글 | 댓글 | 뱃지
-- API: `GET /v1/users/{id}/` + `GET /v1/users/{id}/reputation/`
+- API:
+  - 프로필: `GET /v1/users/{id}/`
+  - 평판: `GET /v1/users/{id}/reputation/`
+  - 작성글 탭: `GET /v1/posts/?author_id={id}`
+  - 댓글 탭: `GET /v1/users/{id}/comments/` (확장 시 구현)
+  - 뱃지 탭: `GET /v1/users/{id}/badges/`
 
 ---
 
@@ -241,7 +261,7 @@ interface AuthContextType {
 | Sidebar | 카테고리 목록, 현재 선택 표시 |
 | BottomTab | 모바일 하단 네비게이션 |
 | Modal | 확인/취소 다이얼로그, 신고 폼 등 |
-| Toast | 성공/에러 알림 (이벤트 패턴, Context 없이) |
+| Toast | 성공/에러 알림 — 아래 Toast 구현 패턴 참고 |
 | LoadingSpinner | 데이터 로딩 표시 |
 
 ### ThemeContext
@@ -254,6 +274,27 @@ interface ThemeContextType {
 ```
 
 초기값: localStorage → OS 설정 → 'light' (기존 ThemeService 로직 유지)
+
+`toggleTheme()`은 React state 변경과 함께 반드시 `document.documentElement.setAttribute('data-theme', theme)`도 호출해야 함. 기존 CSS가 `[data-theme="dark"]` 선택자에 의존하기 때문.
+
+### Toast 구현 패턴
+
+`utils/toast.ts`에 싱글턴 구독 패턴으로 구현:
+
+```typescript
+// utils/toast.ts
+type ToastListener = (message: string, type: 'success' | 'error') => void;
+let listener: ToastListener | null = null;
+
+export function onToast(fn: ToastListener) { listener = fn; }
+export function showToast(message: string, type: 'success' | 'error') {
+  listener?.(message, type);
+}
+```
+
+- `Toast.tsx` 컴포넌트가 마운트 시 `onToast()`로 구독 → 메시지 수신 시 렌더링
+- `App.tsx`에 `<Toast />` 한 번만 배치
+- `services/api.ts` 등 비-React 코드에서도 `showToast()` 호출 가능
 
 ---
 
