@@ -206,7 +206,7 @@ SignupPage에서 `api.postFormData()`으로 `POST /v1/users/` 호출 → 성공 
 | PostListPage | `/` | `GET /v1/posts/` |
 | PostDetailPage | `/detail/:id` | `GET /v1/posts/{id}/` + `GET /v1/posts/{id}/comments/` |
 | PostWritePage | `/write` | `POST /v1/posts/` |
-| PostEditPage | `/edit/:id` | `GET /v1/posts/{id}/` + `PUT /v1/posts/{id}/` |
+| PostEditPage | `/edit/:id` | `GET /v1/posts/{id}/` + `PATCH /v1/posts/{id}/` |
 
 ### 컴포넌트
 
