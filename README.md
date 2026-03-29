@@ -46,7 +46,7 @@ flowchart TD
 
 ```
 2-cho-community-fe/
-├── html/                      # 27개 HTML 페이지
+├── html/                      # 31개 HTML 페이지
 ├── vite.config.js             # Vite MPA 설정 + 클린 URL 리라이트
 ├── Dockerfile                 # 멀티 스테이지 빌드 (node → nginx)
 ├── nginx.conf                 # 프로덕션 서빙 설정
@@ -58,7 +58,7 @@ flowchart TD
 │   │   ├── write.js           # 게시글 작성
 │   │   ├── dm_list.js         # DM 대화 목록
 │   │   ├── dm.js              # DM 데스크톱 통합 (좌우 분할)
-│   │   └── ...                # 총 27개
+│   │   └── ...                # 총 31개
 │   │
 │   ├── controllers/           # 비즈니스 로직 (31개)
 │   │   ├── MainController.js

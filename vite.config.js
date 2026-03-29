@@ -38,8 +38,21 @@ function mpaRewritePlugin() {
     if (rewrites[urlPath]) {
       req.url = req.url.replace(urlPath, rewrites[urlPath]);
     }
-    // 위키 상세 페이지: /wiki/{slug} 동적 라우팅
-    if (!rewrites[urlPath] && urlPath.startsWith('/wiki/') && urlPath !== '/wiki/write' && urlPath !== '/wiki/edit') {
+    // 태그 상세 페이지: /tags/{name} 동적 라우팅
+    if (!rewrites[urlPath] && urlPath.startsWith('/tags/') && urlPath !== '/tags') {
+      req.url = req.url.replace(urlPath, '/html/tag_detail.html');
+    }
+    // 위키 리비전 페이지: 상세 페이지 폴백보다 먼저 체크
+    if (urlPath.match(/^\/wiki\/[^/]+\/history$/)) {
+      req.url = req.url.replace(urlPath, '/html/wiki_history.html');
+    } else if (urlPath.match(/^\/wiki\/[^/]+\/revisions\/\d+$/)) {
+      req.url = req.url.replace(urlPath, '/html/wiki_revision.html');
+    } else if (urlPath.match(/^\/wiki\/[^/]+\/diff$/)) {
+      req.url = req.url.replace(urlPath, '/html/wiki_diff.html');
+    }
+    // 위키 상세 페이지: /wiki/{slug} 동적 라우팅 (리비전 경로 제외)
+    if (!rewrites[urlPath] && urlPath.startsWith('/wiki/') && urlPath !== '/wiki/write' && urlPath !== '/wiki/edit'
+      && !urlPath.match(/^\/wiki\/[^/]+\/(history|diff)$/) && !urlPath.match(/^\/wiki\/[^/]+\/revisions\/\d+$/)) {
       req.url = req.url.replace(urlPath, '/html/wiki_detail.html');
     }
     next();
@@ -98,7 +111,11 @@ export default defineConfig({
         wiki_detail: resolve(__dirname, 'html/wiki_detail.html'),
         wiki_write: resolve(__dirname, 'html/wiki_write.html'),
         wiki_edit: resolve(__dirname, 'html/wiki_edit.html'),
+        wiki_history: resolve(__dirname, 'html/wiki_history.html'),
+        wiki_revision: resolve(__dirname, 'html/wiki_revision.html'),
+        wiki_diff: resolve(__dirname, 'html/wiki_diff.html'),
         badges: resolve(__dirname, 'html/badges.html'),
+        tag_detail: resolve(__dirname, 'html/tag_detail.html'),
       },
     },
   },
