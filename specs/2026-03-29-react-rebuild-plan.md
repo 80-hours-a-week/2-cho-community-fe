@@ -32,7 +32,7 @@
 | `src/utils/validators.ts` | 폼 검증 유틸 |
 | `src/contexts/AuthContext.tsx` | 인증 상태 전역 Context + Provider |
 | `src/contexts/ThemeContext.tsx` | 다크모드 테마 Context + Provider |
-| `src/hooks/useAuth.ts` | AuthContext 접근 훅 |
+| `src/hooks/useAuth.ts` | AuthContext 접근 훅 (useApi.ts는 핵심 범위에서 불필요 — 페이지가 api.ts를 직접 호출) |
 | `src/components/LoadingSpinner.tsx` | 로딩 스피너 |
 | `src/components/Toast.tsx` | 토스트 알림 |
 | `src/components/Header.tsx` | 네비게이션 헤더 |
@@ -95,8 +95,8 @@ git checkout -b feat/react-rebuild
 - [ ] **Step 2: React 의존성 설치**
 
 ```bash
-npm install react react-dom react-router-dom
-npm install -D @types/react @types/react-dom @vitejs/plugin-react
+npm install react react-dom react-router-dom marked dompurify highlight.js lucide-react
+npm install -D @types/react @types/react-dom @types/dompurify @vitejs/plugin-react
 ```
 
 - [ ] **Step 3: `vite.config.ts` 작성 (기존 `vite.config.js` 교체)**
@@ -107,10 +107,14 @@ npm install -D @types/react @types/react-dom @vitejs/plugin-react
 // vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   root: '.',
+  resolve: {
+    alias: { '@': path.resolve(__dirname, './src') },
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -222,10 +226,11 @@ cp -r css/ src/styles/
 
 - [ ] **Step 3: 페이지별 CSS를 `style.css`에 추가**
 
-기존 MPA에서는 각 HTML에서 개별 로드하던 페이지 CSS를 `src/styles/style.css` 하단에 추가:
+기존 MPA에서는 각 HTML에서 개별 로드하던 페이지 CSS를 `src/styles/style.css` 하단에 추가. 먼저 `ls src/styles/pages/`로 실제 존재하는 파일 확인 후, 존재하는 파일만 import:
 
 ```css
 /* 5. Pages - SPA에서는 전역 로드 */
+/* ls src/styles/pages/ 결과 확인 후 존재하는 파일만 아래에 추가 */
 @import url('pages/login.css');
 @import url('pages/signup.css');
 @import url('pages/detail.css');
@@ -920,11 +925,13 @@ git commit -m "feat: PostListPage + PostCard + Pagination 구현"
 
 > **보안**: `DOMPurify.sanitize()`로 반드시 새니타이즈한 HTML만 렌더링. 기존 FE와 동일한 XSS 방지 패턴.
 
-- [ ] **Step 2: highlight.js 타입 설치**
+- [ ] **Step 2: 타입 체크**
 
 ```bash
-npm install -D @types/dompurify
+npx tsc --noEmit
 ```
+
+> `@types/dompurify`는 Task 1에서 이미 설치됨.
 
 - [ ] **Step 3: 커밋**
 
@@ -1131,9 +1138,6 @@ git add nginx.k8s.conf
 git commit -m "feat: nginx SPA fallback 설정 변경"
 ```
 
-- [ ] **Step 6: Phase 1 완료 커밋**
+- [ ] **Step 6: Phase 1 완료 확인**
 
-```bash
-git add -A
-git commit -m "chore: React 프론트엔드 재구축 Phase 1 완료"
-```
+모든 기능이 정상 동작하면 Phase 1 완료. 기존 MPA 파일(`html/`, `js/`, `css/`)은 이 브랜치에서 유지하고 별도 정리 PR에서 삭제.
