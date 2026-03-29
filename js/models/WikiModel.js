@@ -69,7 +69,7 @@ class WikiModel {
      * @param {number} limit
      */
     static async getHistory(slug, offset = 0, limit = 20) {
-        return ApiService.request(
+        return ApiService.get(
             `${API_ENDPOINTS.WIKI.HISTORY(slug)}?offset=${offset}&limit=${limit}`
         );
     }
@@ -80,7 +80,7 @@ class WikiModel {
      * @param {number} revisionNumber
      */
     static async getRevision(slug, revisionNumber) {
-        return ApiService.request(API_ENDPOINTS.WIKI.REVISION(slug, revisionNumber));
+        return ApiService.get(API_ENDPOINTS.WIKI.REVISION(slug, revisionNumber));
     }
 
     /**
@@ -90,7 +90,7 @@ class WikiModel {
      * @param {number} toRev
      */
     static async getDiff(slug, fromRev, toRev) {
-        return ApiService.request(
+        return ApiService.get(
             `${API_ENDPOINTS.WIKI.DIFF(slug)}?from=${fromRev}&to=${toRev}`
         );
     }
@@ -101,9 +101,7 @@ class WikiModel {
      * @param {number} revisionNumber
      */
     static async rollback(slug, revisionNumber) {
-        return ApiService.request(API_ENDPOINTS.WIKI.ROLLBACK(slug, revisionNumber), {
-            method: 'POST',
-        });
+        return ApiService.post(API_ENDPOINTS.WIKI.ROLLBACK(slug, revisionNumber));
     }
 }
 
