@@ -197,12 +197,17 @@ export class DMListController {
             const result = await DMModel.getConversations(_offset, _limit);
 
             if (!result.ok) {
-                // 미인증 시 로그인 페이지로 이동
                 if (result.status === 401) {
                     location.href = resolveNavPath(NAV_PATHS.LOGIN);
                     return;
                 }
-                showToast(UI_MESSAGES.DM_LOAD_FAIL);
+                if (result.status === 403) {
+                    showToast(result.data?.detail?.message || '접근 권한이 없습니다.');
+                    return;
+                }
+                showToast(result.status >= 500
+                    ? '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+                    : UI_MESSAGES.DM_LOAD_FAIL);
                 return;
             }
 

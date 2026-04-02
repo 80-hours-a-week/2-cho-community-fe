@@ -148,8 +148,22 @@ jobs:
             echo "fe_url=https://staging.my-community.shop" >> "${GITHUB_OUTPUT}"
           fi
 
-      - name: Wait for ArgoCD sync
-        run: sleep 90
+      - name: Wait for deployment (health poll)
+        env:
+          FE_URL: ${{ steps.urls.outputs.fe_url }}
+        run: |
+          echo "Waiting for deployment to become healthy..."
+          for i in $(seq 1 30); do
+            STATUS=$(curl -sk -o /dev/null -w "%{http_code}" "${FE_URL}" 2>/dev/null || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed after $((i * 5))s"
+              exit 0
+            fi
+            echo "Attempt $i/30: HTTP $STATUS — retrying in 5s..."
+            sleep 5
+          done
+          echo "::error::Deployment health check timed out after 150s"
+          exit 1
 
       - name: Verify frontend
         env:

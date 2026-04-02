@@ -157,6 +157,7 @@ class UserProfileView {
                     src: getImageUrl(user.profile_img),
                     className: 'follow-list-avatar',
                     alt: '',
+                    loading: 'lazy',
                     onError: (e) => { e.target.src = '/assets/profiles/default_profile.jpg'; },
                 }),
                 createElement('span', { className: 'follow-list-nickname' }, [user.nickname || '탈퇴한 사용자']),

@@ -359,13 +359,18 @@ class ApiService {
      */
     static _handleNetworkError(error, method, endpoint) {
         logger.error(`${method} ${endpoint} 네트워크 에러`, error);
+        const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+        const message = isOffline
+            ? '인터넷에 연결되어 있지 않습니다. 연결 상태를 확인해주세요.'
+            : '네트워크 연결을 확인해주세요.';
         // 네트워크 에러는 백엔드 응답이 아니므로 ApiSuccessResponse 구조를 따르지 않음
         return /** @type {any} */ ({
             ok: false,
             status: 0,
             data: {
-                message: '네트워크 연결을 확인해주세요.',
-                _isNetworkError: true
+                message,
+                _isNetworkError: true,
+                _isOffline: isOffline
             }
         });
     }

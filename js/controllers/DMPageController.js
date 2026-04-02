@@ -113,7 +113,13 @@ export class DMPageController {
                     location.href = resolveNavPath(NAV_PATHS.LOGIN);
                     return;
                 }
-                showToast(UI_MESSAGES.DM_LOAD_FAIL);
+                if (result.status === 403) {
+                    showToast(result.data?.detail?.message || '접근 권한이 없습니다.');
+                    return;
+                }
+                showToast(result.status >= 500
+                    ? '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+                    : UI_MESSAGES.DM_LOAD_FAIL);
                 return;
             }
 
