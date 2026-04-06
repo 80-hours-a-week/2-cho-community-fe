@@ -74,6 +74,7 @@ class ActivityView {
                     src: getImageUrl(block.profile_img),
                     className: 'block-card-avatar',
                     alt: '',
+                    loading: 'lazy',
                     onError: (e) => { e.target.src = '/assets/profiles/default_profile.jpg'; },
                 }),
                 createElement('div', { className: 'block-card-info' }, [

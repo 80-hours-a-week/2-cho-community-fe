@@ -107,10 +107,14 @@ const PURIFY_CONFIG = {
 };
 
 // 링크에 target="_blank" + rel="noopener noreferrer" 자동 적용
+// 이미지에 loading="lazy" 자동 적용 (성능 최적화)
 DOMPurify.addHook('afterSanitizeAttributes', (node) => {
     if (node.tagName === 'A' && node.getAttribute('href')) {
         node.setAttribute('target', '_blank');
         node.setAttribute('rel', 'noopener noreferrer');
+    }
+    if (node.tagName === 'IMG') {
+        node.setAttribute('loading', 'lazy');
     }
 });
 

@@ -2,6 +2,22 @@
 
 ## 2026-03 (Mar)
 
+- **03-29: 코드베이스 품질 개선**
+  - fix: Docker 헬스체크 이슈 수정
+  - fix: Build & CI — 빌드 설정 개선
+  - fix: Code Quality — 코드 품질 개선
+
+- **03-29: 지식 품질 (Knowledge Quality) 기능**
+  - feat: 위키 리비전 API 모델 및 상수 추가 (`WikiRevisionModel`)
+  - feat: 위키 편집 기록 페이지 — `wiki_history.html`, 리비전 목록, 작성자, 편집 요약
+  - feat: 위키 리비전 보기 및 diff 비교 페이지 — `wiki_revision.html`, `wiki_diff.html`
+  - feat: 위키 상세/편집 페이지에 리비전 기능 통합
+  - feat: Q&A 해결/미해결 필터 및 배지 구현
+  - feat: 태그 상세 페이지 — `tag_detail.html`, 태그 설명/본문, 관련 게시글 수
+  - feat: 태그 배지 클릭 시 태그 상세 페이지로 이동
+  - fix: WikiModel 리비전 메서드 ApiService.get/post로 수정
+  - fix: 위키 리비전 TypeScript 타입 오류 수정
+
 - feat: 구독 벨 버튼 (게시글 상세), watching 표시 (게시글 목록)
 - feat: 답변 채택 UI (Q&A 카테고리), 해결됨 배지 (게시글 목록)
 - feat: 알림 설정에 이메일 다이제스트 빈도 선택 추가

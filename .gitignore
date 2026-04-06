@@ -70,3 +70,5 @@ temp/
 CLAUDE.md
 GEMINI.md
 docs/*
+specs/
+.superpowers/

@@ -21,3 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     DMListController.init();
 });
+
+// 페이지 이탈 시 리소스 정리 (스크롤 핸들러, DM 이벤트 리스너)
+window.addEventListener('pagehide', () => DMListController.destroy());
